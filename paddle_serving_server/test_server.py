@@ -53,7 +53,7 @@ class TestServer(object):
         os.system("kill `ps -ef | grep SimpleHTTPServer | awk '{print $2}'` > /dev/null 2>&1")
 
     def test_check_avx(self):
-        assert self.test_server.check_avx() is False
+        assert self.test_server.check_avx() is True
 
     def test_check_local_bin_without_defined(self):
         self.test_server.check_local_bin()
