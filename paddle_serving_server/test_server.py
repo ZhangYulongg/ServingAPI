@@ -8,6 +8,9 @@ import paddle_serving_server as serving
 import argparse
 import collections
 from multiprocessing import Process
+from paddle_serving_client import Client
+import numpy as np
+import paddle
 
 
 class TestServer(object):
@@ -114,7 +117,25 @@ class TestServer(object):
         p = Process(target=self.test_server.run_server)
         p.start()
         time.sleep(5)
-        p.close()
+
+        client = Client()
+        client.load_client_config(self.dir + "/uci_housing_client/serving_client_conf.prototxt")
+        client.connect(["127.0.0.1:9393"])
+
+        test_reader = paddle.batch(
+            paddle.reader.shuffle(
+                paddle.dataset.uci_housing.test(), buf_size=500),
+            batch_size=1)
+
+        for data in test_reader():
+            new_data = np.zeros((1, 13)).astype("float32")
+            new_data[0] = data[0][0]
+            fetch_map = client.predict(
+                feed={"x": new_data}, fetch=["price"], batch=True)
+            print("{} {}".format(fetch_map["price"][0], data[0][1][0]))
+            print(fetch_map)
+
+        os.system("kill `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
 
 
 if __name__ == '__main__':
