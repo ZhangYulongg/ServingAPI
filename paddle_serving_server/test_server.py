@@ -7,6 +7,7 @@ from paddle_serving_server.server import Server
 import paddle_serving_server as serving
 import argparse
 import collections
+from multiprocessing import Process
 
 
 class TestServer(object):
@@ -21,8 +22,9 @@ class TestServer(object):
         general_response_op = op_maker.create('general_response')
         op_seq_maker.add_op(general_response_op)
 
-        dir_name = os.path.dirname(os.path.abspath(__file__))
-        self.model_dir = dir_name + "/uci_housing_model"
+        dir = os.path.dirname(os.path.abspath(__file__))
+        self.dir = dir
+        self.model_dir = dir + "/uci_housing_model"
         self.test_server = Server()
         self.test_server.set_op_sequence(op_seq_maker.get_op_sequence())
         self.test_server.load_model_config(self.model_dir)
@@ -99,8 +101,20 @@ class TestServer(object):
         self.test_server._prepare_resource("workdir_0", None)
         assert str(self.test_server.resource_conf).split() == resource_conf
 
-    def test_run_server(self):
-        pass
+    def test_prepare_server(self):
+        self.test_server.prepare_server("workdir", 9696, "gpu", False)
+        assert os.path.isfile(self.dir + "/workdir/general_infer_0/fluid_time_file") is True
+        assert os.system(f"grep -r services {self.dir}/workdir/infer_service.prototxt") == 0
+        assert os.system(f"grep -r workflows {self.dir}/workdir/workflow.prototxt") == 0
+        assert os.system(f"grep -r model_toolkit_file {self.dir}/workdir/resource.prototxt") == 0
+        assert os.system(f"grep -r engines {self.dir}/workdir/general_infer_0/model_toolkit.prototxt") == 0
+
+    def test_run_server_with_cpu(self):
+        self.test_server.prepare_server("workdir", 9696, "cpu")
+        p = Process(target=self.test_server.run_server)
+        p.start()
+        time.sleep(5)
+        p.close()
 
 
 if __name__ == '__main__':
@@ -113,5 +127,5 @@ if __name__ == '__main__':
     # TestServer().test_get_fetch_list()
     ts = TestServer()
     ts.setup()
-    ts.test_run_server()
+    ts.test_run_server_with_cpu()
     pass
