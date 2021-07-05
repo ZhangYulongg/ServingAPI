@@ -120,20 +120,24 @@ class TestServer(object):
 
         client = Client()
         client.load_client_config(self.dir + "/uci_housing_client/serving_client_conf.prototxt")
-        client.connect(["127.0.0.1:9393"])
+        client.connect(["127.0.0.1:9696"])
 
         test_reader = paddle.batch(
             paddle.reader.shuffle(
                 paddle.dataset.uci_housing.test(), buf_size=500),
             batch_size=1)
 
-        for data in test_reader():
+        for i in range(2):
+            data = test_reader()
             new_data = np.zeros((1, 13)).astype("float32")
             new_data[0] = data[0][0]
+            print(data[0])
             fetch_map = client.predict(
                 feed={"x": new_data}, fetch=["price"], batch=True)
             print("{} {}".format(fetch_map["price"][0], data[0][1][0]))
             print(fetch_map)
+
+        print(test_reader[0])
 
         os.system("kill `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
 
