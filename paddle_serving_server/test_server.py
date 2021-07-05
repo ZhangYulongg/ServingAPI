@@ -10,7 +10,6 @@ import collections
 from multiprocessing import Process
 from paddle_serving_client import Client
 import numpy as np
-import paddle
 
 
 class TestServer(object):
@@ -35,6 +34,19 @@ class TestServer(object):
     def teardown(self):
         os.system("rm -rf workdir*")
         os.system("rm -rf PipelineServingLogs")
+
+    def predict(self):
+        client = Client()
+        client.load_client_config(self.dir + "/uci_housing_client/serving_client_conf.prototxt")
+        client.connect(["127.0.0.1:9696"])
+
+        data = np.array(
+            [[0.0137, -0.1136, 0.2553, -0.0692, 0.0582, -0.0727, -0.1583, -0.0584, 0.6283, 0.4919, 0.1856, 0.0795,
+              -0.0332]])
+        fetch_map = client.predict(
+            feed={"x": data}, fetch=["price"], batch=True)
+        print(fetch_map)
+        return fetch_map['price']
 
     def test_load_model_config(self):
         test_model_conf = str(self.test_server.model_conf['general_infer_0']).split()
@@ -118,26 +130,20 @@ class TestServer(object):
         p.start()
         time.sleep(5)
 
-        client = Client()
-        client.load_client_config(self.dir + "/uci_housing_client/serving_client_conf.prototxt")
-        client.connect(["127.0.0.1:9696"])
+        price = self.predict()
+        assert price == np.array([[18.901152]], dtype=np.float32)
 
-        test_reader = paddle.batch(
-            paddle.reader.shuffle(
-                paddle.dataset.uci_housing.test(), buf_size=500),
-            batch_size=1)
+        os.system("kill `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
 
-        for i in range(2):
-            data = test_reader()
-            new_data = np.zeros((1, 13)).astype("float32")
-            new_data[0] = data[0][0]
-            print(data[0])
-            fetch_map = client.predict(
-                feed={"x": new_data}, fetch=["price"], batch=True)
-            print("{} {}".format(fetch_map["price"][0], data[0][1][0]))
-            print(fetch_map)
+    def test_run_server_with_gpu(self):
+        self.test_server.prepare_server("workdir_0", 9696, "gpu")
+        self.test_server.set_gpuid(0)
+        p = Process(target=self.test_server.run_server)
+        p.start()
+        time.sleep(10)
 
-        print(test_reader[0])
+        price = self.predict()
+        assert price == np.array([[18.901152]], dtype=np.float32)
 
         os.system("kill `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
 
