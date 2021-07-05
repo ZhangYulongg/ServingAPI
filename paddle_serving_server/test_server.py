@@ -27,6 +27,10 @@ class TestServer(object):
         self.test_server.set_op_sequence(op_seq_maker.get_op_sequence())
         self.test_server.load_model_config(self.model_dir)
 
+    def teardown(self):
+        os.system("rm -rf workdir*")
+        os.system("rm -rf PipelineServingLogs")
+
     def test_load_model_config(self):
         test_model_conf = str(self.test_server.model_conf['general_infer_0']).split()
         assert test_model_conf == ['feed_var', '{', 'name:', '"x"', 'alias_name:', '"x"', 'is_lod_tensor:', 'false',
@@ -84,6 +88,11 @@ class TestServer(object):
         assert str(self.test_server.infer_service_conf).split() == infer_service_conf
 
     def test_prepare_resource(self):
+        workdir = "workdir_0"
+        os.system("mkdir -p {}".format(workdir))
+        for subdir in self.test_server.subdirectory:
+            os.system("mkdir -p {}/{}".format(workdir, subdir))
+            os.system("touch {}/{}/fluid_time_file".format(workdir, subdir))
         resource_conf = ['model_toolkit_path:', '"workdir_0"', 'model_toolkit_file:',
                          '"general_infer_0/model_toolkit.prototxt"', 'general_model_path:', '"workdir_0"',
                          'general_model_file:', '"general_infer_0/general_model.prototxt"']
@@ -91,8 +100,7 @@ class TestServer(object):
         assert str(self.test_server.resource_conf).split() == resource_conf
 
     def test_run_server(self):
-        self.test_server.prepare_server(workdir="workdir", port=9696, device="cpu", use_encryption_model=False)
-        self.test_server.run_server()
+        pass
 
 
 if __name__ == '__main__':

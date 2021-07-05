@@ -14,6 +14,10 @@ class TestWebService(object):
         test_service.load_model_config(self.model_dir)
         self.test_service = test_service
 
+    def teardown(self):
+        os.system("rm -rf workdir*")
+        os.system("rm -rf PipelineServingLogs")
+
     def test_load_model_config(self):
         assert self.test_service.server_config_dir_paths == [self.model_dir]
         feed_vars = str(self.test_service.feed_vars['x']).split()
