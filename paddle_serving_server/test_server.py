@@ -39,6 +39,7 @@ class TestServer(object):
         client = Client()
         client.load_client_config(self.dir + "/uci_housing_client/serving_client_conf.prototxt")
         client.connect(["127.0.0.1:9696"])
+        client.set_rpc_timeout_ms(100000)
 
         data = np.array(
             [[0.0137, -0.1136, 0.2553, -0.0692, 0.0582, -0.0727, -0.1583, -0.0584, 0.6283, 0.4919, 0.1856, 0.0795,
@@ -203,8 +204,8 @@ class TestMultiLangServer(object):
         p = Process(target=self.test_server.run_server)
         p.start()
         time.sleep(10)
-        os.system("netstat -nlp")
-        os.system("ps -ef")
+        # os.system("netstat -nlp")
+        # os.system("ps -ef")
 
         price = self.predict()
         assert price == np.array([[18.901152]], dtype=np.float32)
