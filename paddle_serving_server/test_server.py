@@ -124,28 +124,28 @@ class TestServer(object):
         assert os.system(f"grep -r model_toolkit_file {self.dir}/workdir/resource.prototxt") == 0
         assert os.system(f"grep -r engines {self.dir}/workdir/general_infer_0/model_toolkit.prototxt") == 0
 
-    def test_run_server_with_cpu(self):
-        self.test_server.prepare_server("workdir", 9696, "cpu")
-        p = Process(target=self.test_server.run_server)
-        p.start()
-        time.sleep(5)
-
-        price = self.predict()
-        assert price == np.array([[18.901152]], dtype=np.float32)
-
-        os.system("kill `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
-
-    def test_run_server_with_gpu(self):
-        self.test_server.prepare_server("workdir_0", 9696, "gpu")
-        self.test_server.set_gpuid(0)
-        p = Process(target=self.test_server.run_server)
-        p.start()
-        time.sleep(10)
-
-        price = self.predict()
-        assert price == np.array([[18.901152]], dtype=np.float32)
-
-        os.system("kill `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
+    # def test_run_server_with_cpu(self):
+    #     self.test_server.prepare_server("workdir", 9696, "cpu")
+    #     p = Process(target=self.test_server.run_server)
+    #     p.start()
+    #     time.sleep(5)
+    #
+    #     price = self.predict()
+    #     assert price == np.array([[18.901152]], dtype=np.float32)
+    #
+    #     os.system("kill `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
+    #
+    # def test_run_server_with_gpu(self):
+    #     self.test_server.set_gpuid(0)
+    #     self.test_server.prepare_server("workdir_0", 9696, "gpu")
+    #     p = Process(target=self.test_server.run_server)
+    #     p.start()
+    #     time.sleep(10)
+    #
+    #     price = self.predict()
+    #     assert price == np.array([[18.901152]], dtype=np.float32)
+    #
+    #     os.system("kill `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
 
 
 if __name__ == '__main__':
@@ -158,5 +158,5 @@ if __name__ == '__main__':
     # TestServer().test_get_fetch_list()
     ts = TestServer()
     ts.setup()
-    ts.test_run_server_with_cpu()
+    ts.test_run_server_with_gpu()
     pass

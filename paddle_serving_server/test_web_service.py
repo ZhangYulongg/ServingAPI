@@ -38,7 +38,7 @@ class TestWebService(object):
     def test_default_rpc_service(self):
         self.test_service.prepare_server(workdir="workdir", port=9696, device="cpu")
         test_server = self.test_service.default_rpc_service(workdir="workdir", port=self.test_service.port_list[0],
-                                                            gpuid=-1)
+                                                            gpus=-1)
         assert isinstance(test_server, paddle_serving_server.server.Server)
         assert test_server.port == 12000
         assert test_server.workdir == "workdir"
@@ -66,13 +66,13 @@ class TestWebService(object):
         self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
         self.test_service.create_rpc_config()
         rpc_list = self.test_service.rpc_service_list
-        assert len(rpc_list) == 2
+        assert len(rpc_list) == 1
         assert isinstance(rpc_list[0], paddle_serving_server.server.Server)
         assert isinstance(rpc_list[1], paddle_serving_server.server.Server)
 
     def test_set_gpus(self):
         self.test_service.set_gpus("1,2,3")
-        assert self.test_service.gpus == [1, 2, 3]
+        assert self.test_service.gpus == "1,2,3"
 
     def test_run_rpc_service(self):
         pass
