@@ -92,10 +92,11 @@ class TestServer(object):
                               f'"{self.model_dir}/fluid_time_file"',
                               'reloadable_type:', '"timestamp_ne"', 'model_dir:',
                               f'"{self.model_dir}"',
-                              'runtime_thread_num:', '0', 'batch_infer_size:', '0', 'enable_batch_align:', '0',
-                              'enable_memory_optimization:', 'false', 'enable_ir_optimization:', 'false', 'use_trt:',
-                              'false', 'use_lite:', 'false', 'use_xpu:', 'false', 'use_gpu:', 'false',
-                              'combined_model:', 'false', '}']
+                              'gpu_ids:', '-1', 'runtime_thread_num:', '0', 'batch_infer_size:', '32',
+                              'enable_batch_align:', '1', 'enable_memory_optimization:', 'false',
+                              'enable_ir_optimization:', 'false', 'use_trt:', 'false', 'use_lite:', 'false', 'use_xpu:',
+                              'false', 'use_gpu:', 'false', 'combined_model:', 'false', 'gpu_multi_stream:', 'false',
+                              '}']
         assert str(self.test_server.model_toolkit_conf[0]).split() == model_toolkit_conf
 
     def test_prepare_infer_service(self):
@@ -158,5 +159,5 @@ if __name__ == '__main__':
     # TestServer().test_get_fetch_list()
     ts = TestServer()
     ts.setup()
-    ts.test_run_server_with_gpu()
+    ts.test_prepare_engine()
     pass

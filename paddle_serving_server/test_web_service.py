@@ -68,7 +68,6 @@ class TestWebService(object):
         rpc_list = self.test_service.rpc_service_list
         assert len(rpc_list) == 1
         assert isinstance(rpc_list[0], paddle_serving_server.server.Server)
-        assert isinstance(rpc_list[1], paddle_serving_server.server.Server)
 
     def test_set_gpus(self):
         self.test_service.set_gpus("1,2,3")
