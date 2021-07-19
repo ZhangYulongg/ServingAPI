@@ -32,7 +32,6 @@ class TestWebService(object):
         self.test_service.prepare_server(workdir="workdir", port=9696, device="cpu")
         assert self.test_service.workdir == "workdir"
         assert self.test_service.port == 9696
-        assert self.test_service.device == "cpu"
         assert self.test_service.port_list == [12000]
 
     def test_default_rpc_service(self):
@@ -71,7 +70,7 @@ class TestWebService(object):
 
     def test_set_gpus(self):
         self.test_service.set_gpus("1,2,3")
-        assert self.test_service.gpus == "1,2,3"
+        assert self.test_service.gpus == ["1,2,3"]
 
     def test_run_rpc_service(self):
         pass
