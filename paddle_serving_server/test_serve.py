@@ -3,6 +3,7 @@ import os
 import pytest
 from multiprocessing import Process
 import numpy as np
+import pynvml
 
 from paddle_serving_server.serve import format_gpu_to_strlist
 from paddle_serving_server.serve import is_gpu_mode
@@ -10,19 +11,21 @@ from paddle_serving_server.serve import start_gpu_card_model
 from paddle_serving_server.serve import start_multi_card
 from paddle_serving_client import Client, MultiLangClient
 
+from util import kill_process, check_gpu_memory
+
 
 class TestServe(object):
     @staticmethod
     def default_args():
         parser = argparse.ArgumentParser()
-        args = parser.parse_args()
+        args = parser.parse_args([])
         args.thread = 2
         args.port = 9292
         args.device = "cpu"
-        args.gpu_ids = ""
+        args.gpu_ids = [""]
         args.op_num = 0
         args.op_max_batch = 32
-        args.model = ""
+        args.model = [""]
         args.workdir = "workdir"
         args.name = "None"
         args.use_mkl = False
@@ -54,10 +57,15 @@ class TestServe(object):
         print("fetch_map:", fetch_map)
         return fetch_map['price']
 
+
+
     def setup_method(self):
         dir = os.path.dirname(os.path.abspath(__file__))
         self.dir = dir
-        self.model_dir = dir + "/uci_housing_model"
+        self.model_dir = [dir + "/uci_housing_model"]
+
+    def teardown_method(self):
+        pass
 
     def test_format_gpu_to_strlist_with_int(self):
         assert format_gpu_to_strlist(2) == ["2"]
@@ -73,39 +81,62 @@ class TestServe(object):
         # with valid gpu id
         with pytest.raises(ValueError) as e:
             format_gpu_to_strlist(["1", "-2"])
-            assert e.value == "The input of gpuid error."
+        assert str(e.value) == "The input of gpuid error."
         with pytest.raises(ValueError) as e:
-            format_gpu_to_strlist(["-1,0"])
-            assert e.value == "You can not use CPU and GPU in one model."
+            format_gpu_to_strlist(["0,-1"])
+        assert str(e.value) == "You can not use CPU and GPU in one model."
 
     def test_is_gpu_mode(self):
         assert is_gpu_mode(["-1"]) is False
         assert is_gpu_mode(["0,1"]) is True
 
-    # def test_start_gpu_card_model_with_single_model(self):
-    #     args = self.default_args()
-    #     args.model = self.model_dir
-    #     args.port = 9696
-    #
-    #     p = Process(target=start_gpu_card_model, kwargs={"gpu_mode": False, "port": args.port, "args": args})
-    #     p.start()
-    #     os.system("sleep 5")
-    #
-    #     price = self.predict()
-    #     print(price)
-
     def test_start_gpu_card_model_without_model(self):
         args = self.default_args()
+        args.model = ""
         with pytest.raises(SystemExit) as e:
             start_gpu_card_model(gpu_mode=False, port=args.port, args=args)
-            assert e.value == -1
+        assert str(e.value) == "-1"
 
-    # def test_start_multi_card(self):
-    #     pass
+    def test_start_gpu_card_model_with_single_model_cpu(self):
+        args = self.default_args()
+        args.model = self.model_dir
+        args.port = 9696
+
+        p = Process(target=start_gpu_card_model, kwargs={"gpu_mode": False, "port": args.port, "args": args})
+        p.start()
+        os.system("sleep 5")
+
+        price = self.predict()
+        print(price)
+
+        kill_process(9696)
+
+    def test_start_gpu_card_model_with_single_model_gpu(self):
+        args = self.default_args()
+        args.model = self.model_dir
+        args.port = 9696
+        args.gpu_ids = ["0,1"]
+
+        p = Process(target=start_gpu_card_model, kwargs={"gpu_mode": True, "port": args.port, "args": args})
+        p.start()
+        os.system("sleep 7")
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
+        price = self.predict()
+        print(price)
+
+        kill_process(9696)
+
+    def test_start_multi_card(self):
+
+        pass
   
   
 if __name__ == '__main__':  
     ts = TestServe()
     ts.setup_method()
-    ts.test_start_gpu_card_model_with_single_model()
+    ts.test_start_gpu_card_model_with_single_model_gpu()
+    # print(format_gpu_to_strlist(["0,-1"]))
+    # print(format_gpu_to_strlist(""))
 
