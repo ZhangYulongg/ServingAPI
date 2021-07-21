@@ -9,6 +9,7 @@ from paddle_serving_server.serve import format_gpu_to_strlist
 from paddle_serving_server.serve import is_gpu_mode
 from paddle_serving_server.serve import start_gpu_card_model
 from paddle_serving_server.serve import start_multi_card
+from paddle_serving_server.serve import MainService
 from paddle_serving_client import Client, MultiLangClient
 
 from util import kill_process, check_gpu_memory
@@ -57,12 +58,10 @@ class TestServe(object):
         print("fetch_map:", fetch_map)
         return fetch_map['price']
 
-
-
     def setup_method(self):
         dir = os.path.dirname(os.path.abspath(__file__))
         self.dir = dir
-        self.model_dir = [dir + "/uci_housing_model"]
+        self.model_dir = dir + "/uci_housing_model"
 
     def teardown_method(self):
         pass
@@ -99,7 +98,7 @@ class TestServe(object):
 
     def test_start_gpu_card_model_with_single_model_cpu(self):
         args = self.default_args()
-        args.model = self.model_dir
+        args.model = [self.model_dir]
         args.port = 9696
 
         p = Process(target=start_gpu_card_model, kwargs={"gpu_mode": False, "port": args.port, "args": args})
@@ -113,7 +112,7 @@ class TestServe(object):
 
     def test_start_gpu_card_model_with_single_model_gpu(self):
         args = self.default_args()
-        args.model = self.model_dir
+        args.model = [self.model_dir]
         args.port = 9696
         args.gpu_ids = ["0,1"]
 
@@ -128,15 +127,26 @@ class TestServe(object):
 
         kill_process(9696)
 
-    def test_start_multi_card(self):
+    def test_start_gpu_card_model_with_two_models_gpu(self):
+        args = self.default_args()
+        args.model = [self.model_dir, self.model_dir]
+        args.port = 9696
+        args.gpu_ids = ["0", "1"]
 
-        pass
-  
+        p = Process(target=start_gpu_card_model, kwargs={"gpu_mode": True, "port": args.port, "args": args})
+        p.start()
+        os.system("sleep 7")
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
+        kill_process(9696)
+
   
 if __name__ == '__main__':  
-    ts = TestServe()
-    ts.setup_method()
-    ts.test_start_gpu_card_model_with_single_model_gpu()
+    # ts = TestMainService()
+    # ts.setup_method()
+    # ts.test_get_key()
     # print(format_gpu_to_strlist(["0,-1"]))
     # print(format_gpu_to_strlist(""))
+    pass
 
