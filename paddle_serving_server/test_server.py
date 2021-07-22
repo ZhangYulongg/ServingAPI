@@ -9,7 +9,7 @@ from paddle_serving_server.server import Server, MultiLangServer
 import paddle_serving_server as serving
 from paddle_serving_client import Client, MultiLangClient
 
-from util import kill_process
+# from util import kill_process, check_gpu_memory
 
 
 class TestMultiLangServer(object):
@@ -124,6 +124,13 @@ class TestServer(object):
         return fetch_map['price']
 
     def test_load_model_config(self):
+        # check workflow_conf (already in test_dag.py)
+        # check general_infer_0 op feed_var and fetch_var
+        # TODO
+        feed_var = self.test_server.model_conf["general_infer_0"].feed_var
+        print(self.test_server.model_conf)
+        print(self.test_server.model_conf["general_infer_0"].feed_var, type(self.test_server.model_conf["general_infer_0"].feed_var))
+        # print(self.test_server.model_conf.workflows)
         test_model_conf = str(self.test_server.model_conf['general_infer_0']).split()
         assert test_model_conf == ['feed_var', '{', 'name:', '"x"', 'alias_name:', '"x"', 'is_lod_tensor:', 'false',
                                    'feed_type:', '1', 'shape:', '13', '}', 'fetch_var', '{', 'name:', '"fc_0.tmp_1"',
@@ -146,18 +153,6 @@ class TestServer(object):
 
     def test_check_avx(self):
         assert self.test_server.check_avx() is True
-
-    # def test_check_local_bin_without_defined(self):
-    #     del os.environ["SERVING_BIN"]
-    #     self.test_server.check_local_bin()
-    #     assert self.test_server.use_local_bin is False
-    #
-    # def test_check_local_bin_with_defined(self):
-    #     os.environ["SERVING_BIN"] = "/home"
-    #     self.test_server.check_local_bin()
-    #     assert self.test_server.use_local_bin is True
-    #     assert self.test_server.bin_path == os.environ["SERVING_BIN"]
-    #     del os.environ["SERVING_BIN"]
 
     def test_get_fetch_list(self):
         assert self.test_server.get_fetch_list() == ['price']
@@ -233,7 +228,7 @@ if __name__ == '__main__':
     # test_port_is_available_with_used_port()
     # pytest.main(["-sv", "test_server.py"])
     # TestServer().test_get_fetch_list()
-    ts = TestMultiLangServer()
+    ts = TestServer()
     ts.setup_method()
-    ts.test_run_server()
+    ts.test_load_model_config()
     pass
