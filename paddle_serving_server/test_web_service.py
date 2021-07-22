@@ -111,26 +111,17 @@ class TestWebService(object):
 
     @pytest.mark.run(order=1)
     def test_run_web_service(self):
-        print("before-----------")
-        os.system("netstat -nlp")
-        os.system("ps -ef")
         self.test_service.set_gpus("0,1")
         self.test_service.prepare_server(workdir="workdir", port=9393, device="gpu")
         self.test_service.run_rpc_service()
         p = Process(target=self.test_service.run_web_service)
         p.start()
         os.system("sleep 9")
-        print("after start-----------")
-        os.system("netstat -nlp")
-        os.system("ps -ef")
 
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
         result = self.predict_http(9393)
-        print("after-----------")
-        os.system("netstat -nlp")
-        os.system("ps -ef")
 
         assert result["result"]["price"] == [[18.901151657104492]]
 
@@ -151,11 +142,25 @@ class TestWebService(object):
 
         kill_process(12000, 1)
 
+    def test_run_debugger_service(self):
+        self.test_service.set_gpus("0")
+        self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
+        self.test_service.run_debugger_service()
+        p = Process(target=self.test_service.run_web_service)
+        p.start()
+        os.system("sleep 5")
+        # TODO local模式直接使用paddle.inference进行推理，如何判断是否使用了GPU
+
+        result = self.predict_http(9696)
+        assert result["result"]["price"] == [[18.901151657104492]]
+
+        kill_process(9696, 1)
+
 
 if __name__ == '__main__':
     tws = TestWebService()
     tws.setup()
-    tws.test_run_web_service()
+    tws.test_run_debugger_service()
     # test_load_model_config()
     # test_prepare_server()
     # test_default_rpc_service()
