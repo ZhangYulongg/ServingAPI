@@ -47,9 +47,9 @@ class TestWebService(object):
         data = {"feed": [{"x": [0.0137, -0.1136, 0.2553, -0.0692, 0.0582, -0.0727, -0.1583, -0.0584, 0.6283, 0.4919,
                                 0.1856, 0.0795, -0.0332]}], "fetch": ["price"]}
 
-        result = requests.post(url=web_url, data=json.dumps(data))
-        print(result)
-        return result
+        result = requests.post(url=web_url, json=data)
+        print("result: ", result.json())
+        return result.json()
 
     def test_load_model_config(self):
         # config_dir list
@@ -109,6 +109,23 @@ class TestWebService(object):
         self.test_service.set_gpus("1,2,3")
         assert self.test_service.gpus == ["1,2,3"]
 
+    def test_run_web_service(self):
+        self.test_service.set_gpus("0,1")
+        self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
+        self.test_service.run_rpc_service()
+        p = Process(target=self.test_service.run_web_service, daemon=True)
+        p.start()
+        os.system("sleep 9")
+
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
+        result = self.predict_http()
+        assert result["result"]["price"] == [[18.901151657104492]]
+
+        kill_process(9696)
+        kill_process(12000, 1)
+
     def test_run_rpc_service_with_gpu(self):
         self.test_service.set_gpus("0,1")
         self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
@@ -121,25 +138,7 @@ class TestWebService(object):
         price = self.predict_brpc()
         assert price == np.array([[18.901152]], dtype=np.float32)
 
-        kill_process(12000)
-
-    def test_run_web_service(self):
-        # TODO fix
-        self.test_service.set_gpus("0,1")
-        self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
-        self.test_service.run_rpc_service()
-        p = Process(target=self.test_service.run_web_service)
-        p.start()
-        os.system("sleep 5")
-
-        assert check_gpu_memory(0) is True
-        assert check_gpu_memory(1) is True
-
-        result = self.predict_http()
-
-        kill_process(9696)
-        kill_process(12000)
-        pass
+        kill_process(12000, 1)
 
 
 if __name__ == '__main__':
