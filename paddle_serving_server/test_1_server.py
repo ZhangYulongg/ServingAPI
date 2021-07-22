@@ -36,9 +36,9 @@ class TestMultiLangServer(object):
         os.system("rm -rf PipelineServingLogs")
         pass
 
-    def predict(self):
+    def predict(self, port=9696):
         client = MultiLangClient()
-        client.connect(["127.0.0.1:9696"])
+        client.connect([f"127.0.0.1:{port}"])
         client.set_rpc_timeout_ms(12000)
 
         data = np.array(
@@ -63,28 +63,24 @@ class TestMultiLangServer(object):
 
     def test_run_server(self):
         self.test_server.set_gpuid("0,1")
-        self.test_server.prepare_server(workdir="workdir", port=9696, device="gpu", use_encryption_model=False,
+        self.test_server.prepare_server(workdir="workdir", port=9697, device="gpu", use_encryption_model=False,
                                         cube_conf=None)
 
         p = Process(target=self.test_server.run_server)
-        p.start()
-        os.system("sleep 10")
-
         # print("000000000000")
         # os.system("netstat -nlp")
         # os.system("ps -ef")
-        price = self.predict()
+        p.start()
+        os.system("sleep 10")
+
+        price = self.predict(9697)
         assert price == np.array([[18.901152]], dtype=np.float32)
 
         # print("1111111111")
         # os.system("netstat -nlp")
         # os.system("ps -ef")
-        kill_process(9696)
-        kill_process(12000)
-        os.system("sleep 2")
-        # print("2222222222")
-        # os.system("netstat -nlp")
-        # os.system("ps -ef")
+        kill_process(9697)
+        kill_process(12000, 2)
 
 
 class TestServer(object):
@@ -139,13 +135,13 @@ class TestServer(object):
         assert self.test_server.subdirectory == ['general_infer_0']
 
     def test_port_is_available_with_unused_port(self):
-        assert self.test_server.port_is_available(12000) is True
+        assert self.test_server.port_is_available(12003) is True
 
     def test_port_is_available_with_used_port(self):
-        os.system("python -m SimpleHTTPServer 12000 &")
+        os.system("python -m SimpleHTTPServer 12005 &")
         time.sleep(2)
-        assert self.test_server.port_is_available(12000) is False
-        kill_process(12000)
+        assert self.test_server.port_is_available(12005) is False
+        kill_process(12005)
 
     def test_check_avx(self):
         assert self.test_server.check_avx() is True
@@ -214,7 +210,7 @@ class TestServer(object):
         price = self.predict()
         assert price == np.array([[18.901152]], dtype=np.float32)
 
-        kill_process(9696)
+        kill_process(9696, 1)
 
     def test_run_server_with_gpu(self):
         self.test_server.set_gpuid("0,1")
@@ -235,7 +231,7 @@ class TestServer(object):
 if __name__ == '__main__':
     # test_load_model_config()
     # test_port_is_available_with_used_port()
-    # pytest.main(["-sv", "test_server.py"])
+    # pytest.main(["-sv", "test_1_server.py"])
     # TestServer().test_get_fetch_list()
     ts = TestMultiLangServer()
     ts.setup_method()

@@ -125,7 +125,7 @@ class TestServe(object):
         price = self.predict()
         print(price)
 
-        kill_process(9696)
+        kill_process(9696, 1)
 
     def test_start_gpu_card_model_with_two_models_gpu(self):
         args = self.default_args()
@@ -139,7 +139,7 @@ class TestServe(object):
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
-        kill_process(9696)
+        kill_process(9696, 2)
 
   
 if __name__ == '__main__':  
