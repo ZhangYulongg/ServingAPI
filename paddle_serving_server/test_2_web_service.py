@@ -42,8 +42,8 @@ class TestWebService(object):
         return fetch_map['price']
 
     @staticmethod
-    def predict_http():
-        web_url = "http://127.0.0.1:9696/test_web_service/prediction"
+    def predict_http(port=9696):
+        web_url = f"http://127.0.0.1:{port}/test_web_service/prediction"
         data = {"feed": [{"x": [0.0137, -0.1136, 0.2553, -0.0692, 0.0582, -0.0727, -0.1583, -0.0584, 0.6283, 0.4919,
                                 0.1856, 0.0795, -0.0332]}], "fetch": ["price"]}
 
@@ -110,20 +110,30 @@ class TestWebService(object):
         assert self.test_service.gpus == ["1,2,3"]
 
     def test_run_web_service(self):
+        print("before-----------")
+        os.system("netstat -nlp")
+        os.system("ps -ef")
         self.test_service.set_gpus("0,1")
-        self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
+        self.test_service.prepare_server(workdir="workdir", port=9393, device="gpu")
         self.test_service.run_rpc_service()
         p = Process(target=self.test_service.run_web_service, daemon=True)
         p.start()
         os.system("sleep 9")
+        print("after start-----------")
+        os.system("netstat -nlp")
+        os.system("ps -ef")
 
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
-        result = self.predict_http()
+        result = self.predict_http(9393)
+        print("after-----------")
+        os.system("netstat -nlp")
+        os.system("ps -ef")
+
         assert result["result"]["price"] == [[18.901151657104492]]
 
-        kill_process(9696)
+        kill_process(9393)
         kill_process(12000, 1)
 
     def test_run_rpc_service_with_gpu(self):
