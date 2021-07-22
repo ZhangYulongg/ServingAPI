@@ -109,6 +109,7 @@ class TestWebService(object):
         self.test_service.set_gpus("1,2,3")
         assert self.test_service.gpus == ["1,2,3"]
 
+    @pytest.mark.run(order=1)
     def test_run_web_service(self):
         print("before-----------")
         os.system("netstat -nlp")
@@ -116,7 +117,7 @@ class TestWebService(object):
         self.test_service.set_gpus("0,1")
         self.test_service.prepare_server(workdir="workdir", port=9393, device="gpu")
         self.test_service.run_rpc_service()
-        p = Process(target=self.test_service.run_web_service, daemon=True)
+        p = Process(target=self.test_service.run_web_service)
         p.start()
         os.system("sleep 9")
         print("after start-----------")

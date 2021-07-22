@@ -61,6 +61,7 @@ class TestMultiLangServer(object):
         assert self.test_server.port_list_ == [12000]
         assert self.test_server.gport_ == 9696
 
+    @pytest.mark.run(order=2)
     def test_run_server(self):
         self.test_server.set_gpuid("0,1")
         self.test_server.prepare_server(workdir="workdir", port=9697, device="gpu", use_encryption_model=False,
@@ -205,7 +206,7 @@ class TestServer(object):
         self.test_server.prepare_server("workdir", 9696, "cpu")
         p = Process(target=self.test_server.run_server)
         p.start()
-        time.sleep(5)
+        os.system("sleep 5")
 
         price = self.predict()
         assert price == np.array([[18.901152]], dtype=np.float32)
@@ -219,19 +220,18 @@ class TestServer(object):
         self.test_server.prepare_server("workdir_0", 9696, "gpu")
         p = Process(target=self.test_server.run_server)
         p.start()
-        time.sleep(10)
+        os.system("sleep 10")
 
         price = self.predict()
         assert price == np.array([[18.901152]], dtype=np.float32)
 
-        os.system("kill `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
-        os.system("sleep 2")
+        kill_process(9696, 2)
 
 
 if __name__ == '__main__':
     # test_load_model_config()
     # test_port_is_available_with_used_port()
-    # pytest.main(["-sv", "test_1_server.py"])
+    # pytest.main(["-sv", "test_server.py"])
     # TestServer().test_get_fetch_list()
     ts = TestMultiLangServer()
     ts.setup_method()
