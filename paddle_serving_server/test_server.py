@@ -9,7 +9,7 @@ from paddle_serving_server.server import Server, MultiLangServer
 import paddle_serving_server as serving
 from paddle_serving_client import Client, MultiLangClient
 
-# from util import kill_process, check_gpu_memory
+from util import kill_process, check_gpu_memory
 
 
 class TestMultiLangServer(object):
@@ -54,7 +54,6 @@ class TestMultiLangServer(object):
         assert self.test_server.bclient_config_path_list == [self.model_dir]
 
     def test_prepare_server(self):
-        os.system("netstat -nlp")
         self.test_server.prepare_server(workdir="workdir", port=9696, device="gpu", use_encryption_model=False,
                                         cube_conf=None)
         assert self.test_server.device == "gpu"
@@ -70,6 +69,9 @@ class TestMultiLangServer(object):
         p = Process(target=self.test_server.run_server)
         p.start()
         os.system("sleep 10")
+
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
 
         price = self.predict(9697)
         assert price == np.array([[18.901152]], dtype=np.float32)
@@ -119,7 +121,7 @@ class TestServer(object):
 
     def test_load_model_config(self):
         # check workflow_conf (already in test_dag.py)
-        # check general_infer_0 op feed_var and fetch_var
+        # check general_infer_0 op model_conf (feed_var and fetch_var)
         # feed_var
         feed_var = self.test_server.model_conf["general_infer_0"].feed_var
         assert feed_var[0].name == "x"
@@ -155,47 +157,61 @@ class TestServer(object):
     def test_get_fetch_list(self):
         assert self.test_server.get_fetch_list() == ['price']
 
-    def test_prepare_engine(self):
-        # todo 优化
-        self.test_server._prepare_engine(self.test_server.model_config_paths, "cpu", False)
-        model_toolkit_conf = ['engines', '{', 'name:', '"general_infer_0"', 'type:', '"PADDLE_INFER"',
-                              'reloadable_meta:',
-                              f'"{self.model_dir}/fluid_time_file"',
-                              'reloadable_type:', '"timestamp_ne"', 'model_dir:',
-                              f'"{self.model_dir}"',
-                              'gpu_ids:', '-1', 'runtime_thread_num:', '0', 'batch_infer_size:', '32',
-                              'enable_batch_align:', '1', 'enable_memory_optimization:', 'false',
-                              'enable_ir_optimization:', 'false', 'use_trt:', 'false', 'use_lite:', 'false', 'use_xpu:',
-                              'false', 'use_gpu:', 'false', 'combined_model:', 'false', 'gpu_multi_stream:', 'false',
-                              '}']
-        assert str(self.test_server.model_toolkit_conf[0]).split() == model_toolkit_conf
+    def test_prepare_engine_with_async_mode(self):
+        # 生成bRPC server配置信息(model_toolkit_conf)
+        # check model_toolkit_conf
+        self.test_server.set_op_num(4)
+        self.test_server.set_op_max_batch(64)
+        self.test_server.set_gpuid(["0,1"])
+        self.test_server.set_gpu_multi_stream()
+        self.test_server._prepare_engine(self.test_server.model_config_paths, "gpu", False)
+        model_engine_0 = self.test_server.model_toolkit_conf[0].engines[0]
+
+        assert model_engine_0.name == "general_infer_0"
+        assert model_engine_0.type == "PADDLE_INFER"
+        assert model_engine_0.reloadable_meta == f"{self.model_dir}/fluid_time_file"
+        assert model_engine_0.reloadable_type == "timestamp_ne"
+        assert model_engine_0.model_dir == self.model_dir
+        assert model_engine_0.gpu_ids == [0, 1]
+        assert model_engine_0.runtime_thread_num == 4
+        assert model_engine_0.batch_infer_size == 64
+        assert model_engine_0.enable_batch_align == 1
+        assert model_engine_0.enable_memory_optimization is False
+        assert model_engine_0.enable_ir_optimization is False
+        assert model_engine_0.use_trt is False
+        assert model_engine_0.use_lite is False
+        assert model_engine_0.use_xpu is False
+        assert model_engine_0.use_gpu is True
+        assert model_engine_0.combined_model is False
+        assert model_engine_0.gpu_multi_stream is True
 
     def test_prepare_infer_service(self):
-        # todo 优化
+        # check infer_service_conf
         self.test_server._prepare_infer_service(9696)
-        infer_service_conf = ['port:', '9696', 'services', '{', 'name:', '"GeneralModelService"', 'workflows:',
-                              '"workflow1"', '}']
-        assert str(self.test_server.infer_service_conf).split() == infer_service_conf
+        infer_service_conf = self.test_server.infer_service_conf
+
+        assert infer_service_conf.port == 9696
+        assert infer_service_conf.services[0].name == "GeneralModelService"
+        assert infer_service_conf.services[0].workflows == ["workflow1"]
 
     def test_prepare_resource(self):
-        workdir = "workdir_0"
-        os.system("mkdir -p {}".format(workdir))
-        for subdir in self.test_server.subdirectory:
-            os.system("mkdir -p {}/{}".format(workdir, subdir))
-            os.system("touch {}/{}/fluid_time_file".format(workdir, subdir))
-        resource_conf = ['model_toolkit_path:', '"workdir_0"', 'model_toolkit_file:',
-                         '"general_infer_0/model_toolkit.prototxt"', 'general_model_path:', '"workdir_0"',
-                         'general_model_file:', '"general_infer_0/general_model.prototxt"']
-        self.test_server._prepare_resource("workdir_0", None)
-        assert str(self.test_server.resource_conf).split() == resource_conf
+        # 生成模型feed_var,fetch_var配置文件(general_model.prototxt)，设置resource_conf属性
+        # check resource_conf
+        self.test_server._prepare_resource("workdir_9696", None)
+        resource_conf = self.test_server.resource_conf
+        assert resource_conf.model_toolkit_path == ["workdir_9696"]
+        assert resource_conf.model_toolkit_file == ["general_infer_0/model_toolkit.prototxt"]
+        assert resource_conf.general_model_path == ["workdir_9696"]
+        assert resource_conf.general_model_file == ["general_infer_0/general_model.prototxt"]
 
     def test_prepare_server(self):
-        self.test_server.prepare_server("workdir", 9696, "gpu", False)
-        assert os.path.isfile(self.dir + "/workdir/general_infer_0/fluid_time_file") is True
-        assert os.system(f"grep -r services {self.dir}/workdir/infer_service.prototxt") == 0
-        assert os.system(f"grep -r workflows {self.dir}/workdir/workflow.prototxt") == 0
-        assert os.system(f"grep -r model_toolkit_file {self.dir}/workdir/resource.prototxt") == 0
-        assert os.system(f"grep -r engines {self.dir}/workdir/general_infer_0/model_toolkit.prototxt") == 0
+        # 生成bRPC server各种配置文件
+        self.test_server.prepare_server("workdir_9696", 9696, "gpu", False)
+        assert os.path.isfile(f"{self.dir}/workdir_9696/general_infer_0/fluid_time_file") is True
+        assert os.path.isfile(f"{self.dir}/workdir_9696/infer_service.prototxt") is True
+        assert os.path.isfile(f"{self.dir}/workdir_9696/workflow.prototxt") is True
+        assert os.path.isfile(f"{self.dir}/workdir_9696/resource.prototxt") is True
+        assert os.path.isfile(f"{self.dir}/workdir_9696/general_infer_0/model_toolkit.prototxt") is True
 
     def test_run_server_with_cpu(self):
         self.test_server.prepare_server("workdir", 9696, "cpu")
@@ -217,6 +233,9 @@ class TestServer(object):
         p.start()
         os.system("sleep 10")
 
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
         price = self.predict()
         assert price == np.array([[18.901152]], dtype=np.float32)
 
@@ -230,5 +249,5 @@ if __name__ == '__main__':
     # TestServer().test_get_fetch_list()
     ts = TestServer()
     ts.setup_method()
-    ts.test_get_fetch_list()
+    ts.test_prepare_server()
     pass
