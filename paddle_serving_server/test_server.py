@@ -197,7 +197,10 @@ class TestServer(object):
     def test_prepare_resource(self):
         # 生成模型feed_var,fetch_var配置文件(general_model.prototxt)，设置resource_conf属性
         # check resource_conf
-        self.test_server._prepare_resource("workdir_9696", None)
+        workdir = "workdir_9696"
+        subdir = "general_infer_0"
+        os.system("mkdir -p {}/{}".format(workdir, subdir))
+        self.test_server._prepare_resource(workdir, None)
         resource_conf = self.test_server.resource_conf
         assert resource_conf.model_toolkit_path == ["workdir_9696"]
         assert resource_conf.model_toolkit_file == ["general_infer_0/model_toolkit.prototxt"]
