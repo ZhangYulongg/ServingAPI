@@ -68,18 +68,12 @@ class TestMultiLangServer(object):
                                         cube_conf=None)
 
         p = Process(target=self.test_server.run_server)
-        # print("000000000000")
-        # os.system("netstat -nlp")
-        # os.system("ps -ef")
         p.start()
         os.system("sleep 10")
 
         price = self.predict(9697)
         assert price == np.array([[18.901152]], dtype=np.float32)
 
-        # print("1111111111")
-        # os.system("netstat -nlp")
-        # os.system("ps -ef")
         kill_process(9697)
         kill_process(12000, 2)
 
@@ -126,18 +120,22 @@ class TestServer(object):
     def test_load_model_config(self):
         # check workflow_conf (already in test_dag.py)
         # check general_infer_0 op feed_var and fetch_var
-        # TODO
+        # feed_var
         feed_var = self.test_server.model_conf["general_infer_0"].feed_var
-        print(self.test_server.model_conf)
-        print(self.test_server.model_conf["general_infer_0"].feed_var, type(self.test_server.model_conf["general_infer_0"].feed_var))
-        # print(self.test_server.model_conf.workflows)
-        test_model_conf = str(self.test_server.model_conf['general_infer_0']).split()
-        assert test_model_conf == ['feed_var', '{', 'name:', '"x"', 'alias_name:', '"x"', 'is_lod_tensor:', 'false',
-                                   'feed_type:', '1', 'shape:', '13', '}', 'fetch_var', '{', 'name:', '"fc_0.tmp_1"',
-                                   'alias_name:', '"price"', 'is_lod_tensor:', 'false', 'fetch_type:', '1', 'shape:',
-                                   '1', '}']
-        model_config_paths = collections.OrderedDict([('general_infer_0', self.model_dir)])
-        assert self.test_server.model_config_paths == model_config_paths
+        assert feed_var[0].name == "x"
+        assert feed_var[0].alias_name == "x"
+        assert feed_var[0].is_lod_tensor is False
+        assert feed_var[0].feed_type == 1
+        assert feed_var[0].shape == [13]
+        # fetch_var
+        fetch_var = self.test_server.model_conf["general_infer_0"].fetch_var
+        assert fetch_var[0].name == "fc_0.tmp_1"
+        assert fetch_var[0].alias_name == "price"
+        assert fetch_var[0].is_lod_tensor is False
+        assert fetch_var[0].fetch_type == 1
+        assert fetch_var[0].shape == [1]
+        # check model_config_paths and server config filename
+        assert self.test_server.model_config_paths["general_infer_0"] == self.model_dir
         assert self.test_server.general_model_config_fn == ['general_infer_0/general_model.prototxt']
         assert self.test_server.model_toolkit_fn == ['general_infer_0/model_toolkit.prototxt']
         assert self.test_server.subdirectory == ['general_infer_0']
@@ -158,6 +156,7 @@ class TestServer(object):
         assert self.test_server.get_fetch_list() == ['price']
 
     def test_prepare_engine(self):
+        # todo 优化
         self.test_server._prepare_engine(self.test_server.model_config_paths, "cpu", False)
         model_toolkit_conf = ['engines', '{', 'name:', '"general_infer_0"', 'type:', '"PADDLE_INFER"',
                               'reloadable_meta:',
@@ -172,6 +171,7 @@ class TestServer(object):
         assert str(self.test_server.model_toolkit_conf[0]).split() == model_toolkit_conf
 
     def test_prepare_infer_service(self):
+        # todo 优化
         self.test_server._prepare_infer_service(9696)
         infer_service_conf = ['port:', '9696', 'services', '{', 'name:', '"GeneralModelService"', 'workflows:',
                               '"workflow1"', '}']
@@ -230,5 +230,5 @@ if __name__ == '__main__':
     # TestServer().test_get_fetch_list()
     ts = TestServer()
     ts.setup_method()
-    ts.test_load_model_config()
+    ts.test_get_fetch_list()
     pass
