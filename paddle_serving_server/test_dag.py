@@ -23,10 +23,9 @@ class TestOpMaker(object):
 
     def test_create_with_undefined_node(self):
         op_maker = OpMaker()
-        try:
-            read_op = op_maker.create("general_detection")
-        except Exception as e:
-            assert str(e) == "Op type general_det is not supported right now"
+        with pytest.raises(Exception) as e:
+            read_op = op_maker.create("general_classification")
+        assert str(e.value) == "Op type general_classification is not supported right now"
 
 
 class TestOpSeqMaker(object):
@@ -74,6 +73,6 @@ class TestOpSeqMaker(object):
 
 
 if __name__ == '__main__':
-    tosm = TestOpSeqMaker()
-    tosm.test_get_op_sequence()
+    tosm = TestOpMaker()
+    tosm.test_create_with_undefined_node()
     pass
