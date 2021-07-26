@@ -8,6 +8,8 @@ import numpy as np
 from paddle_serving_server.server import Server, MultiLangServer
 import paddle_serving_server as serving
 from paddle_serving_client import Client, MultiLangClient
+from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
+from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
 from util import kill_process, check_gpu_memory
 
@@ -26,7 +28,7 @@ class TestMultiLangServer(object):
 
         dir = os.path.dirname(os.path.abspath(__file__))
         self.dir = dir
-        self.model_dir = dir + "/uci_housing_model"
+        self.model_dir = dir + "/resnet_v2_50_imagenet_model"
         self.test_server = MultiLangServer()
         self.test_server.set_op_sequence(op_seq_maker.get_op_sequence())
         self.test_server.load_model_config(self.model_dir)
@@ -41,13 +43,17 @@ class TestMultiLangServer(object):
         client.connect([f"127.0.0.1:{port}"])
         client.set_rpc_timeout_ms(12000)
 
-        data = np.array(
-            [[0.0137, -0.1136, 0.2553, -0.0692, 0.0582, -0.0727, -0.1583, -0.0584, 0.6283, 0.4919, 0.1856, 0.0795,
-              -0.0332]])
-        fetch_map = client.predict(
-            feed={"x": data}, fetch=["price"], batch=True)
+        seq = Sequential([
+            File2Image(), Resize(256), CenterCrop(224), RGB2BGR(), Transpose((2, 0, 1)),
+            Div(255), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True)
+        ])
+        image_file = "daisy.jpg"
+        img = seq(image_file)
+        fetch_map = client.predict(feed={"image": img}, fetch=["score"], batch=False)
+
         print("fetch_map:", fetch_map)
-        return fetch_map['price']
+        print(np.argmax(fetch_map["score"].reshape(-1)))
+        return fetch_map["score"].reshape(-1)
 
     def test_load_model_config(self):
         assert self.test_server.is_multi_model_ is False
@@ -73,11 +79,13 @@ class TestMultiLangServer(object):
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
-        price = self.predict(9697)
-        assert price == np.array([[18.901152]], dtype=np.float32)
+        score = self.predict(9697)
+        daisy_result = np.float32(0.9341405)
+        assert np.argmax(score) == 985, "infer class error"
+        assert score[985] == daisy_result, "daisy_result diff"
 
         kill_process(9697)
-        kill_process(12000, 2)
+        kill_process(12000, 3)
 
 
 class TestServer(object):
@@ -94,7 +102,7 @@ class TestServer(object):
 
         dir = os.path.dirname(os.path.abspath(__file__))
         self.dir = dir
-        self.model_dir = dir + "/uci_housing_model"
+        self.model_dir = dir + "/resnet_v2_50_imagenet_model"
         self.test_server = Server()
         self.test_server.set_op_sequence(op_seq_maker.get_op_sequence())
         self.test_server.load_model_config(self.model_dir)
@@ -108,34 +116,38 @@ class TestServer(object):
 
     def predict(self):
         client = Client()
-        client.load_client_config(self.dir + "/uci_housing_client/serving_client_conf.prototxt")
+        client.load_client_config(self.dir + "/resnet_v2_50_imagenet_client/serving_client_conf.prototxt")
         client.connect(["127.0.0.1:9696"])
 
-        data = np.array(
-            [[0.0137, -0.1136, 0.2553, -0.0692, 0.0582, -0.0727, -0.1583, -0.0584, 0.6283, 0.4919, 0.1856, 0.0795,
-              -0.0332]])
-        fetch_map = client.predict(
-            feed={"x": data}, fetch=["price"], batch=True)
+        seq = Sequential([
+            File2Image(), Resize(256), CenterCrop(224), RGB2BGR(), Transpose((2, 0, 1)),
+            Div(255), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True)
+        ])
+        image_file = "daisy.jpg"
+        img = seq(image_file)
+        fetch_map = client.predict(feed={"image": img}, fetch=["score"], batch=False)
+
         print("fetch_map:", fetch_map)
-        return fetch_map['price']
+        print(np.argmax(fetch_map["score"].reshape(-1)))
+        return fetch_map["score"].reshape(-1)
 
     def test_load_model_config(self):
         # check workflow_conf (already in test_dag.py)
         # check general_infer_0 op model_conf (feed_var and fetch_var)
         # feed_var
         feed_var = self.test_server.model_conf["general_infer_0"].feed_var
-        assert feed_var[0].name == "x"
-        assert feed_var[0].alias_name == "x"
+        assert feed_var[0].name == "image"
+        assert feed_var[0].alias_name == "image"
         assert feed_var[0].is_lod_tensor is False
         assert feed_var[0].feed_type == 1
-        assert feed_var[0].shape == [13]
+        assert feed_var[0].shape == [3, 224, 224]
         # fetch_var
         fetch_var = self.test_server.model_conf["general_infer_0"].fetch_var
-        assert fetch_var[0].name == "fc_0.tmp_1"
-        assert fetch_var[0].alias_name == "price"
+        assert fetch_var[0].name == "softmax_0.tmp_0"
+        assert fetch_var[0].alias_name == "score"
         assert fetch_var[0].is_lod_tensor is False
         assert fetch_var[0].fetch_type == 1
-        assert fetch_var[0].shape == [1]
+        assert fetch_var[0].shape == [1000]
         # check model_config_paths and server config filename
         assert self.test_server.model_config_paths["general_infer_0"] == self.model_dir
         assert self.test_server.general_model_config_fn == ['general_infer_0/general_model.prototxt']
@@ -155,7 +167,7 @@ class TestServer(object):
         assert self.test_server.check_avx() is True
 
     def test_get_fetch_list(self):
-        assert self.test_server.get_fetch_list() == ['price']
+        assert self.test_server.get_fetch_list() == ['score']
 
     def test_prepare_engine_with_async_mode(self):
         # 生成bRPC server配置信息(model_toolkit_conf)
@@ -222,15 +234,17 @@ class TestServer(object):
         p.start()
         os.system("sleep 5")
 
-        price = self.predict()
-        assert price == np.array([[18.901152]], dtype=np.float32)
+        assert check_gpu_memory(0) is False
+
+        score = self.predict()
+        daisy_result = np.float32(0.9341399)
+        assert np.argmax(score) == 985, "infer class error"
+        assert score[985] == daisy_result, "daisy_result diff"
 
         kill_process(9696, 1)
 
     def test_run_server_with_gpu(self):
         self.test_server.set_gpuid("0,1")
-        os.system("netstat -nlp")
-        os.system("ps -ef")
         self.test_server.prepare_server("workdir_0", 9696, "gpu")
         p = Process(target=self.test_server.run_server)
         p.start()
@@ -239,10 +253,12 @@ class TestServer(object):
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
-        price = self.predict()
-        assert price == np.array([[18.901152]], dtype=np.float32)
+        score = self.predict()
+        daisy_result = np.float32(0.9341405)
+        assert np.argmax(score) == 985, "infer class error"
+        assert score[985] == daisy_result, "daisy_result diff"
 
-        kill_process(9696, 2)
+        kill_process(9696, 3)
 
 
 if __name__ == '__main__':
