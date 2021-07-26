@@ -45,7 +45,7 @@ class TestServe(object):
         args.gpu_multi_stream = False
         return args
 
-    def predict(self):
+    def predict(self, batch=False, batch_size=1):
         client = Client()
         client.load_client_config(self.dir + "/resnet_v2_50_imagenet_client/serving_client_conf.prototxt")
         client.connect(["127.0.0.1:9696"])
@@ -56,11 +56,20 @@ class TestServe(object):
         ])
         image_file = "daisy.jpg"
         img = seq(image_file)
-        fetch_map = client.predict(feed={"image": img}, fetch=["score"])
 
+        if batch:
+            img_batch = img[np.newaxis, :]
+            img_batch = np.repeat(img_batch, repeats=batch_size, axis=0)
+            fetch_map = client.predict(feed={"image": img_batch}, fetch=["score"], batch=batch)
+        else:
+            fetch_map = client.predict(feed={"image": img}, fetch=["score"], batch=False)
+
+        result_class = np.argmax(fetch_map["score"], axis=1)
+        result_prob = np.max(fetch_map["score"], axis=1)
         print("fetch_map:", fetch_map)
-        print(np.argmax(fetch_map["score"].reshape(-1)))
-        return fetch_map["score"].reshape(-1)
+        print("class:", result_class)
+        print("prob:", result_prob)
+        return result_class.tolist(), result_prob.tolist()
 
     def setup_method(self):
         dir = os.path.dirname(os.path.abspath(__file__))
@@ -111,10 +120,17 @@ class TestServe(object):
 
         assert check_gpu_memory(0) is False
 
-        score = self.predict()
-        daisy_result = np.float32(0.9341399)
-        assert np.argmax(score) == 985, "infer class error"
-        assert score[985] == daisy_result, "daisy_result diff"
+        # batch = False
+        brcp_class, brpc_prob = self.predict(batch=False)
+        print(brcp_class, brpc_prob)
+        assert brcp_class == [985]
+        assert brpc_prob == [0.9341399073600769]
+
+        # batch_size = 2
+        brcp_class, brpc_prob = self.predict(batch=True, batch_size=2)
+        print(brcp_class, brpc_prob)
+        assert brcp_class == [985, 985]
+        assert brpc_prob == [0.9341403245925903, 0.9341403245925903]
 
         kill_process(9696, 1)
 
@@ -130,10 +146,17 @@ class TestServe(object):
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
-        score = self.predict()
-        daisy_result = np.float32(0.9341405)
-        assert np.argmax(score) == 985, "infer class error"
-        assert score[985] == daisy_result, "daisy_result diff"
+        # batch = False
+        brcp_class, brpc_prob = self.predict(batch=False)
+        print(brcp_class, brpc_prob)
+        assert brcp_class == [985]
+        assert brpc_prob == [0.9341405034065247]
+
+        # batch_size = 2
+        brcp_class, brpc_prob = self.predict(batch=True, batch_size=2)
+        print(brcp_class, brpc_prob)
+        assert brcp_class == [985, 985]
+        assert brpc_prob == [0.9341405034065247, 0.9341405034065247]
 
         kill_process(9696, 3)
 
@@ -155,7 +178,7 @@ class TestServe(object):
 if __name__ == '__main__':  
     ts = TestServe()
     ts.setup_method()
-    ts.test_start_gpu_card_model_with_single_model_cpu()
+    ts.test_start_gpu_card_model_with_single_model_gpu()
     # ts.test_get_key()
     # print(format_gpu_to_strlist(["0,-1"]))
     # print(format_gpu_to_strlist(""))
