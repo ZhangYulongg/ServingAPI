@@ -57,10 +57,10 @@ class TestServe(object):
         image_file = "daisy.jpg"
         img = seq(image_file)
         fetch_map = client.predict(feed={"image": img}, fetch=["score"])
-        print(fetch_map["score"].reshape(-1))
 
         print("fetch_map:", fetch_map)
-        return fetch_map["score"]
+        print(np.argmax(fetch_map["score"].reshape(-1)))
+        return fetch_map["score"].reshape(-1)
 
     def setup_method(self):
         dir = os.path.dirname(os.path.abspath(__file__))
@@ -109,10 +109,14 @@ class TestServe(object):
         p.start()
         os.system("sleep 5")
 
-        score = self.predict()
-        print(score)
+        assert check_gpu_memory(0) is False
 
-        kill_process(9696)
+        score = self.predict()
+        daisy_result = np.float32(0.9341399)
+        assert np.argmax(score) == 985, "infer class error"
+        assert score[985] == daisy_result, "daisy_result diff"
+
+        kill_process(9696, 1)
 
     def test_start_gpu_card_model_with_single_model_gpu(self):
         args = self.default_args()
@@ -122,14 +126,16 @@ class TestServe(object):
 
         p = Process(target=start_gpu_card_model, kwargs={"gpu_mode": True, "port": args.port, "args": args})
         p.start()
-        os.system("sleep 7")
+        os.system("sleep 10")
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
-        price = self.predict()
-        print(price)
+        score = self.predict()
+        daisy_result = np.float32(0.9341405)
+        assert np.argmax(score) == 985, "infer class error"
+        assert score[985] == daisy_result, "daisy_result diff"
 
-        kill_process(9696, 1)
+        kill_process(9696, 3)
 
     def test_start_gpu_card_model_with_two_models_gpu(self):
         args = self.default_args()
@@ -139,11 +145,11 @@ class TestServe(object):
 
         p = Process(target=start_gpu_card_model, kwargs={"gpu_mode": True, "port": args.port, "args": args})
         p.start()
-        os.system("sleep 7")
+        os.system("sleep 10")
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
-        kill_process(9696, 2)
+        kill_process(9696, 3)
 
   
 if __name__ == '__main__':  
