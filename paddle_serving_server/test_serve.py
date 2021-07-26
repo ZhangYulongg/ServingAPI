@@ -8,9 +8,9 @@ import pynvml
 from paddle_serving_server.serve import format_gpu_to_strlist
 from paddle_serving_server.serve import is_gpu_mode
 from paddle_serving_server.serve import start_gpu_card_model
-from paddle_serving_server.serve import start_multi_card
-from paddle_serving_server.serve import MainService
 from paddle_serving_client import Client, MultiLangClient
+from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
+from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
 from util import kill_process, check_gpu_memory
 
@@ -47,21 +47,25 @@ class TestServe(object):
 
     def predict(self):
         client = Client()
-        client.load_client_config(self.dir + "/uci_housing_client/serving_client_conf.prototxt")
+        client.load_client_config(self.dir + "/resnet_v2_50_imagenet_client/serving_client_conf.prototxt")
         client.connect(["127.0.0.1:9696"])
 
-        data = np.array(
-            [[0.0137, -0.1136, 0.2553, -0.0692, 0.0582, -0.0727, -0.1583, -0.0584, 0.6283, 0.4919, 0.1856, 0.0795,
-              -0.0332]])
-        fetch_map = client.predict(
-            feed={"x": data}, fetch=["price"], batch=True)
+        seq = Sequential([
+            File2Image(), Resize(256), CenterCrop(224), RGB2BGR(), Transpose((2, 0, 1)),
+            Div(255), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True)
+        ])
+        image_file = "daisy.jpg"
+        img = seq(image_file)
+        fetch_map = client.predict(feed={"image": img}, fetch=["score"])
+        print(fetch_map["score"].reshape(-1))
+
         print("fetch_map:", fetch_map)
-        return fetch_map['price']
+        return fetch_map["score"]
 
     def setup_method(self):
         dir = os.path.dirname(os.path.abspath(__file__))
         self.dir = dir
-        self.model_dir = dir + "/uci_housing_model"
+        self.model_dir = dir + "/resnet_v2_50_imagenet_model"
 
     def teardown_method(self):
         pass
@@ -105,8 +109,8 @@ class TestServe(object):
         p.start()
         os.system("sleep 5")
 
-        price = self.predict()
-        print(price)
+        score = self.predict()
+        print(score)
 
         kill_process(9696)
 
@@ -143,8 +147,9 @@ class TestServe(object):
 
   
 if __name__ == '__main__':  
-    # ts = TestMainService()
-    # ts.setup_method()
+    ts = TestServe()
+    ts.setup_method()
+    ts.test_start_gpu_card_model_with_single_model_cpu()
     # ts.test_get_key()
     # print(format_gpu_to_strlist(["0,-1"]))
     # print(format_gpu_to_strlist(""))
