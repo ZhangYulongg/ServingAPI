@@ -1,5 +1,6 @@
 import os
 import pynvml
+import argparse
 
 
 def kill_process(port, sleep_time=0):
@@ -16,3 +17,32 @@ def check_gpu_memory(gpu_id):
     mem_used = mem_info.used / 1024 ** 2
     print(f"GPU-{gpu_id} memory used:", mem_used)
     return mem_used > 100
+
+
+def default_args():
+    parser = argparse.ArgumentParser()
+    args = parser.parse_args([])
+    args.thread = 2
+    args.port = 9292
+    args.device = "cpu"
+    args.gpu_ids = [""]
+    args.op_num = 0
+    args.op_max_batch = 32
+    args.model = [""]
+    args.workdir = "workdir"
+    args.name = "None"
+    args.use_mkl = False
+    args.precision = "fp32"
+    args.use_calib = False
+    args.mem_optim_off = False
+    args.ir_optim = False
+    args.max_body_size = 512 * 1024 * 1024
+    args.use_encryption_model = False
+    args.use_multilang = False
+    args.use_trt = False
+    args.use_lite = False
+    args.use_xpu = False
+    args.product_name = None
+    args.container_id = None
+    args.gpu_multi_stream = False
+    return args
