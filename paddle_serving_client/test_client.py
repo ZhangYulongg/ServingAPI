@@ -13,7 +13,33 @@ from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
 from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
 sys.path.append("../paddle_serving_server")
-from util import default_args, kill_process
+from util import default_args, kill_process, check_gpu_memory
+
+
+class TestSDKConfig(object):
+    def test_add_server_variant(self):
+        client = Client()
+        predictor_sdk = SDKConfig()
+
+        # check predictor_sdk
+        client_id = id(client)
+        predictor_sdk.add_server_variant("default_tag_{}".format(client_id), ["127.0.0.1:12003"], "100")
+        assert predictor_sdk.tag_list == [f"default_tag_{client_id}"]
+        assert predictor_sdk.cluster_list == [["127.0.0.1:12003"]]
+        assert predictor_sdk.variant_weight_list == ["100"]
+
+    def test_gen_desc(self):
+        client = Client()
+        predictor_sdk = SDKConfig()
+        client_id = id(client)
+        predictor_sdk.add_server_variant("default_tag_{}".format(client_id), ["127.0.0.1:12003"], "90")
+        sdk_desc = predictor_sdk.gen_desc(300000)
+
+        # check sdk_desc
+        assert sdk_desc.default_variant_conf.connection_conf.rpc_timeout_ms == 300000
+        assert sdk_desc.predictors[0].weighted_random_render_conf.variant_weight_list == "90"
+        assert sdk_desc.predictors[0].variants[0].tag == f"default_tag_{client_id}"
+        assert sdk_desc.predictors[0].variants[0].naming_conf.cluster == "list://127.0.0.1:12003"
 
 
 class TestSDKConfig(object):
@@ -128,6 +154,9 @@ class TestClient(object):
             shell=True)
         os.system("sleep 10")
 
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
         seq = Sequential([
             File2Image(), Resize(256), CenterCrop(224), RGB2BGR(), Transpose((2, 0, 1)),
             Div(255), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True)
@@ -179,6 +208,9 @@ class TestMultiLangClient(object):
     def test_connect(self):
         self.start_grpc_server_with_bsf()
 
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
         client = MultiLangClient()
         client.connect(["127.0.0.1:9696"])
         assert client.feed_names_ == ["image"]
@@ -192,6 +224,9 @@ class TestMultiLangClient(object):
 
     def test_predict(self):
         self.start_grpc_server_with_bsf()
+
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
 
         client = MultiLangClient()
         client.connect(["127.0.0.1:9696"])
