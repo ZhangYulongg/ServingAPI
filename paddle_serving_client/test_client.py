@@ -1,45 +1,15 @@
 import os
-import base64
 import sys
-from multiprocessing import Process
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import subprocess
 import numpy as np
 import pytest
 
-from paddle_serving_server.serve import MainService
 from paddle_serving_client import Client, MultiLangClient, SDKConfig
 from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
 from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
 sys.path.append("../paddle_serving_server")
 from util import default_args, kill_process, check_gpu_memory
-
-
-class TestSDKConfig(object):
-    def test_add_server_variant(self):
-        client = Client()
-        predictor_sdk = SDKConfig()
-
-        # check predictor_sdk
-        client_id = id(client)
-        predictor_sdk.add_server_variant("default_tag_{}".format(client_id), ["127.0.0.1:12003"], "100")
-        assert predictor_sdk.tag_list == [f"default_tag_{client_id}"]
-        assert predictor_sdk.cluster_list == [["127.0.0.1:12003"]]
-        assert predictor_sdk.variant_weight_list == ["100"]
-
-    def test_gen_desc(self):
-        client = Client()
-        predictor_sdk = SDKConfig()
-        client_id = id(client)
-        predictor_sdk.add_server_variant("default_tag_{}".format(client_id), ["127.0.0.1:12003"], "90")
-        sdk_desc = predictor_sdk.gen_desc(300000)
-
-        # check sdk_desc
-        assert sdk_desc.default_variant_conf.connection_conf.rpc_timeout_ms == 300000
-        assert sdk_desc.predictors[0].weighted_random_render_conf.variant_weight_list == "90"
-        assert sdk_desc.predictors[0].variants[0].tag == f"default_tag_{client_id}"
-        assert sdk_desc.predictors[0].variants[0].naming_conf.cluster == "list://127.0.0.1:12003"
 
 
 class TestSDKConfig(object):
