@@ -13,7 +13,7 @@ from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
 from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
 sys.path.append("../paddle_serving_server")
-from util import default_args, kill_process
+from util import default_args, kill_process, check_gpu_memory
 
 
 class TestSDKConfig(object):
@@ -128,6 +128,9 @@ class TestClient(object):
             shell=True)
         os.system("sleep 10")
 
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
         seq = Sequential([
             File2Image(), Resize(256), CenterCrop(224), RGB2BGR(), Transpose((2, 0, 1)),
             Div(255), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True)
@@ -179,6 +182,9 @@ class TestMultiLangClient(object):
     def test_connect(self):
         self.start_grpc_server_with_bsf()
 
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
         client = MultiLangClient()
         client.connect(["127.0.0.1:9696"])
         assert client.feed_names_ == ["image"]
@@ -192,6 +198,9 @@ class TestMultiLangClient(object):
 
     def test_predict(self):
         self.start_grpc_server_with_bsf()
+
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
 
         client = MultiLangClient()
         client.connect(["127.0.0.1:9696"])
