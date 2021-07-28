@@ -42,7 +42,16 @@ class TestClient(object):
         # TODO client.client_handle_(PredictorClient对象)
 
     def test_add_variant(self):
-        pass
+        client = Client()
+        client.load_client_config(self.client_dir)
+        client.add_variant("default_tag_{}".format(id(client)), ["127.0.0.1:12000"], 100)
+
+        # check predictor_sdk_
+        sdk_config = client.predictor_sdk_
+        client_id = id(client)
+        assert sdk_config.tag_list == [f"default_tag_{client_id}"]
+        assert sdk_config.cluster_list == [["127.0.0.1:12000"]]
+        assert sdk_config.variant_weight_list == ["100"]
 
     def test_use_key(self):
         client = Client()
@@ -78,4 +87,4 @@ if __name__ == '__main__':
     tc = TestClient()
     tc.setup_method()
     tc.setup_class()
-    tc.test_get_serving_port()
+    tc.test_add_variant()
