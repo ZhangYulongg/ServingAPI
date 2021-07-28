@@ -1,12 +1,18 @@
 import os
 import base64
 import sys
+from multiprocessing import Process
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import subprocess
+import numpy as np
 
 from paddle_serving_server.serve import MainService
 from paddle_serving_client import Client
+from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
+from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
 sys.path.append("../paddle_serving_server")
-from util import default_args
+from util import default_args, kill_process
 
 
 class TestClient(object):
@@ -16,6 +22,7 @@ class TestClient(object):
 
     def setup_method(self):
         self.dir = os.path.dirname(os.path.abspath(__file__))
+        print(self.dir)
         self.model_dir = f"{os.path.split(self.dir)[0]}/paddle_serving_server/resnet_v2_50_imagenet_model"
         self.client_dir = f"{os.path.split(self.dir)[0]}/paddle_serving_server/resnet_v2_50_imagenet_client"
 
@@ -46,13 +53,24 @@ class TestClient(object):
         assert client.key == self.key
 
     def test_get_serving_port(self):
-        args = default_args()
-        print(args)
+        # start encrypt server
+        p = subprocess.Popen(
+                f"python3.6 -m paddle_serving_server.serve --model "
+                f"{os.path.split(self.dir)[0]}/paddle_serving_server/encrypt_server --port 9300 --use_encryption_model", shell=True)
+        os.system("sleep 3")
 
         client = Client()
         client.load_client_config(self.client_dir)
         client.use_key("./key")
-        # client.get_serving_port(["127.0.0.1:9300"])
+        endpoints = client.get_serving_port(["127.0.0.1:9300"])
+        assert endpoints == ["127.0.0.1:12000"]
+
+        os.system("sleep 3")
+        kill_process(12000)
+        kill_process(9300)
+
+    def test_connect(self):
+
         pass
 
 
@@ -61,4 +79,3 @@ if __name__ == '__main__':
     tc.setup_method()
     tc.setup_class()
     tc.test_get_serving_port()
-
