@@ -69,7 +69,7 @@ class TestClient(object):
     def test_use_key(self):
         client = Client()
         client.load_client_config(self.client_dir)
-        client.use_key("./key")
+        client.use_key(f"{self.model_dir}/../key")
 
         # check key
         assert client.key == self.key
