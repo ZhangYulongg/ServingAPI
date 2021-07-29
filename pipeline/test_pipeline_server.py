@@ -1,62 +1,55 @@
+"""
+test pipeline_server module
+"""
 import sys
 import logging
 import numpy as np
 import base64
 import cv2
+import pytest
 
 from paddle_serving_app.reader import Sequential, URL2Image, Resize, CenterCrop, RGB2BGR, Transpose, Div, Normalize, Base64ToImage
 from paddle_serving_server.web_service import WebService, Op
+from paddle_serving_server import pipeline
+from paddle_serving_server.pipeline import PipelineServer
+
+# from resnet_pipeline import ImagenetOp, ImageService
+from pipeline.resnet_pipeline import ImagenetOp, ImageService
 
 
-class ImagenetOp(Op):
-    def init_op(self):
-        self.seq = Sequential([
-            Resize(256), CenterCrop(224), RGB2BGR(), Transpose((2, 0, 1)),
-            Div(255), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225],
-                                True)
-        ])
-        self.label_dict = {}
-        label_idx = 0
-        with open("imagenet.label") as fin:
-            for line in fin:
-                self.label_dict[label_idx] = line.strip()
-                label_idx += 1
+class TestPipelineServer(object):
+    """test PipelineServer class"""
+    def test_set_response_op(self):
+        """test set_response_op"""
+        image_service = ImageService()
+        server = PipelineServer()
 
-    def preprocess(self, input_dicts, data_id, log_id):
-        (_, input_dict), = input_dicts.items()
-        batch_size = len(input_dict.keys())
-        imgs = []
-        for key in input_dict.keys():
-            data = base64.b64decode(input_dict[key].encode('utf8'))
-            data = np.fromstring(data, np.uint8)
-            im = cv2.imdecode(data, cv2.IMREAD_COLOR)
-            img = self.seq(im)
-            imgs.append(img[np.newaxis, :].copy())
-        input_imgs = np.concatenate(imgs, axis=0)
-        return {"image": input_imgs}, False, None, ""
+        read_op = pipeline.RequestOp()
+        last_op = image_service.get_pipeline_response(read_op=read_op)
+        response_op = pipeline.ResponseOp(input_ops=[last_op])
+        server.set_response_op(response_op)
 
-    def postprocess(self, input_dicts, fetch_dict, log_id):
-        score_list = fetch_dict["score"]
-        result = {"label": [], "prob": []}
-        for score in score_list:
-            score = score.tolist()
-            max_score = max(score)
-            result["label"].append(self.label_dict[score.index(max_score)]
-                                   .strip().replace(",", ""))
-            result["prob"].append(max_score)
-        result["label"] = str(result["label"])
-        result["prob"] = str(result["prob"])
-        return result, None, ""
+        used_op = list(server._used_op)
+        assert server._response_op is response_op
+        assert used_op[0] is read_op
+        assert used_op[-1] is last_op
+
+    def test(self):
+        pass
 
 
-class ImageService(WebService):
-    def get_pipeline_response(self, read_op):
-        image_op = ImagenetOp(name="imagenet", input_ops=[read_op])
-        return image_op
+class TestServerYamlConfChecker(object):
+    """test ServerYamlConfChecker class"""
+    def test_load_server_yaml_conf(self):
+        """test pipeline server load yaml file"""
+
+        pass
 
 
 if __name__ == '__main__':
-    resnet_service = ImageService(name="imagenet")
-    resnet_service.prepare_pipeline_config("config.yml")
+    tps = TestPipelineServer()
+    tps.test_set_response_op()
+    # resnet_service = ImageService(name="imagenet")
+    # resnet_service.prepare_pipeline_config("config.yml")
     # resnet_service.run_service()
     pass
