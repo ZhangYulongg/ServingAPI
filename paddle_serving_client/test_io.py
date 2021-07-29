@@ -8,6 +8,7 @@ class TestClientIO(object):
         self.dir = os.path.dirname(os.path.abspath(__file__))
         self.origin_model = f"{self.dir}/ResNet50"
 
+    @pytest.mark.api_clientIo_inferenceModelToServing_parameters
     def test_inference_model_to_serving(self):
         feed_names, fetch_names = inference_model_to_serving(dirname=self.origin_model, model_filename="model", params_filename="params")
         print("feed_names:", list(feed_names))

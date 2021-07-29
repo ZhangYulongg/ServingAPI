@@ -13,6 +13,7 @@ from util import default_args, kill_process, check_gpu_memory
 
 
 class TestSDKConfig(object):
+    @pytest.mark.api_clientClient_addServerVariant_parameters
     def test_add_server_variant(self):
         client = Client()
         predictor_sdk = SDKConfig()
@@ -24,6 +25,7 @@ class TestSDKConfig(object):
         assert predictor_sdk.cluster_list == [["127.0.0.1:12003"]]
         assert predictor_sdk.variant_weight_list == ["100"]
 
+    @pytest.mark.api_clientClient_genDesc_parameters
     def test_gen_desc(self):
         client = Client()
         predictor_sdk = SDKConfig()
@@ -51,6 +53,7 @@ class TestClient(object):
         self.model_dir = f"{os.path.split(self.dir)[0]}/paddle_serving_server/resnet_v2_50_imagenet_model"
         self.client_dir = f"{os.path.split(self.dir)[0]}/paddle_serving_server/resnet_v2_50_imagenet_client"
 
+    @pytest.mark.api_clientClient_loadClientConfig_parameters
     def test_load_client_config(self):
         client = Client()
         client.load_client_config(self.client_dir)
@@ -66,6 +69,7 @@ class TestClient(object):
         assert client.fetch_names_to_type_ == {"score": 1}
         # TODO client.client_handle_(PredictorClient对象)
 
+    @pytest.mark.api_clientClient_useKey_parameters
     def test_use_key(self):
         client = Client()
         client.load_client_config(self.client_dir)
@@ -74,6 +78,7 @@ class TestClient(object):
         # check key
         assert client.key == self.key
 
+    @pytest.mark.api_clientClient_getServingPort_parameters
     def test_get_serving_port(self):
         # start encrypt server
         p = subprocess.Popen(
@@ -92,6 +97,7 @@ class TestClient(object):
         kill_process(12000)
         kill_process(9300)
 
+    @pytest.mark.api_clientClient_shapeCheck_parameters
     def test_shape_check(self):
         # shape_check only check list type
         client = Client()
@@ -108,6 +114,7 @@ class TestClient(object):
 
         client.shape_check(feed, "image")
 
+    @pytest.mark.api_clientClient_loadClientConfig_exception
     def test_shape_check_with_wrong_shape(self):
         client = Client()
         client.load_client_config(self.client_dir)
@@ -118,6 +125,7 @@ class TestClient(object):
             client.shape_check(feed, "image")
         assert str(e.value) == f"The shape of feed tensor image not match."
 
+    @pytest.mark.api_clientClient_predict_parameters
     def test_predict(self):
         p = subprocess.Popen(
             f"python3.6 -m paddle_serving_server.serve --model {self.model_dir} --port 9697 --gpu_ids 0,1",
@@ -175,6 +183,7 @@ class TestMultiLangClient(object):
             shell=True)
         os.system("sleep 10")
 
+    @pytest.mark.api_clientClient_connect_parameters
     def test_connect(self):
         self.start_grpc_server_with_bsf()
 
@@ -192,6 +201,7 @@ class TestMultiLangClient(object):
         kill_process(9696)
         kill_process(12000, 3)
 
+    @pytest.mark.api_clientClient_predict_parameters
     def test_predict(self):
         self.start_grpc_server_with_bsf()
 
