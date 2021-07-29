@@ -64,10 +64,12 @@ class TestMultiLangServer(object):
         print("prob:", result_prob)
         return result_class.tolist(), result_prob.tolist()
 
+    @pytest.mark.api_serverServer_loadModelConfig_parameters
     def test_load_model_config(self):
         assert self.test_server.is_multi_model_ is False
         assert self.test_server.bclient_config_path_list == [self.model_dir]
 
+    @pytest.mark.api_serverServer_prepareServer_parameters
     def test_prepare_server(self):
         self.test_server.prepare_server(workdir="workdir", port=9696, device="gpu", use_encryption_model=False,
                                         cube_conf=None)
@@ -76,6 +78,7 @@ class TestMultiLangServer(object):
         assert self.test_server.gport_ == 9696
 
     @pytest.mark.run(order=2)
+    @pytest.mark.api_serverServer_runServer_parameters
     def test_run_server(self):
         self.test_server.set_gpuid("0,1")
         self.test_server.prepare_server(workdir="workdir", port=9697, device="gpu", use_encryption_model=False,
@@ -156,6 +159,7 @@ class TestServer(object):
         print("prob:", result_prob)
         return result_class.tolist(), result_prob.tolist()
 
+    @pytest.mark.api_serverServer_loadModelConfig_parameters
     def test_load_model_config(self):
         # check workflow_conf (already in test_dag.py)
         # check general_infer_0 op model_conf (feed_var and fetch_var)
@@ -179,21 +183,26 @@ class TestServer(object):
         assert self.test_server.model_toolkit_fn == ['general_infer_0/model_toolkit.prototxt']
         assert self.test_server.subdirectory == ['general_infer_0']
 
+    @pytest.mark.api_serverServer_portIsAvailable_parameters
     def test_port_is_available_with_unused_port(self):
         assert self.test_server.port_is_available(12003) is True
 
+    @pytest.mark.api_serverServer_portIsAvailable_parameters
     def test_port_is_available_with_used_port(self):
         os.system("python -m SimpleHTTPServer 12005 &")
         time.sleep(2)
         assert self.test_server.port_is_available(12005) is False
         kill_process(12005)
 
+    @pytest.mark.api_serverServer_checkAvx_parameters
     def test_check_avx(self):
         assert self.test_server.check_avx() is True
 
+    @pytest.mark.api_serverServer_getFetchList_parameters
     def test_get_fetch_list(self):
         assert self.test_server.get_fetch_list() == ['score']
 
+    @pytest.mark.api_serverServer_prepareEngine_parameters
     def test_prepare_engine_with_async_mode(self):
         # 生成bRPC server配置信息(model_toolkit_conf)
         # check model_toolkit_conf
@@ -222,6 +231,7 @@ class TestServer(object):
         assert model_engine_0.combined_model is False
         assert model_engine_0.gpu_multi_stream is True
 
+    @pytest.mark.api_serverServer_prepareInferService_parameters
     def test_prepare_infer_service(self):
         # check infer_service_conf
         self.test_server._prepare_infer_service(9696)
@@ -231,6 +241,7 @@ class TestServer(object):
         assert infer_service_conf.services[0].name == "GeneralModelService"
         assert infer_service_conf.services[0].workflows == ["workflow1"]
 
+    @pytest.mark.api_serverServer_prepareResource_parameters
     def test_prepare_resource(self):
         # 生成模型feed_var,fetch_var配置文件(general_model.prototxt)，设置resource_conf属性
         # check resource_conf
@@ -244,6 +255,7 @@ class TestServer(object):
         assert resource_conf.general_model_path == ["workdir_9696"]
         assert resource_conf.general_model_file == ["general_infer_0/general_model.prototxt"]
 
+    @pytest.mark.api_serverServer_prepareServer_parameters
     def test_prepare_server(self):
         # 生成bRPC server各种配置文件
         self.test_server.prepare_server("workdir_9696", 9696, "gpu", False)
@@ -253,6 +265,7 @@ class TestServer(object):
         assert os.path.isfile(f"{self.dir}/workdir_9696/resource.prototxt") is True
         assert os.path.isfile(f"{self.dir}/workdir_9696/general_infer_0/model_toolkit.prototxt") is True
 
+    @pytest.mark.api_serverServer_runServer_parameters
     def test_run_server_with_cpu(self):
         self.test_server.prepare_server("workdir", 9696, "cpu")
         p = Process(target=self.test_server.run_server)
@@ -275,6 +288,7 @@ class TestServer(object):
 
         kill_process(9696, 1)
 
+    @pytest.mark.api_serverServer_runServer_parameters
     def test_run_server_with_gpu(self):
         self.test_server.set_gpuid("0,1")
         self.test_server.prepare_server("workdir_0", 9696, "gpu")

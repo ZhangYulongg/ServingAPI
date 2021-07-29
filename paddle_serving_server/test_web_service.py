@@ -128,6 +128,7 @@ class TestWebService(object):
         print("http_result: ", result.json())
         return result.json()
 
+    @pytest.mark.api_serverWebService_loadModelConfig_parameters
     def test_load_model_config(self):
         # config_dir list
         assert self.test_service.server_config_dir_paths == [self.model_dir]
@@ -148,12 +149,14 @@ class TestWebService(object):
         # client config_path list
         assert self.test_service.client_config_path == [self.model_dir + '/serving_server_conf.prototxt']
 
+    @pytest.mark.api_serverWebService_prepareServer_parameters
     def test_prepare_server(self):
         self.test_service.prepare_server(workdir="workdir", port=9696, device="cpu")
         assert self.test_service.workdir == "workdir"
         assert self.test_service.port == 9696
         assert self.test_service.port_list == [12000]
 
+    @pytest.mark.api_serverWebService_fefaultRpcService_parameters
     def test_default_rpc_service(self):
         self.test_service.prepare_server(workdir="workdir", port=9696, device="cpu")
         test_server = self.test_service.default_rpc_service(workdir="workdir", port=self.test_service.port_list[0],
@@ -167,6 +170,7 @@ class TestWebService(object):
         assert len(workflows) == 1
         TestOpSeqMaker.check_standard_workflow(workflows[0])
 
+    @pytest.mark.api_serverWebService_createRpcConfig_parameters
     def test_create_rpc_config_with_cpu(self):
         self.test_service.prepare_server(workdir="workdir", port=9696, device="cpu")
         self.test_service.create_rpc_config()
@@ -179,6 +183,7 @@ class TestWebService(object):
         assert len(rpc_list) == 1
         assert isinstance(rpc_list[0], paddle_serving_server.server.Server)
 
+    @pytest.mark.api_serverWebService_createRpcConfig_parameters
     def test_create_rpc_config_with_gpu(self):
         self.test_service.set_gpus("0,1")
         self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
@@ -193,11 +198,13 @@ class TestWebService(object):
         assert len(rpc_list) == 1
         assert isinstance(rpc_list[0], paddle_serving_server.server.Server)
 
+    @pytest.mark.api_serverWebService_setGpus_parameters
     def test_set_gpus(self):
         self.test_service.set_gpus("1,2,3")
         assert self.test_service.gpus == ["1,2,3"]
 
     @pytest.mark.run(order=1)
+    @pytest.mark.api_serverWebService_runWebService_parameters
     def test_run_web_service(self):
         self.test_service.init_imagenet_setting()
         self.test_service.set_gpus("0,1")
@@ -239,6 +246,7 @@ class TestWebService(object):
         kill_process(9393)
         kill_process(12000, 3)
 
+    @pytest.mark.api_serverWebService_runRpcService_parameters
     def test_run_rpc_service_with_gpu(self):
         self.test_service.set_gpus("0,1")
         self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
@@ -255,6 +263,7 @@ class TestWebService(object):
 
         kill_process(12000, 3)
 
+    @pytest.mark.api_serverWebService_runDebuggerService_parameters
     def test_run_debugger_service(self):
         self.test_service.init_imagenet_setting()
         self.test_service.set_gpus("0")

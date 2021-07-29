@@ -6,6 +6,7 @@ from paddle_serving_server import OpMaker, OpSeqMaker
 
 
 class TestOpMaker(object):
+    @pytest.mark.api_serverDag_create_parameters
     def test_create_with_existed_node(self):
         op_maker = OpMaker()
         read_op = op_maker.create("general_reader")
@@ -21,6 +22,7 @@ class TestOpMaker(object):
         assert response_op_dict["name"] == "general_response_0"
         assert response_op_dict["type"] == "GeneralResponseOp"
 
+    @pytest.mark.api_serverDag_create_exception
     def test_create_with_undefined_node(self):
         op_maker = OpMaker()
         with pytest.raises(Exception) as e:
@@ -60,10 +62,12 @@ class TestOpSeqMaker(object):
         assert single_workflow.nodes[2].dependencies[-1].name == "general_infer_0"
         assert single_workflow.nodes[2].dependencies[-1].mode == "RO"
 
+    @pytest.mark.api_serverDag_addOP_parameters
     def test_add_op(self):
         self.general_op_seq()
         self.check_standard_workflow(self.op_seq_maker.workflow)
 
+    @pytest.mark.api_serverDag_getOpSequence_parameters
     def test_get_op_sequence(self):
         self.general_op_seq()
 

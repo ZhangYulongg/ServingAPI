@@ -79,9 +79,11 @@ class TestServe(object):
     def teardown_method(self):
         pass
 
+    @pytest.mark.api_serverServe_formatGpuToStrList_parameters
     def test_format_gpu_to_strlist_with_int(self):
         assert format_gpu_to_strlist(2) == ["2"]
 
+    @pytest.mark.api_serverServe_formatGpuToStrList_parameters
     def test_format_gpu_to_strlist_with_list(self):
         assert format_gpu_to_strlist(["3"]) == ["3"]
         assert format_gpu_to_strlist([""]) == ["-1"]
@@ -98,10 +100,12 @@ class TestServe(object):
             format_gpu_to_strlist(["0,-1"])
         assert str(e.value) == "You can not use CPU and GPU in one model."
 
+    @pytest.mark.api_serverServe_isGpuMode_parameters
     def test_is_gpu_mode(self):
         assert is_gpu_mode(["-1"]) is False
         assert is_gpu_mode(["0,1"]) is True
 
+    @pytest.mark.api_serverServe_startGpuCardModel_exception
     def test_start_gpu_card_model_without_model(self):
         args = self.default_args()
         args.model = ""
@@ -109,6 +113,7 @@ class TestServe(object):
             start_gpu_card_model(gpu_mode=False, port=args.port, args=args)
         assert str(e.value) == "-1"
 
+    @pytest.mark.api_serverServe_startGpuCardModel_parameters
     def test_start_gpu_card_model_with_single_model_cpu(self):
         args = self.default_args()
         args.model = [self.model_dir]
@@ -134,6 +139,7 @@ class TestServe(object):
 
         kill_process(9696, 1)
 
+    @pytest.mark.api_serverServe_startGpuCardModel_parameters
     def test_start_gpu_card_model_with_single_model_gpu(self):
         args = self.default_args()
         args.model = [self.model_dir]
@@ -160,6 +166,7 @@ class TestServe(object):
 
         kill_process(9696, 3)
 
+    @pytest.mark.api_serverServe_startGpuCardModel_parameters
     def test_start_gpu_card_model_with_two_models_gpu(self):
         args = self.default_args()
         args.model = [self.model_dir, self.model_dir]
