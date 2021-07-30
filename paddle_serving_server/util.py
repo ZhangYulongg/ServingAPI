@@ -1,6 +1,7 @@
 import os
 import pynvml
 import argparse
+import base64
 
 
 def kill_process(port, sleep_time=0):
@@ -17,6 +18,10 @@ def check_gpu_memory(gpu_id):
     mem_used = mem_info.used / 1024 ** 2
     print(f"GPU-{gpu_id} memory used:", mem_used)
     return mem_used > 100
+
+
+def cv2_to_base64(image):
+    return base64.b64encode(image).decode('utf8')
 
 
 def default_args():
