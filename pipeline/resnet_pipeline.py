@@ -51,3 +51,9 @@ class ImageService(WebService):
     def get_pipeline_response(self, read_op):
         image_op = ImagenetOp(name="imagenet", input_ops=[read_op])
         return image_op
+
+
+if __name__ == '__main__':
+    resnet_service = ImageService(name="imagenet")
+    resnet_service.prepare_pipeline_config("config.yml")
+    resnet_service.run_service()
