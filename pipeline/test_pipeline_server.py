@@ -15,6 +15,8 @@ import json
 from multiprocessing import Process
 import subprocess
 import time
+import logging
+import copy
 
 from paddle_serving_app.reader import (
     Sequential,
@@ -82,6 +84,18 @@ class TestPipelineServer(object):
             }
         }
 
+    def teardown_method(self):
+        """release"""
+        self.err.close()
+        self.out.close()
+
+    def start_pipeline_server(self, sleep=5):
+        """start pipeline server(need config)"""
+        self.err = open("stderr.log", "w")
+        self.out = open("stdout.log", "w")
+        p = subprocess.Popen("python3.6 resnet_pipeline.py", shell=True, stdout=self.out, stderr=self.err)
+        os.system(f"sleep {sleep}")
+
     def predict_rpc(self):
         """test predict by rpc"""
         client = PipelineClient()
@@ -102,6 +116,7 @@ class TestPipelineServer(object):
         data = {"key": ["image"], "value": [image]}
 
         result = requests.post(url=url, data=json.dumps(data))
+        print(result)
         return result.json()
 
     def test_set_response_op(self):
@@ -226,41 +241,76 @@ class TestPipelineServer(object):
 
     def test_run_server_cpu_3proc_ir_mkl(self):
         """worker_num 3  ir_optim on  mkldnn on"""
-        # self.pipeline_server.set_response_op(self.response_op)
-        # self.default_yml_dict["build_dag_each_worker"] = True
-        # self.default_yml_dict["worker_num"] = 3
-        # self.default_yml_dict["op"]["imagenet"]["local_service_conf"]["ir_optim"] = True
-        # self.default_yml_dict["op"]["imagenet"]["local_service_conf"]["use_mkldnn"] = True
-        # self.pipeline_server.prepare_server(yml_dict=self.default_yml_dict)
-        # p = Process(target=self.pipeline_server.run_server)
-        # p.start()
-        err = open("stderr.log", "w")
-        out = open("stdout.log", "w")
-        p = subprocess.Popen("python3.6 resnet_pipeline.py", shell=True, stdout=out, stderr=err)
+        yml_dict = copy.deepcopy(self.default_yml_dict)
+        yml_dict["build_dag_each_worker"] = True
+        yml_dict["worker_num"] = 3
+        yml_dict["op"]["imagenet"]["local_service_conf"]["ir_optim"] = True
+        yml_dict["op"]["imagenet"]["local_service_conf"]["use_mkldnn"] = True
+        with open("config.yml", "w") as f:
+            yaml.dump(yml_dict, f, default_flow_style=False)
 
-        # print(p.stdout.read())
+        self.start_pipeline_server(5)
 
-        os.system("sleep 5")
+        assert count_process_num_on_port(9993) == 3
+        assert check_gpu_memory(0) is False
+
+        p = subprocess.Popen("grep 'MKLDNN is enabled' stderr.log", shell=True)
+        p.wait()
+        print("plan1:", p.returncode)
+        assert p.returncode == 0
+
+        # predict by rpc
+        result = self.predict_rpc()
+        print("RPC result:\n", result)
+        assert result.key == ["label", "prob"]
+        assert result.value == ["['daisy']", "[0.9341402053833008]"]
+
+        # predict by http
+        result = self.predict_http()
+        print("HTTP result:\n", result)
+        assert result["key"] == ["label", "prob"]
+        assert result["value"] == ["['daisy']", "[0.9341402053833008]"]
+
         kill_process(9993)
         os.system("kill -9 $(netstat -nlp | grep 'LISTENING' | awk '{print $9}' | awk -F'/' '{{ print $1 }}')")
         kill_process(18080, 1)
-        err.close()
-        out.close()
-        # plan1
-        start = time.time()
-        p = subprocess.Popen("grep 'MKLDNN is enabled' stderr.log", shell=True)
-        print("plan1:", p.returncode)
-        end = time.time()
-        time1 = end - start
-        # plan2
-        start = time.time()
-        p = os.system("grep 'MKLDNN is enabled' stderr.log")
-        print("plan2:", p)
-        end = time.time()
-        time2 = end - start
 
-        print(time1, time2)
+    def test_run_server_gpu_1proc(self):
+        """threadpool gpu"""
+        yml_dict = copy.deepcopy(self.default_yml_dict)
+        yml_dict["worker_num"] = 3
+        yml_dict["op"]["imagenet"]["concurrency"] = 4
+        yml_dict["op"]["imagenet"]["local_service_conf"]["device_type"] = 1
+        yml_dict["op"]["imagenet"]["local_service_conf"]["devices"] = "0,1"
+        with open("config.yml", "w") as f:
+            yaml.dump(yml_dict, f, default_flow_style=False)
 
+        self.start_pipeline_server(10)
+        os.system("cat stderr.log")
+
+        assert count_process_num_on_port(9993) == 1
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
+        # p = subprocess.Popen("grep 'MKLDNN is enabled' stderr.log", shell=True)
+        # p.wait()
+        # print("plan1:", p.returncode)
+
+        # predict by rpc
+        result = self.predict_rpc()
+        print("RPC result:\n", result)
+        assert result.key == ["label", "prob"]
+        assert result.value == ["['daisy']", "[0.9341405034065247]"]
+
+        # predict by http
+        result = self.predict_http()
+        print("HTTP result:\n", result)
+        assert result["key"] == ["label", "prob"]
+        assert result["value"] == ["['daisy']", "[0.9341405034065247]"]
+
+        kill_process(9993)
+        os.system("kill -9 $(netstat -nlp | grep 'LISTENING' | awk '{print $9}' | awk -F'/' '{{ print $1 }}')")
+        kill_process(18080, 3)
 
 
 if __name__ == "__main__":
@@ -268,7 +318,8 @@ if __name__ == "__main__":
     tps.setup_class()
     tps.setup_method()
     # tps.test_set_response_op()
-    tps.test_run_server_cpu_3proc_ir_mkl()
+    tps.test_run_server_gpu_1proc()
+    tps.teardown_method()
     # resnet_service = ImageService(name="imagenet")
     # resnet_service.prepare_pipeline_config("config.yml")
     # resnet_service.run_service()

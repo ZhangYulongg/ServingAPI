@@ -24,7 +24,7 @@ def check_gpu_memory(gpu_id):
 def count_process_num_on_port(port):
     command = "netstat -nlp | grep :" + str(port) + " | wc -l"
     count = eval(os.popen(command).read())
-    print(f"port{port} processes num:", count)
+    print(f"port-{port} processes num:", count)
     return count
 
 
