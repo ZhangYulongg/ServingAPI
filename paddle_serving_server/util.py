@@ -28,6 +28,12 @@ def count_process_num_on_port(port):
     return count
 
 
+def check_keywords_in_server_log(words: str):
+    p = subprocess.Popen(f"grep '{words}' stderr.log", shell=True)
+    p.wait()
+    return p.returncode == 0
+
+
 def cv2_to_base64(image):
     return base64.b64encode(image).decode('utf8')
 

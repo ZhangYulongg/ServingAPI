@@ -36,7 +36,7 @@ from paddle_serving_server.pipeline import PipelineServer, PipelineClient
 from resnet_pipeline import ImagenetOp, ImageService
 # from pipeline.resnet_pipeline import ImagenetOp, ImageService
 sys.path.append("../paddle_serving_server")
-from util import default_args, kill_process, check_gpu_memory, cv2_to_base64, count_process_num_on_port
+from util import *
 
 
 class TestPipelineServer(object):
@@ -95,6 +95,12 @@ class TestPipelineServer(object):
         self.out = open("stdout.log", "w")
         p = subprocess.Popen("python3.6 resnet_pipeline.py", shell=True, stdout=self.out, stderr=self.err)
         os.system(f"sleep {sleep}")
+
+        print("======================stderr.log======================")
+        os.system("cat stderr.log")
+        print("======================stdout.log======================")
+        os.system("cat stdout.log")
+        print("======================================================")
 
     def predict_rpc(self):
         """test predict by rpc"""
@@ -183,28 +189,31 @@ class TestPipelineServer(object):
     @pytest.mark.api_pipelinePipelineServer_runServer_parameters
     def test_run_server_cpu_1proc_noir_nomkl(self):
         """test run pipeline server"""
-        self.pipeline_server.set_response_op(self.response_op)
-        self.pipeline_server.prepare_server(yml_dict=self.default_yml_dict)
-        p = Process(target=self.pipeline_server.run_server)
-        p.start()
-        os.system("sleep 5")
+        # 1.prepare server config
+        yml_dict = copy.deepcopy(self.default_yml_dict)
+        with open("config.yml", "w") as f:
+            yaml.dump(yml_dict, f, default_flow_style=False)
 
-        # TODO 封装优化
+        # 2.start pipeline server
+        self.start_pipeline_server(5)
+
+        # 3.check server status
         assert count_process_num_on_port(9993) == 1
         assert check_gpu_memory(0) is False
 
-        # predict by rpc
+        # 4.predict by rpc
         result = self.predict_rpc()
         print("RPC result:\n", result)
         assert result.key == ["label", "prob"]
         assert result.value == ["['daisy']", "[0.9341403245925903]"]
 
-        # predict by http
+        # 5.predict by http
         result = self.predict_http()
         print("HTTP result:\n", result)
         assert result["key"] == ["label", "prob"]
         assert result["value"] == ["['daisy']", "[0.9341403245925903]"]
 
+        # 6.release
         kill_process(9993)
         os.system("kill -9 $(netstat -nlp | grep 'LISTENING' | awk '{print $9}' | awk -F'/' '{{ print $1 }}')")
         kill_process(18080, 1)
@@ -212,13 +221,13 @@ class TestPipelineServer(object):
     @pytest.mark.api_pipelinePipelineServer_runServer_parameters
     def test_run_server_cpu_3proc_noir_nomkl(self):
         """worker_num 3  ir_optim off  mkldnn off"""
-        self.pipeline_server.set_response_op(self.response_op)
-        self.default_yml_dict["build_dag_each_worker"] = True
-        self.default_yml_dict["worker_num"] = 3
-        self.pipeline_server.prepare_server(yml_dict=self.default_yml_dict)
-        p = Process(target=self.pipeline_server.run_server)
-        p.start()
-        os.system("sleep 5")
+        yml_dict = copy.deepcopy(self.default_yml_dict)
+        yml_dict["build_dag_each_worker"] = True
+        yml_dict["worker_num"] = 3
+        with open("config.yml", "w") as f:
+            yaml.dump(yml_dict, f, default_flow_style=False)
+
+        self.start_pipeline_server(5)
 
         assert count_process_num_on_port(9993) == 3
         assert check_gpu_memory(0) is False
@@ -254,10 +263,7 @@ class TestPipelineServer(object):
         assert count_process_num_on_port(9993) == 3
         assert check_gpu_memory(0) is False
 
-        p = subprocess.Popen("grep 'MKLDNN is enabled' stderr.log", shell=True)
-        p.wait()
-        print("plan1:", p.returncode)
-        assert p.returncode == 0
+        assert check_keywords_in_server_log("MKLDNN is enabled") is True
 
         # predict by rpc
         result = self.predict_rpc()
@@ -278,7 +284,7 @@ class TestPipelineServer(object):
     def test_run_server_gpu_1proc(self):
         """threadpool gpu"""
         yml_dict = copy.deepcopy(self.default_yml_dict)
-        yml_dict["worker_num"] = 3
+        yml_dict["worker_num"] = 1
         yml_dict["op"]["imagenet"]["concurrency"] = 4
         yml_dict["op"]["imagenet"]["local_service_conf"]["device_type"] = 1
         yml_dict["op"]["imagenet"]["local_service_conf"]["devices"] = "0,1"
@@ -286,15 +292,10 @@ class TestPipelineServer(object):
             yaml.dump(yml_dict, f, default_flow_style=False)
 
         self.start_pipeline_server(10)
-        os.system("cat stderr.log")
 
         assert count_process_num_on_port(9993) == 1
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
-
-        # p = subprocess.Popen("grep 'MKLDNN is enabled' stderr.log", shell=True)
-        # p.wait()
-        # print("plan1:", p.returncode)
 
         # predict by rpc
         result = self.predict_rpc()
@@ -312,13 +313,81 @@ class TestPipelineServer(object):
         os.system("kill -9 $(netstat -nlp | grep 'LISTENING' | awk '{print $9}' | awk -F'/' '{{ print $1 }}')")
         kill_process(18080, 3)
 
+    def test_run_server_gpu_3proc(self):
+        """multiprocess gpu"""
+        yml_dict = copy.deepcopy(self.default_yml_dict)
+        yml_dict["worker_num"] = 3
+        yml_dict["build_dag_each_worker"] = True
+        yml_dict["op"]["imagenet"]["concurrency"] = 4
+        yml_dict["op"]["imagenet"]["local_service_conf"]["device_type"] = 1
+        yml_dict["op"]["imagenet"]["local_service_conf"]["devices"] = "0,1"
+        with open("config.yml", "w") as f:
+            yaml.dump(yml_dict, f, default_flow_style=False)
+
+        self.start_pipeline_server(10)
+
+        assert count_process_num_on_port(9993) == 3
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
+        # predict by rpc
+        result = self.predict_rpc()
+        print("RPC result:\n", result)
+        assert result.key == ["label", "prob"]
+        assert result.value == ["['daisy']", "[0.9341405034065247]"]
+
+        # predict by http
+        result = self.predict_http()
+        print("HTTP result:\n", result)
+        assert result["key"] == ["label", "prob"]
+        assert result["value"] == ["['daisy']", "[0.9341405034065247]"]
+
+        kill_process(9993)
+        os.system("kill -9 $(netstat -nlp | grep 'LISTENING' | awk '{print $9}' | awk -F'/' '{{ print $1 }}')")
+        kill_process(18080, 3)
+
+    def test_run_server_gpu_3proc_trt(self):
+        """multiprocess gpu TRT"""
+        yml_dict = copy.deepcopy(self.default_yml_dict)
+        yml_dict["worker_num"] = 2
+        yml_dict["build_dag_each_worker"] = True
+        yml_dict["op"]["imagenet"]["concurrency"] = 2
+        yml_dict["op"]["imagenet"]["local_service_conf"]["device_type"] = 2
+        yml_dict["op"]["imagenet"]["local_service_conf"]["ir_optim"] = True
+        yml_dict["op"]["imagenet"]["local_service_conf"]["devices"] = "0,1"
+        with open("config.yml", "w") as f:
+            yaml.dump(yml_dict, f, default_flow_style=False)
+
+        self.start_pipeline_server(30)
+
+        assert count_process_num_on_port(9993) == 2
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+        assert check_keywords_in_server_log("Prepare TRT engine")
+
+        # predict by rpc
+        result = self.predict_rpc()
+        print("RPC result:\n", result)
+        assert result.key == ["label", "prob"]
+        assert result.value == ["['daisy']", "[[[0.9341403841972351]]]"]
+
+        # predict by http
+        result = self.predict_http()
+        print("HTTP result:\n", result)
+        assert result["key"] == ["label", "prob"]
+        assert result["value"] == ["['daisy']", "[[[0.9341403841972351]]]"]
+
+        kill_process(9993)
+        os.system("kill -9 $(netstat -nlp | grep 'LISTENING' | awk '{print $9}' | awk -F'/' '{{ print $1 }}')")
+        kill_process(18080, 3)
+
 
 if __name__ == "__main__":
     tps = TestPipelineServer()
     tps.setup_class()
     tps.setup_method()
     # tps.test_set_response_op()
-    tps.test_run_server_gpu_1proc()
+    tps.test_run_server_gpu_3proc_trt()
     tps.teardown_method()
     # resnet_service = ImageService(name="imagenet")
     # resnet_service.prepare_pipeline_config("config.yml")
