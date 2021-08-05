@@ -1,61 +1,51 @@
+"""
+test paddle_serving_server.serve
+"""
 import argparse
 import os
-import pytest
 from multiprocessing import Process
+import pytest
 import numpy as np
 import pynvml
 
 from paddle_serving_server.serve import format_gpu_to_strlist
 from paddle_serving_server.serve import is_gpu_mode
 from paddle_serving_server.serve import start_gpu_card_model
-from paddle_serving_client import Client, MultiLangClient
+from paddle_serving_client import Client
 from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
 from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
-from util import kill_process, check_gpu_memory
+from util import *
 
 
 class TestServe(object):
-    @staticmethod
-    def default_args():
-        parser = argparse.ArgumentParser()
-        args = parser.parse_args([])
-        args.thread = 2
-        args.port = 9292
-        args.device = "cpu"
-        args.gpu_ids = [""]
-        args.op_num = 0
-        args.op_max_batch = 32
-        args.model = [""]
-        args.workdir = "workdir"
-        args.name = "None"
-        args.use_mkl = False
-        args.precision = "fp32"
-        args.use_calib = False
-        args.mem_optim_off = False
-        args.ir_optim = False
-        args.max_body_size = 512 * 1024 * 1024
-        args.use_encryption_model = False
-        args.use_multilang = False
-        args.use_trt = False
-        args.use_lite = False
-        args.use_xpu = False
-        args.product_name = None
-        args.container_id = None
-        args.gpu_multi_stream = False
-        return args
+    """test serve module"""
+
+    def setup_class(self):
+        """setup func"""
+        self.dir = os.path.dirname(os.path.abspath(__file__))
+        self.model_dir = f"{os.path.split(self.dir)[0]}/data/resnet_v2_50_imagenet_model"
+        self.client_dir = f"{os.path.split(self.dir)[0]}/data/resnet_v2_50_imagenet_client"
+        self.img_path = f"{self.dir}/../data/daisy.jpg"
 
     def predict(self, batch=False, batch_size=1):
+        """predict by bRPC client"""
         client = Client()
-        client.load_client_config(self.dir + "/resnet_v2_50_imagenet_client/serving_client_conf.prototxt")
+        client.load_client_config(self.client_dir)
         client.connect(["127.0.0.1:9696"])
 
-        seq = Sequential([
-            File2Image(), Resize(256), CenterCrop(224), RGB2BGR(), Transpose((2, 0, 1)),
-            Div(255), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True)
-        ])
-        image_file = "daisy.jpg"
-        img = seq(image_file)
+        seq = Sequential(
+            [
+                File2Image(),
+                Resize(256),
+                CenterCrop(224),
+                RGB2BGR(),
+                Transpose((2, 0, 1)),
+                Div(255),
+                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            ]
+        )
+        img = seq(self.img_path)
 
         if batch:
             img_batch = img[np.newaxis, :]
@@ -71,20 +61,14 @@ class TestServe(object):
         print("prob:", result_prob)
         return result_class.tolist(), result_prob.tolist()
 
-    def setup_method(self):
-        dir = os.path.dirname(os.path.abspath(__file__))
-        self.dir = dir
-        self.model_dir = dir + "/resnet_v2_50_imagenet_model"
-
-    def teardown_method(self):
-        pass
-
     @pytest.mark.api_serverServe_formatGpuToStrList_parameters
     def test_format_gpu_to_strlist_with_int(self):
+        """test format_gpu_to_strlist with int type"""
         assert format_gpu_to_strlist(2) == ["2"]
 
     @pytest.mark.api_serverServe_formatGpuToStrList_parameters
     def test_format_gpu_to_strlist_with_list(self):
+        """test format_gpu_to_strlist with list type"""
         assert format_gpu_to_strlist(["3"]) == ["3"]
         assert format_gpu_to_strlist([""]) == ["-1"]
         assert format_gpu_to_strlist([]) == ["-1"]
@@ -102,12 +86,14 @@ class TestServe(object):
 
     @pytest.mark.api_serverServe_isGpuMode_parameters
     def test_is_gpu_mode(self):
+        """test is_gpu_mode"""
         assert is_gpu_mode(["-1"]) is False
         assert is_gpu_mode(["0,1"]) is True
 
     @pytest.mark.api_serverServe_startGpuCardModel_exception
     def test_start_gpu_card_model_without_model(self):
-        args = self.default_args()
+        """test start_gpu_card_model in exception"""
+        args = default_args()
         args.model = ""
         with pytest.raises(SystemExit) as e:
             start_gpu_card_model(gpu_mode=False, port=args.port, args=args)
@@ -115,7 +101,8 @@ class TestServe(object):
 
     @pytest.mark.api_serverServe_startGpuCardModel_parameters
     def test_start_gpu_card_model_with_single_model_cpu(self):
-        args = self.default_args()
+        """test start_gpu_card_model single model on cpu"""
+        args = default_args()
         args.model = [self.model_dir]
         args.port = 9696
 
@@ -123,6 +110,7 @@ class TestServe(object):
         p.start()
         os.system("sleep 5")
 
+        assert count_process_num_on_port(9696) == 1
         assert check_gpu_memory(0) is False
 
         # batch = False
@@ -141,7 +129,8 @@ class TestServe(object):
 
     @pytest.mark.api_serverServe_startGpuCardModel_parameters
     def test_start_gpu_card_model_with_single_model_gpu(self):
-        args = self.default_args()
+        """test start_gpu_card_model single model on gpu"""
+        args = default_args()
         args.model = [self.model_dir]
         args.port = 9696
         args.gpu_ids = ["0,1"]
@@ -149,6 +138,8 @@ class TestServe(object):
         p = Process(target=start_gpu_card_model, kwargs={"gpu_mode": True, "port": args.port, "args": args})
         p.start()
         os.system("sleep 10")
+
+        assert count_process_num_on_port(9696) == 1
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
@@ -168,7 +159,8 @@ class TestServe(object):
 
     @pytest.mark.api_serverServe_startGpuCardModel_parameters
     def test_start_gpu_card_model_with_two_models_gpu(self):
-        args = self.default_args()
+        """test start_gpu_card_model two_models on gpu"""
+        args = default_args()
         args.model = [self.model_dir, self.model_dir]
         args.port = 9696
         args.gpu_ids = ["0", "1"]
@@ -176,18 +168,9 @@ class TestServe(object):
         p = Process(target=start_gpu_card_model, kwargs={"gpu_mode": True, "port": args.port, "args": args})
         p.start()
         os.system("sleep 10")
+
+        assert count_process_num_on_port(9696) == 1
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
         kill_process(9696, 3)
-
-  
-if __name__ == '__main__':  
-    ts = TestServe()
-    ts.setup_method()
-    ts.test_start_gpu_card_model_with_single_model_gpu()
-    # ts.test_get_key()
-    # print(format_gpu_to_strlist(["0,-1"]))
-    # print(format_gpu_to_strlist(""))
-    pass
-
