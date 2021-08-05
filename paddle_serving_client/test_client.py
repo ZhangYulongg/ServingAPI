@@ -7,7 +7,7 @@ import subprocess
 import numpy as np
 import pytest
 
-from paddle_serving_client import Client, MultiLangClient, SDKConfig
+from paddle_serving_client import Client, SDKConfig
 from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
 from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
