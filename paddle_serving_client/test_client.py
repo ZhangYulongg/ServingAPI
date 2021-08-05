@@ -54,8 +54,8 @@ class TestClient(object):
     def setup_class(self):
         """setup func"""
         self.dir = os.path.dirname(os.path.abspath(__file__))
-        self.model_dir = f"{os.path.split(self.dir)[0]}/model/resnet_v2_50_imagenet_model"
-        self.client_dir = f"{os.path.split(self.dir)[0]}/model/resnet_v2_50_imagenet_client"
+        self.model_dir = f"{os.path.split(self.dir)[0]}/data/resnet_v2_50_imagenet_model"
+        self.client_dir = f"{os.path.split(self.dir)[0]}/data/resnet_v2_50_imagenet_client"
         with open(f"{self.model_dir}/../key", "rb") as f:
             self.key = f.read()
 
@@ -92,7 +92,7 @@ class TestClient(object):
         # start encrypt server
         p = subprocess.Popen(
             f"python3.6 -m paddle_serving_server.serve --model "
-            f"{os.path.split(self.dir)[0]}/model/encrypt_server --port 9300 --use_encryption_model",
+            f"{os.path.split(self.dir)[0]}/data/encrypt_server --port 9300 --use_encryption_model",
             shell=True,
         )
         os.system("sleep 3")
