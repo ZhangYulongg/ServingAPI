@@ -1,13 +1,13 @@
+"""
+test paddle_serving_server.web_service
+"""
 import os
-import pytest
-import subprocess
-import time
+from multiprocessing import Process
+import base64
 import numpy as np
 import requests
-from multiprocessing import Process
-import json
-import base64
 import cv2
+import pytest
 
 from paddle_serving_server.web_service import WebService
 import paddle_serving_server.serve
@@ -16,36 +16,43 @@ from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
 from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
 from test_dag import TestOpSeqMaker
-from util import kill_process, check_gpu_memory
-
-
-def cv2_to_base64(image):
-    return base64.b64encode(image).decode('utf8')
+from util import *
 
 
 class ResnetService(WebService):
+    """Resnet web service class"""
+
     def init_imagenet_setting(self):
-        self.seq = Sequential([
-            Resize(256), CenterCrop(224), RGB2BGR(), Transpose(
-                (2, 0, 1)), Div(255), Normalize([0.485, 0.456, 0.406],
-                                                [0.229, 0.224, 0.225], True)
-        ])
+        """init web service settings"""
+        self.seq = Sequential(
+            [
+                Resize(256),
+                CenterCrop(224),
+                RGB2BGR(),
+                Transpose((2, 0, 1)),
+                Div(255),
+                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            ]
+        )
         self.label_dict = {}
         label_idx = 0
-        with open("imagenet.label") as fin:
+        self.dir = os.path.dirname(os.path.abspath(__file__))
+        self.label_dir = f"{self.dir}/../data/imagenet.label"
+        with open(self.label_dir) as fin:
             for line in fin:
                 self.label_dict[label_idx] = line.strip()
                 label_idx += 1
 
     def preprocess(self, feed=[], fetch=[]):
+        """web service preprocess"""
         # feed_batch最好直接封装为dict，local模式只支持dict类型
         # client.predict会将dict封装为len为1的list，dict的value为带有batch维的ndarray
         feed_batch = {}
         is_batch = True
 
-        for i in range(len(feed)):
+        for i, _ in enumerate(feed):
             if "image" not in feed[i]:
-                raise ("feed data error!")
+                raise ValueError("feed data error!")
             data_str = base64.b64decode(feed[i]["image"].encode("utf8"))
             data = np.fromstring(data_str, np.uint8)
             img = cv2.imdecode(data, cv2.IMREAD_COLOR)
@@ -58,41 +65,53 @@ class ResnetService(WebService):
         return feed_batch, fetch, is_batch
 
     def postprocess(self, feed=[], fetch=[], fetch_map={}):
+        """web service postprocess"""
         score_list = fetch_map["score"]
         result = {"label": [], "prob": []}
         for score in score_list:
             score = score.tolist()
             max_score = max(score)
-            result["label"].append(self.label_dict[score.index(max_score)]
-                                   .strip().replace(",", ""))
+            result["label"].append(self.label_dict[score.index(max_score)].strip().replace(",", ""))
             result["prob"].append(max_score)
         return result
 
 
 class TestWebService(object):
-    def setup(self):
-        dir_name = os.path.dirname(os.path.abspath(__file__))
-        self.dir = dir_name
-        self.model_dir = dir_name + "/resnet_v2_50_imagenet_model"
+    """test WebService class"""
+
+    def setup_method(self):
+        """setup func"""
+        self.dir = os.path.dirname(os.path.abspath(__file__))
+        self.model_dir = f"{os.path.split(self.dir)[0]}/data/resnet_v2_50_imagenet_model"
+        self.client_dir = f"{os.path.split(self.dir)[0]}/data/resnet_v2_50_imagenet_client"
+        self.img_path = f"{self.dir}/../data/daisy.jpg"
         test_service = ResnetService("Resnet_service")
         test_service.load_model_config(self.model_dir)
         self.test_service = test_service
 
     def teardown(self):
+        """teardown func"""
         os.system("rm -rf workdir*")
         os.system("rm -rf PipelineServingLogs")
 
     def predict_brpc(self, batch=False, batch_size=1):
+        """predict by bRPC client"""
         client = Client()
-        client.load_client_config(self.dir + "/resnet_v2_50_imagenet_client/serving_client_conf.prototxt")
+        client.load_client_config(self.client_dir)
         client.connect(["127.0.0.1:12000"])
 
-        seq = Sequential([
-            File2Image(), Resize(256), CenterCrop(224), RGB2BGR(), Transpose((2, 0, 1)),
-            Div(255), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True)
-        ])
-        image_file = "daisy.jpg"
-        img = seq(image_file)
+        seq = Sequential(
+            [
+                File2Image(),
+                Resize(256),
+                CenterCrop(224),
+                RGB2BGR(),
+                Transpose((2, 0, 1)),
+                Div(255),
+                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            ]
+        )
+        img = seq(self.img_path)
 
         if batch:
             img_batch = img[np.newaxis, :]
@@ -108,10 +127,10 @@ class TestWebService(object):
         print("prob:", result_prob)
         return result_class.tolist(), result_prob.tolist()
 
-    @staticmethod
-    def predict_http(port=9696, batch=False, batch_size=1):
+    def predict_http(self, port=9696, batch=False, batch_size=1):
+        """predict by post HTTP request"""
         web_url = f"http://127.0.0.1:{port}/Resnet_service/prediction"
-        with open("./daisy.jpg", "rb") as file:
+        with open(self.img_path, "rb") as file:
             image_data = file.read()
         image = cv2_to_base64(image_data)
 
@@ -130,6 +149,7 @@ class TestWebService(object):
 
     @pytest.mark.api_serverWebService_loadModelConfig_parameters
     def test_load_model_config(self):
+        """test load model config"""
         # config_dir list
         assert self.test_service.server_config_dir_paths == [self.model_dir]
         # feed_vars
@@ -140,17 +160,18 @@ class TestWebService(object):
         assert feed_var.feed_type == 1
         assert feed_var.shape == [3, 224, 224]
         # fetch_vars
-        fetch_var = self.test_service.fetch_vars["softmax_0.tmp_0"]
+        fetch_var = self.test_service.fetch_vars["score"]
         assert fetch_var.name == "softmax_0.tmp_0"
         assert fetch_var.alias_name == "score"
         assert fetch_var.is_lod_tensor is False
         assert fetch_var.fetch_type == 1
         assert fetch_var.shape == [1000]
         # client config_path list
-        assert self.test_service.client_config_path == [self.model_dir + '/serving_server_conf.prototxt']
+        assert self.test_service.client_config_path == [self.model_dir + "/serving_server_conf.prototxt"]
 
     @pytest.mark.api_serverWebService_prepareServer_parameters
     def test_prepare_server(self):
+        """test prepare server"""
         self.test_service.prepare_server(workdir="workdir", port=9696, device="cpu")
         assert self.test_service.workdir == "workdir"
         assert self.test_service.port == 9696
@@ -158,9 +179,11 @@ class TestWebService(object):
 
     @pytest.mark.api_serverWebService_fefaultRpcService_parameters
     def test_default_rpc_service(self):
+        """test init default rpc service"""
         self.test_service.prepare_server(workdir="workdir", port=9696, device="cpu")
-        test_server = self.test_service.default_rpc_service(workdir="workdir", port=self.test_service.port_list[0],
-                                                            gpus=-1)
+        test_server = self.test_service.default_rpc_service(
+            workdir="workdir", port=self.test_service.port_list[0], gpus=-1
+        )
         # check bRPC server params
         assert test_server.port == 12000
         assert test_server.workdir == "workdir"
@@ -172,6 +195,7 @@ class TestWebService(object):
 
     @pytest.mark.api_serverWebService_createRpcConfig_parameters
     def test_create_rpc_config_with_cpu(self):
+        """test create rpc service config on cpu"""
         self.test_service.prepare_server(workdir="workdir", port=9696, device="cpu")
         self.test_service.create_rpc_config()
         rpc_list = self.test_service.rpc_service_list
@@ -185,6 +209,7 @@ class TestWebService(object):
 
     @pytest.mark.api_serverWebService_createRpcConfig_parameters
     def test_create_rpc_config_with_gpu(self):
+        """test create rpc service config on gpu"""
         self.test_service.set_gpus("0,1")
         self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
         self.test_service.create_rpc_config()
@@ -200,12 +225,14 @@ class TestWebService(object):
 
     @pytest.mark.api_serverWebService_setGpus_parameters
     def test_set_gpus(self):
+        """test set gpu id"""
         self.test_service.set_gpus("1,2,3")
         assert self.test_service.gpus == ["1,2,3"]
 
     @pytest.mark.run(order=1)
     @pytest.mark.api_serverWebService_runWebService_parameters
     def test_run_web_service(self):
+        """test run web service"""
         self.test_service.init_imagenet_setting()
         self.test_service.set_gpus("0,1")
         self.test_service.prepare_server(workdir="workdir", port=9393, device="gpu")
@@ -216,6 +243,8 @@ class TestWebService(object):
 
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
+        assert count_process_num_on_port(9393) == 1
+        assert count_process_num_on_port(12000) == 1
 
         # batch = False
         http_result = self.predict_http(9393, batch=False)
@@ -248,6 +277,7 @@ class TestWebService(object):
 
     @pytest.mark.api_serverWebService_runRpcService_parameters
     def test_run_rpc_service_with_gpu(self):
+        """test only run rpc service on gpu"""
         self.test_service.set_gpus("0,1")
         self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
         self.test_service.run_rpc_service()
@@ -255,6 +285,7 @@ class TestWebService(object):
 
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
+        assert count_process_num_on_port(12000) == 1
 
         brcp_class, brpc_prob = self.predict_brpc(batch=False)
         print(brcp_class, brpc_prob)
@@ -265,6 +296,7 @@ class TestWebService(object):
 
     @pytest.mark.api_serverWebService_runDebuggerService_parameters
     def test_run_debugger_service(self):
+        """test local predict"""
         self.test_service.init_imagenet_setting()
         self.test_service.set_gpus("0")
         self.test_service.prepare_server(workdir="workdir", port=9696, device="gpu")
@@ -273,6 +305,8 @@ class TestWebService(object):
         p.start()
         os.system("sleep 5")
         # TODO local模式直接使用paddle.inference进行推理，如何判断是否使用了GPU
+
+        assert count_process_num_on_port(9696) == 1
 
         # batch = False
         http_result = self.predict_http(9696)
@@ -289,15 +323,3 @@ class TestWebService(object):
         assert result_prob == [0.9341403245925903, 0.9341403245925903]
 
         kill_process(9696, 1)
-
-
-if __name__ == '__main__':
-    tws = TestWebService()
-    tws.setup()
-    tws.test_run_debugger_service()
-    # test_load_model_config()
-    # test_prepare_server()
-    # test_default_rpc_service()
-    # test_create_rpc_config_with_cpu()
-    # test_set_gpus()
-    pass
