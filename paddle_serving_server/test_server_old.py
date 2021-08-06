@@ -7,9 +7,9 @@ import time
 from multiprocessing import Process
 import numpy as np
 
-from paddle_serving_server.server import Server
+from paddle_serving_server.server import Server, MultiLangServer
 import paddle_serving_server as serving
-from paddle_serving_client import Client
+from paddle_serving_client import Client, MultiLangClient
 from paddle_serving_app.reader import Sequential, File2Image, Resize, CenterCrop
 from paddle_serving_app.reader import RGB2BGR, Transpose, Div, Normalize
 
