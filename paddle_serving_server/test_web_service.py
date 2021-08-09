@@ -44,7 +44,16 @@ class ResnetService(WebService):
                 label_idx += 1
 
     def preprocess(self, feed=[], fetch=[]):
-        """web service preprocess"""
+        """
+        web service preprocess
+        inputs:
+            feed(list): feed_data to model (list of dict)
+            fetch(list): fetch_var list
+        returns:
+            feed_batch(dict): feed param for bRPC-client.predict()
+            fetch(list): fetch param for bRPC-client.predict()
+            is_batch(bool): batch param for bRPC-client.predict()
+        """
         # feed_batch最好直接封装为dict，local模式只支持dict类型
         # client.predict会将dict封装为len为1的list，dict的value为带有batch维的ndarray
         feed_batch = {}
@@ -65,7 +74,15 @@ class ResnetService(WebService):
         return feed_batch, fetch, is_batch
 
     def postprocess(self, feed=[], fetch=[], fetch_map={}):
-        """web service postprocess"""
+        """
+        web service postprocess
+        inputs:
+            feed(list): feed_data to model (list of dict)
+            fetch(list): fetch_var list
+            fetch_map(dict): result of bRPC-client.predict()
+        returns:
+            result(dict): model prediction results for check
+        """
         score_list = fetch_map["score"]
         result = {"label": [], "prob": []}
         for score in score_list:
@@ -95,7 +112,15 @@ class TestWebService(object):
         os.system("rm -rf PipelineServingLogs")
 
     def predict_brpc(self, batch=False, batch_size=1):
-        """predict by bRPC client"""
+        """
+        predict by bRPC client
+        inputs:
+            batch(bool): True if feed_data have batch dimension
+            batch_size(int): feed_data's batch_size
+        returns:
+            result_class(list): prediction result of feed_data's class
+            result_prob(list): prediction result of feed_data's probability
+        """
         client = Client()
         client.load_client_config(self.client_dir)
         client.connect(["127.0.0.1:12000"])
