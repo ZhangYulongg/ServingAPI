@@ -3,19 +3,11 @@ test pipeline.pipeline_server module
 """
 import os
 import sys
-import logging
-import io
-import base64
-import numpy as np
-import cv2
 import pytest
 import yaml
 import requests
 import json
-from multiprocessing import Process
 import subprocess
-import time
-import logging
 import copy
 
 from paddle_serving_app.reader import (
@@ -34,7 +26,7 @@ from paddle_serving_server import pipeline
 from paddle_serving_server.pipeline import PipelineServer, PipelineClient
 
 from resnet_pipeline import ImagenetOp, ImageService
-# from pipeline.resnet_pipeline import ImagenetOp, ImageService
+
 sys.path.append("../paddle_serving_server")
 from util import *
 
@@ -45,7 +37,7 @@ class TestPipelineServer(object):
     def setup_class(self):
         """setup func"""
         self.dir = os.path.dirname(os.path.abspath(__file__))
-        self.img_path = f"{self.dir}/../paddle_serving_server/daisy.jpg"
+        self.img_path = f"{self.dir}/../data/daisy.jpg"
 
     def setup_method(self):
         """setup func"""
@@ -84,6 +76,9 @@ class TestPipelineServer(object):
             }
         }
 
+        self.err = None
+        self.out = None
+
     def teardown_method(self):
         """release"""
         self.err.close()
@@ -103,7 +98,7 @@ class TestPipelineServer(object):
         print("======================================================")
 
     def predict_rpc(self):
-        """test predict by rpc"""
+        """test predict by gRPC client"""
         client = PipelineClient()
         client.connect(["127.0.0.1:9993"])
         with open(self.img_path, "rb") as file:
@@ -131,9 +126,11 @@ class TestPipelineServer(object):
 
         used_op = list(self.pipeline_server._used_op)
         used_op.sort(key=self.used_op.index)
+        print(used_op)
         assert self.pipeline_server._response_op is self.response_op
         assert isinstance(used_op[0], pipeline.operator.RequestOp)
         assert isinstance(used_op[-1], ImagenetOp)
+        print(used_op[-1]._local_service_handler)
 
     def test_prepare_server(self):
         """test pipeline read config.yaml"""
@@ -387,7 +384,7 @@ if __name__ == "__main__":
     tps.setup_class()
     tps.setup_method()
     # tps.test_set_response_op()
-    tps.test_run_server_gpu_3proc_trt()
+    tps.test_set_response_op()
     tps.teardown_method()
     # resnet_service = ImageService(name="imagenet")
     # resnet_service.prepare_pipeline_config("config.yml")
