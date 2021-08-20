@@ -65,6 +65,7 @@ class TestClient(object):
         client = Client()
         client.load_client_config(self.client_dir)
         # check feed_names_ feed_names_to_idx and so on (feed_vars)
+        # feed_names and fetch_names are alias_name(defined by user)
         assert client.feed_names_ == ["image"]
         assert client.feed_names_to_idx_ == {"image": 0}
         assert client.feed_types_ == {"image": 1}
