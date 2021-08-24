@@ -11,31 +11,14 @@ from util import *
 
 class TestBert(object):
     def setup_class(self):
-        code_path = os.environ.get("CODE_PATH")
-        self.data_path = f"{os.environ.get('DATA_PATH')}/bert/"
-        example_path = f"{code_path}/Serving/python/examples/bert/"
-        self.py_version = os.environ.get("py_version")
-        self.client_config = f"{example_path}/bert_seq128_client/serving_client_conf.prototxt"
-
-        os.system(f"cd {example_path}")
-        print("======================cur path======================")
-        print(example_path)
-        self.check_model_data_exist()
-        self.get_truth_val_by_inference()
+        serving_util = ServingTest(data_path="bert", example_path="bert", model_dir="bert_seq128_model",
+                                   client_dir="bert_seq128_client")
+        serving_util.check_model_data_exist()
+        self.get_truth_val_by_inference(self)
+        self.serving_util = serving_util
 
     def teardown_method(self):
         kill_process(9292)
-
-    def check_model_data_exist(self):
-        if not os.path.exists("./bert_seq128_model"):
-            # 软链模型数据
-            dir_path, dir_names, file_names = next(os.walk(self.data_path))
-            for dir_ in dir_names:
-                abs_path = os.path.join(dir_path, dir_)
-                os.system(f"ln -s {abs_path} {dir_}")
-            for file in file_names:
-                abs_path = os.path.join(dir_path, file)
-                os.system(f"ln -s {abs_path} {file}")
 
     def get_truth_val_by_inference(self):
         reader = ChineseBertReader({"max_seq_len": 128})
@@ -88,24 +71,12 @@ class TestBert(object):
             diff = sig_fig_compare(data, truth_result["save_infer_model/scale_1.tmp_0"][i])
             assert diff < delta, f"diff is {diff} > {delta}"
 
-    def start_server_by_shell(self, cmd: str, sleep: int = 5):
-        self.err = open("stderr.log", "w")
-        self.out = open("stdout.log", "w")
-        p = subprocess.Popen(cmd, shell=True, stdout=self.out, stderr=self.err)
-        os.system(f"sleep {sleep}")
-
-        print("======================stderr.log======================")
-        os.system("cat stderr.log")
-        print("======================stdout.log======================")
-        os.system("cat stdout.log")
-        print("======================================================")
-
     def predict_brpc(self, batch_size=1):
         reader = ChineseBertReader({"max_seq_len": 128})
         fetch = ["pooled_output", "sequence_output"]
         endpoint_list = ['127.0.0.1:9292']
         client = Client()
-        client.load_client_config(self.client_config)
+        client.load_client_config(self.serving_util.client_config)
         client.connect(endpoint_list)
 
         feed_dict = reader.process("送晚了，饿得吃得很香")
@@ -126,7 +97,7 @@ class TestBert(object):
         reader = ChineseBertReader({"max_seq_len": 128})
         fetch = ["pooled_output", "sequence_output"]
         client = HttpClient(ip='127.0.0.1', port='9292')
-        client.load_client_config(self.client_config)
+        client.load_client_config(self.serving_util.client_config)
         if mode == "proto":
             client.set_http_proto(True)
         elif mode == "json":
@@ -164,7 +135,7 @@ class TestBert(object):
 
     def test_cpu(self, delta=1e-3):
         # 1.start server
-        self.start_server_by_shell(f"{self.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292")
+        self.serving_util.start_server_by_shell(f"{self.serving_util.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292")
 
         # 2.resource check
         assert count_process_num_on_port(9292) == 1
@@ -198,8 +169,8 @@ class TestBert(object):
 
     def test_gpu(self):
         # 1.start server
-        self.start_server_by_shell(
-            cmd=f"{self.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292 --gpu_ids 0",
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292 --gpu_ids 0",
             sleep=5,
         )
 
