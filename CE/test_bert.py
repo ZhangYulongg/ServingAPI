@@ -18,6 +18,11 @@ class TestBert(object):
         self.serving_util = serving_util
 
     def teardown_method(self):
+        print("======================stderr.log after predict======================")
+        os.system("cat stderr.log")
+        print("======================stdout.log after predict======================")
+        os.system("cat stdout.log")
+        print("====================================================================")
         kill_process(9292)
 
     def get_truth_val_by_inference(self):
