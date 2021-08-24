@@ -1,7 +1,6 @@
 import os
 import subprocess
 import numpy as np
-import time
 
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_app.reader import ChineseBertReader
@@ -25,7 +24,7 @@ class TestBert(object):
         self.get_truth_val_by_inference()
 
     def teardown_method(self):
-        kill_process(9292, 2)
+        kill_process(9292)
 
     def check_model_data_exist(self):
         if not os.path.exists("./bert_seq128_model"):
@@ -72,13 +71,13 @@ class TestBert(object):
             output_data_dict[output_data_name] = output_data
         self.truth_val = output_data_dict
 
-    def check_result(self, result_data, batch_size=1, delta=1e-3):
+    def check_result(self, result_data, truth_data, batch_size=1, delta=1e-3):
         # flatten
         predict_result = {}
         truth_result = {}
         for key, value in result_data.items():
             predict_result[key] = value.flatten()
-        for key, value in self.truth_val.items():
+        for key, value in truth_data.items():
             truth_result[key] = np.repeat(value, repeats=batch_size, axis=0).flatten()
 
         # compare
@@ -176,23 +175,23 @@ class TestBert(object):
         # 4.predict
         # by pybind-brpc_client
         result_data = self.predict_brpc(batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         result_data = self.predict_brpc(batch_size=2)
-        self.check_result(result_data=result_data, batch_size=2)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
 
         # by HTTP-proto
         result_data = self.predict_http(mode="proto", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         result_data = self.predict_http(mode="proto", compress=False, batch_size=2)
-        self.check_result(result_data=result_data, batch_size=2)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
         result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         # by HTTP-json
         result_data = self.predict_http(mode="json", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         # by HTTP-grpc
         result_data = self.predict_http(mode="grpc", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
         kill_process(9292)
@@ -210,35 +209,28 @@ class TestBert(object):
         assert check_gpu_memory(1) is False
 
         # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU")
 
         # 4.predict
         # by pybind-brpc_client
         result_data = self.predict_brpc(batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         result_data = self.predict_brpc(batch_size=2)
-        self.check_result(result_data=result_data, batch_size=2)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
 
         # by HTTP-proto
         result_data = self.predict_http(mode="proto", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         result_data = self.predict_http(mode="proto", compress=False, batch_size=2)
-        self.check_result(result_data=result_data, batch_size=2)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
         result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         # by HTTP-json
         result_data = self.predict_http(mode="json", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         # by HTTP-grpc
         result_data = self.predict_http(mode="grpc", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, batch_size=1)
+        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
         kill_process(9292, 2)
-
-if __name__ == '__main__':
-    tb = TestBert()
-    tb.setup_class()
-    # tb.test_cpu()
-    tb.test_gpu()
-    # tb.teardown_method()
-    # tb.get_truth_val_by_inference()
