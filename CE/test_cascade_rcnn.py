@@ -8,7 +8,6 @@ from paddle_serving_app.reader import BlazeFacePostprocess
 from paddle_serving_app.reader import *
 import paddle.inference as paddle_infer
 
-from util import ServingTest
 from util import *
 
 

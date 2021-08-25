@@ -3,6 +3,67 @@ import pynvml
 import argparse
 import base64
 import subprocess
+import numpy as np
+
+
+class ServingTest(object):
+    def __init__(self, data_path: str, example_path: str, model_dir: str, client_dir: str):
+        code_path = os.environ.get("CODE_PATH")
+        self.data_path = f"{os.environ.get('DATA_PATH')}/{data_path}/"
+        example_path = f"{code_path}/Serving/python/examples/{example_path}/"
+        self.py_version = os.environ.get("py_version")
+        self.model_dir = model_dir
+        self.client_config = f"{example_path}/{client_dir}/serving_client_conf.prototxt"
+
+        os.system(f"cd {example_path}")
+        print("======================cur path======================")
+        print(example_path)
+        self.check_model_data_exist()
+
+    def check_model_data_exist(self):
+        if not os.path.exists(f"./{self.model_dir}"):
+            # 软链模型数据
+            dir_path, dir_names, file_names = next(os.walk(self.data_path))
+            for dir_ in dir_names:
+                abs_path = os.path.join(dir_path, dir_)
+                os.system(f"ln -s {abs_path} {dir_}")
+            for file in file_names:
+                abs_path = os.path.join(dir_path, file)
+                os.system(f"ln -s {abs_path} {file}")
+
+    def start_server_by_shell(self, cmd: str, sleep: int = 5):
+        self.err = open("stderr.log", "w")
+        self.out = open("stdout.log", "w")
+        p = subprocess.Popen(cmd, shell=True, stdout=self.out, stderr=self.err)
+        os.system(f"sleep {sleep}")
+
+        print("======================stderr.log======================")
+        os.system("cat stderr.log")
+        print("======================stdout.log======================")
+        os.system("cat stdout.log")
+        print("======================================================")
+
+    @staticmethod
+    def check_result(result_data: dict, truth_data: dict, batch_size=1, delta=1e-3):
+        # flatten
+        predict_result = {}
+        truth_result = {}
+        for key, value in result_data.items():
+            predict_result[key] = value.flatten()
+        for key, value in truth_data.items():
+            truth_result[key] = np.repeat(value, repeats=batch_size, axis=0).flatten()
+        print("预测值:", predict_result)
+        print("真实值:", truth_result)
+
+        # compare
+        for key in predict_result.keys():
+            for i, data in enumerate(predict_result[key]):
+                diff = sig_fig_compare(data, truth_result[key][i])
+                assert diff < delta, f"diff is {diff} > {delta}"
+
+    @staticmethod
+    def release():
+        os.system("kill -9 `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
 
 
 def kill_process(port, sleep_time=0):
