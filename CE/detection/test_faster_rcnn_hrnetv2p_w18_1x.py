@@ -26,7 +26,7 @@ class TestFasterRCNN(object):
         print("======================stdout.log after predict======================")
         os.system("cat stdout.log")
         print("====================================================================")
-        kill_process(9494)
+        kill_process(9292)
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
