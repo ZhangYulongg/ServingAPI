@@ -1,4 +1,4 @@
-# todo bug示例
+# todo fetch取值错误 + 框bug示例
 import os
 import subprocess
 import numpy as np
