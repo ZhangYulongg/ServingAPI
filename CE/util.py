@@ -59,7 +59,7 @@ class ServingTest(object):
         for key in predict_result.keys():
             for i, data in enumerate(predict_result[key]):
                 diff = sig_fig_compare(data, truth_result[key][i])
-                assert diff < delta, f"diff is {diff} > {delta}"
+                assert diff < delta, f"data:{data} truth:{truth_result[key][i]} diff is {diff} > {delta}"
 
     @staticmethod
     def release():
@@ -89,8 +89,8 @@ def count_process_num_on_port(port):
     return count
 
 
-def check_keywords_in_server_log(words: str):
-    p = subprocess.Popen(f"grep '{words}' stderr.log", shell=True)
+def check_keywords_in_server_log(words: str, filename="stderr.log"):
+    p = subprocess.Popen(f"grep '{words}' {filename}", shell=True)
     p.wait()
     return p.returncode == 0
 
