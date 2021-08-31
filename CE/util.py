@@ -62,6 +62,14 @@ class ServingTest(object):
                 assert diff < delta, f"data:{data} truth:{truth_result[key][i]} diff is {diff} > {delta}"
 
     @staticmethod
+    def parse_http_result(output):
+        # 转换http client返回的proto格式数据，统一为dict包numpy array
+        result_dict = {}
+        for tensor in output.outputs[0].tensor:
+            result_dict[tensor.alias_name] = np.array(tensor.float_data).reshape(tensor.shape)
+        return result_dict
+
+    @staticmethod
     def release():
         os.system("kill -9 `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
 

@@ -124,9 +124,7 @@ class TestEncryption(object):
             fetch_map = client.predict(feed={"x": data}, fetch=client.get_fetch_names(), batch=True)
         print(fetch_map)
         # 转换为dict包numpy array
-        result_dict = {}
-        for tensor in fetch_map.outputs[0].tensor:
-            result_dict[tensor.alias_name] = np.array(tensor.float_data).reshape(tensor.shape)
+        result_dict = self.serving_util.parse_http_result(fetch_map)
         return result_dict
 
     def test_encrypt(self):
