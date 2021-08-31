@@ -65,8 +65,12 @@ class ServingTest(object):
     def parse_http_result(output):
         # 转换http client返回的proto格式数据，统一为dict包numpy array
         result_dict = {}
-        for tensor in output.outputs[0].tensor:
-            result_dict[tensor.alias_name] = np.array(tensor.float_data).reshape(tensor.shape)
+        if isinstance(output, dict):
+            for tensor in output["outputs"][0]["tensor"]:
+                result_dict[tensor["alias_name"]] = np.array(tensor["float_data"]).reshape(tensor["shape"])
+        else:
+            for tensor in output.outputs[0].tensor:
+                result_dict[tensor.alias_name] = np.array(tensor.float_data).reshape(tensor.shape)
         return result_dict
 
     @staticmethod
