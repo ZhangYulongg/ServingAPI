@@ -94,7 +94,7 @@ class TestYOLOv3(object):
                 "im_shape": np.array(list(im.shape[1:])).reshape(-1),
                 "scale_factor": np.array([1.0, 1.0]).reshape(-1),
             },
-            fetch=["save_infer_model/scale_0.tmp_1"],
+            fetch=fetch,
             batch=False)
         print(fetch_map)
         dict_ = copy.deepcopy(fetch_map)
