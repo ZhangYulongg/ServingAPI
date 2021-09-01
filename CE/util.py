@@ -64,6 +64,7 @@ class ServingTest(object):
     @staticmethod
     def parse_http_result(output):
         # 转换http client返回的proto格式数据，统一为dict包numpy array
+        # todo 仅支持float_data
         result_dict = {}
         if isinstance(output, dict):
             for tensor in output["outputs"][0]["tensor"]:
