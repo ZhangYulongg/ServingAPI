@@ -14,10 +14,10 @@ import paddle.inference as paddle_infer
 from util import *
 
 
-class TestMobileNetV1(object):
+class TestMobileNetV2(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="pipeline/MobileNetV1", example_path="pipeline/PaddleClas/MobileNetV1", model_dir="MobileNetV1/ppcls_model",
-                                   client_dir="MobileNetV1/ppcls_client_conf")
+        serving_util = ServingTest(data_path="pipeline/MobileNetV2", example_path="pipeline/PaddleClas/MobileNetV2", model_dir="MobileNetV2/ppcls_model",
+                                   client_dir="MobileNetV2/ppcls_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
         self.serving_util = serving_util
@@ -42,7 +42,7 @@ class TestMobileNetV1(object):
             "image": im.astype("float32"),
         }
 
-        pd_config = paddle_infer.Config("MobileNetV1/ppcls_model/__model__", "MobileNetV1/ppcls_model/__params__")
+        pd_config = paddle_infer.Config("MobileNetV2/ppcls_model/__model__", "MobileNetV2/ppcls_model/__params__")
         pd_config.disable_gpu()
         pd_config.switch_ir_optim(False)
 
@@ -86,6 +86,7 @@ class TestMobileNetV1(object):
         ret = client.predict(feed_dict=feed_dict, fetch=fetch)
         # 转换为dict
         result = {"prob": np.array(eval(ret.value[1]))}
+        print(result)
         return result
 
     def predict_pipeline_http(self, batch_size=1):
