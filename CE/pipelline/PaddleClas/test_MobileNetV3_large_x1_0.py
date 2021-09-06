@@ -111,7 +111,7 @@ class TestMobileNetV3(object):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} resnet50_web_service.py",
-            sleep=5,
+            sleep=8,
         )
 
         # 2.resource check
