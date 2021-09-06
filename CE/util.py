@@ -77,6 +77,7 @@ class ServingTest(object):
     @staticmethod
     def release():
         os.system("kill -9 `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
+        os.system("kill -9 `ps -ef | grep web_service.py | awk '{print $2}'` > /dev/null 2>&1")
 
 
 def kill_process(port, sleep_time=0):
