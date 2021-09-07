@@ -5,6 +5,7 @@ import copy
 import cv2
 import requests
 import json
+import yaml
 
 from paddle_serving_server.pipeline import PipelineClient
 from paddle_serving_app.reader import CenterCrop, RGB2BGR, Transpose, Div, Normalize, RCNNPostprocess
@@ -14,15 +15,22 @@ import paddle.inference as paddle_infer
 from util import *
 
 
-class TestPPYOLO_mbv3(object):
+class TestYOLOv3(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="detection/ppyolo_mbv3", example_path="pipeline/PaddleDetection/ppyolo_mbv3", model_dir="serving_server",
+        serving_util = ServingTest(data_path="detection/yolov3_darknet53_270e_coco", example_path="pipeline/PaddleDetection/yolov3", model_dir="serving_server",
                                    client_dir="serving_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
         self.serving_util = serving_util
         # TODO 为校验精度将模型输出存入npy文件，通过修改server端代码实现，考虑更优雅的方法
         os.system("sed -i '61 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict\", fetch_dict)' web_service.py")
+        # 修改config.yml
+        with open("config.yml", "r") as file:
+            dict_ = yaml.safe_load(file)
+        print(dict_)
+        dict_["op"]["yolov3"]["local_service_conf"]["devices"] = "0"
+        with open("config.yml", "w") as f:
+            yaml.dump(dict_, f)
 
     def teardown_method(self):
         print("======================stderr.log after predict======================")
@@ -37,7 +45,7 @@ class TestPPYOLO_mbv3(object):
         preprocess = Sequential([
             File2Image(), BGR2RGB(), Div(255.0),
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize((320, 320)), Transpose((2, 0, 1))
+            Resize((640, 640)), Transpose((2, 0, 1))
         ])
         file_name = "000000570688.jpg"
         im = preprocess(file_name)[np.newaxis, :]
@@ -92,11 +100,12 @@ class TestPPYOLO_mbv3(object):
         # 从npy文件读取 .item()转换为dict
         result = np.load("fetch_dict.npy", allow_pickle=True).item()
 
-        postprocess = RCNNPostprocess("label_list.txt", "output", [320, 320])
-        # output_data_dict["save_infer_model/scale_0.tmp_0.lod"] = np.array([ 0, 71], dtype="int32")
-        dict_ = copy.deepcopy(result)
-        dict_["image"] = "000000570688.jpg"
-        postprocess(dict_)
+        # draw
+        if batch_size == 1:
+            postprocess = RCNNPostprocess("label_list.txt", "output", [640, 640])
+            dict_ = copy.deepcopy(result)
+            dict_["image"] = "000000570688.jpg"
+            postprocess(dict_)
 
         # 删除lod信息
         print(result["save_infer_model/scale_0.tmp_1"].shape)
@@ -114,7 +123,7 @@ class TestPPYOLO_mbv3(object):
             feed_dict["value"].append(image)
 
         # 2.predict for fetch_map
-        url = "http://127.0.0.1:18082/ppyolo_mbv3/prediction"
+        url = "http://127.0.0.1:18082/yolov3/prediction"
         r = requests.post(url=url, data=json.dumps(feed_dict))
         print(r.json())
         # 从npy文件读取 .item()转换为dict
@@ -161,6 +170,6 @@ class TestPPYOLO_mbv3(object):
 
 
 if __name__ == '__main__':
-    sss = TestPPYOLO_mbv3()
-    sss.predict_pipeline_rpc(batch_size=2)
+    sss = TestYOLOv3()
+    sss.get_truth_val_by_inference()
 
