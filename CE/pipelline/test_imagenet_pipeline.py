@@ -14,15 +14,13 @@ import paddle.inference as paddle_infer
 from util import *
 
 
-class TestPPYOLO_mbv3(object):
+class TestImagenetPipeline(object):
     def setup_class(self):
         serving_util = ServingTest(data_path="imagenet", example_path="pipeline/imagenet", model_dir="ResNet50_vd_model",
                                    client_dir="ResNet50_vd_client_config")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
         self.serving_util = serving_util
-        # TODO 为校验精度将模型输出存入npy文件，通过修改server端代码实现，考虑更优雅的方法
-        # os.system("sed -i '61 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict\", fetch_dict)' web_service.py")
 
     def teardown_method(self):
         print("======================stderr.log after predict======================")
@@ -30,7 +28,7 @@ class TestPPYOLO_mbv3(object):
         print("======================stdout.log after predict======================")
         os.system("cat stdout.log")
         print("====================================================================")
-        kill_process(9993)
+        kill_process(9999)
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
@@ -99,7 +97,7 @@ class TestPPYOLO_mbv3(object):
         image = cv2_to_base64(image_data)
         feed_dict = {"key": [], "value": []}
         # TODO 原示例不支持batch
-        feed_dict["key"].append(f"image")
+        feed_dict["key"].append("image")
         feed_dict["value"].append(image)
 
         # 2.predict for fetch_map
