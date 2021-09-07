@@ -8,6 +8,12 @@ import numpy as np
 
 class ServingTest(object):
     def __init__(self, data_path: str, example_path: str, model_dir: str, client_dir: str):
+        """
+        需设置环境变量
+        CODE_PATH: repo上一级目录
+        DATA_PATH: 数据集根目录
+        py_version: python版本 python3.6~3.8
+        """
         code_path = os.environ.get("CODE_PATH")
         self.data_path = f"{os.environ.get('DATA_PATH')}/{data_path}/"
         example_path = f"{code_path}/Serving/python/examples/{example_path}/"
@@ -52,14 +58,14 @@ class ServingTest(object):
             predict_result[key] = value.flatten()
         for key, value in truth_data.items():
             truth_result[key] = np.repeat(value, repeats=batch_size, axis=0).flatten()
-        print("预测值:", predict_result)
-        print("真实值:", truth_result)
+        # print("预测值:", predict_result)
+        # print("真实值:", truth_result)
 
         # compare
         for key in predict_result.keys():
             for i, data in enumerate(predict_result[key]):
                 diff = sig_fig_compare(data, truth_result[key][i])
-                assert diff < delta, f"data:{data} truth:{truth_result[key][i]} diff is {diff} > {delta}"
+                assert diff < delta, f"data:{data} truth:{truth_result[key][i]} diff is {diff} > {delta}, index:{i}"
 
     @staticmethod
     def parse_http_result(output):
