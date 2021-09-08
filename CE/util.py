@@ -37,16 +37,16 @@ class ServingTest(object):
                 abs_path = os.path.join(dir_path, file)
                 os.system(f"ln -s {abs_path} {file}")
 
-    def start_server_by_shell(self, cmd: str, sleep: int = 5):
-        self.err = open("stderr.log", "w")
-        self.out = open("stdout.log", "w")
+    def start_server_by_shell(self, cmd: str, sleep: int = 5, err="stderr.log", out="stdout.log"):
+        self.err = open(err, "w")
+        self.out = open(out, "w")
         p = subprocess.Popen(cmd, shell=True, stdout=self.out, stderr=self.err)
         os.system(f"sleep {sleep}")
 
-        print("======================stderr.log======================")
-        os.system("cat stderr.log")
-        print("======================stdout.log======================")
-        os.system("cat stdout.log")
+        print(f"======================{err}======================")
+        os.system(f"cat {err}")
+        print(f"======================{out}======================")
+        os.system(f"cat {out}")
         print("======================================================")
 
     @staticmethod
@@ -81,9 +81,9 @@ class ServingTest(object):
         return result_dict
 
     @staticmethod
-    def release():
+    def release(keywords="web_service.py"):
         os.system("kill -9 `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
-        os.system("kill -9 `ps -ef | grep web_service.py | awk '{print $2}'` > /dev/null 2>&1")
+        os.system("kill -9 `ps -ef | grep " + keywords + " | awk '{print $2}'` > /dev/null 2>&1")
 
 
 def kill_process(port, sleep_time=0):
