@@ -61,8 +61,12 @@ class TestFasterRCNN(object):
             output_handle = predictor.get_output_handle(output_data_name)
             output_data = output_handle.copy_to_cpu()
             output_data_dict[output_data_name] = output_data
+        # 对齐serving output
+        output_data_dict["save_infer_model/scale_0.tmp_1"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
+        output_data_dict["save_infer_model/scale_1.tmp_1"] = output_data_dict["save_infer_model/scale_1.tmp_0"]
+        del output_data_dict["save_infer_model/scale_0.tmp_0"], output_data_dict["save_infer_model/scale_1.tmp_0"]
         self.truth_val = output_data_dict
-        print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_0"].shape, self.truth_val["save_infer_model/scale_1.tmp_0"].shape)
+        print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape, self.truth_val["save_infer_model/scale_1.tmp_1"].shape)
 
     def predict_brpc(self, batch_size=1):
         preprocess = Sequential([
@@ -74,8 +78,8 @@ class TestFasterRCNN(object):
         filename = "000000570688.jpg"
         im = preprocess(filename)
 
-        # todo fetch save_infer_model/scale_1.tmp_1 时报错，暂时不取这个输出
-        fetch = ["save_infer_model/scale_0.tmp_1"]
+        # todo fetch save_infer_model/scale_1.tmp_1 时报错，暂时不取这个输出(已修复)
+        fetch = ["save_infer_model/scale_0.tmp_1", "save_infer_model/scale_1.tmp_1"]
         endpoint_list = ['127.0.0.1:9494']
 
         client = Client()
@@ -92,6 +96,7 @@ class TestFasterRCNN(object):
             batch=False)
         print(fetch_map)
         dict_ = copy.deepcopy(fetch_map)
+        del dict_["save_infer_model/scale_1.tmp_1"]
         dict_["image"] = filename
         postprocess(dict_)
         return fetch_map
@@ -100,7 +105,7 @@ class TestFasterRCNN(object):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9494 --gpu_ids 1",
-            sleep=6,
+            sleep=8,
         )
 
         # 2.resource check
@@ -113,6 +118,8 @@ class TestFasterRCNN(object):
 
         # 4.predict
         result_data = self.predict_brpc(batch_size=1)
+        # 删除lod信息
+        del result_data["save_infer_model/scale_0.tmp_1.lod"]
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
