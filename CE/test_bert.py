@@ -24,13 +24,17 @@ class TestBert(object):
         os.system("cat stdout.log")
         print("====================================================================")
         kill_process(9292)
+        self.serving_util.release()
 
     def get_truth_val_by_inference(self):
-        reader = ChineseBertReader({"max_seq_len": 128})
-        feed_dict = reader.process("送晚了，饿得吃得很香")
-
-        for key in feed_dict.keys():
-            feed_dict[key] = np.array(feed_dict[key]).reshape((1, 128, 1))
+        reader = ChineseBertReader({"max_seq_len": 128, "vocab_file": "vocab.txt"})
+        input_dict = reader.process("送晚了，饿得吃得很香")
+        for key in input_dict.keys():
+            input_dict[key] = np.array(input_dict[key]).reshape((1, 128, 1))
+        input_dict["input_mask"] = input_dict["input_mask"].astype("float32")
+        input_dict["position_ids"] = input_dict["position_ids"].astype("int64")
+        input_dict["input_ids"] = input_dict["input_ids"].astype("int64")
+        input_dict["segment_ids"] = input_dict["segment_ids"].astype("int64")
 
         pd_config = paddle_infer.Config("bert_seq128_model")
         pd_config.disable_gpu()
@@ -39,15 +43,9 @@ class TestBert(object):
         predictor = paddle_infer.create_predictor(pd_config)
 
         input_names = predictor.get_input_names()
-        input_ids = predictor.get_input_handle(input_names[0])
-        position_ids = predictor.get_input_handle(input_names[1])
-        segment_ids = predictor.get_input_handle(input_names[2])
-        input_mask = predictor.get_input_handle(input_names[3])
-
-        input_mask.copy_from_cpu(feed_dict["input_mask"].astype("float32"))
-        position_ids.copy_from_cpu(feed_dict["position_ids"].astype("int64"))
-        input_ids.copy_from_cpu(feed_dict["input_ids"].astype("int64"))
-        segment_ids.copy_from_cpu(feed_dict["segment_ids"].astype("int64"))
+        for i, input_name in enumerate(input_names):
+            input_handle = predictor.get_input_handle(input_name)
+            input_handle.copy_from_cpu(input_dict[input_name])
 
         predictor.run()
 
@@ -57,7 +55,16 @@ class TestBert(object):
             output_handle = predictor.get_output_handle(output_data_name)
             output_data = output_handle.copy_to_cpu()
             output_data_dict[output_data_name] = output_data
+        # 对齐serving output
+        print(output_data_dict)
+        output_data_dict["pooled_output"] = output_data_dict[
+            "@HUB_bert_chinese_L-12_H-768_A-12@@HUB_bert_chinese_L-12_H-768_A-12@fc_72.tmp_2"]
+        output_data_dict["sequence_output"] = output_data_dict[
+            "@HUB_bert_chinese_L-12_H-768_A-12@@HUB_bert_chinese_L-12_H-768_A-12@layer_norm_24.tmp_2"]
+        del output_data_dict["@HUB_bert_chinese_L-12_H-768_A-12@@HUB_bert_chinese_L-12_H-768_A-12@fc_72.tmp_2"], \
+        output_data_dict["@HUB_bert_chinese_L-12_H-768_A-12@@HUB_bert_chinese_L-12_H-768_A-12@layer_norm_24.tmp_2"]
         self.truth_val = output_data_dict
+        print(self.truth_val, self.truth_val["pooled_output"].shape, self.truth_val["sequence_output"].shape)
 
     def check_result(self, result_data, truth_data, batch_size=1, delta=1e-3):
         # flatten
@@ -151,23 +158,23 @@ class TestBert(object):
         # 4.predict
         # by pybind-brpc_client
         result_data = self.predict_brpc(batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         result_data = self.predict_brpc(batch_size=2)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
 
         # by HTTP-proto
         result_data = self.predict_http(mode="proto", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         result_data = self.predict_http(mode="proto", compress=False, batch_size=2)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
         result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         # by HTTP-json
         result_data = self.predict_http(mode="json", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         # by HTTP-grpc
         result_data = self.predict_http(mode="grpc", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
         kill_process(9292)
@@ -190,23 +197,23 @@ class TestBert(object):
         # 4.predict
         # by pybind-brpc_client
         result_data = self.predict_brpc(batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         result_data = self.predict_brpc(batch_size=2)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
 
         # by HTTP-proto
         result_data = self.predict_http(mode="proto", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         result_data = self.predict_http(mode="proto", compress=False, batch_size=2)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
         result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         # by HTTP-json
         result_data = self.predict_http(mode="json", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
         # by HTTP-grpc
         result_data = self.predict_http(mode="grpc", compress=False, batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
         kill_process(9292, 2)
