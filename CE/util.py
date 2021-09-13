@@ -110,7 +110,7 @@ def count_process_num_on_port(port):
 
 
 def check_keywords_in_server_log(words: str, filename="stderr.log"):
-    p = subprocess.Popen(f"grep '{words}' {filename}", shell=True)
+    p = subprocess.Popen(f"grep '{words}' {filename} | head", shell=True)
     p.wait()
     return p.returncode == 0
 
