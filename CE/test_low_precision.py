@@ -107,9 +107,3 @@ class TestLowPrecision(object):
 
         # 5.release
         kill_process(9393, 2)
-
-
-if __name__ == '__main__':
-    sss = TestLowPrecision()
-    # sss.setup_class()
-    sss.get_truth_val_by_inference()

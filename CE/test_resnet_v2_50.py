@@ -102,7 +102,7 @@ class TestResnetV2(object):
 
         # 2.init client
         fetch = ["score"]
-        client = HttpClient(ip='127.0.0.1', port='9393')
+        client = HttpClient()
         client.load_client_config(self.serving_util.client_config)
         if mode == "proto":
             client.set_http_proto(True)
@@ -115,6 +115,7 @@ class TestResnetV2(object):
         if compress:
             client.set_response_compress(True)
             client.set_request_compress(True)
+        client.connect(["127.0.0.1:9393"])
 
         # 3.predict for fetch_map
         if batch_size == 1:
@@ -123,7 +124,7 @@ class TestResnetV2(object):
             img = img[np.newaxis, :]
             img = np.repeat(img, repeats=batch_size, axis=0)
             fetch_map = client.predict(feed={"image": img}, fetch=fetch, batch=True)
-        print(fetch_map)
+        # print(fetch_map)
         # 转换为dict包numpy array
         result_dict = self.serving_util.parse_http_result(fetch_map)
         # print(result_dict)

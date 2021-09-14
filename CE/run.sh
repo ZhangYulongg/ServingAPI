@@ -4,24 +4,20 @@ echo $cases
 ignore=""
 bug=0
 
-env
-
-$py_version -m pytest --disable-warnings -sv test_bert.py
-
-#echo "============ failed cases =============" >> result.txt
-#for file in ${cases}
-#do
-#    echo ${file}
-#    if [[ ${ignore} =~ ${file##*/} ]]; then
-#        echo "跳过"
-#    else
-#        python -m pytest --disable-warnings -v ${file}
-#        if [ $? -ne 0 ]; then
-#            echo ${file} >> result.txt
-#            bug=`expr ${bug} + 1`
-#        fi
-#    fi
-#done
+echo "============ failed cases =============" >> result.txt
+for file in ${cases}
+do
+    echo ${file}
+    if [[ ${ignore} =~ ${file##*/} ]]; then
+        echo "跳过"
+    else
+        python -m pytest --disable-warnings -v ${file}
+        if [ $? -ne 0 ]; then
+            echo ${file} >> result.txt
+            bug=`expr ${bug} + 1`
+        fi
+    fi
+done
 
 echo "total bugs: "${bug} >> result.txt
 exit ${bug}

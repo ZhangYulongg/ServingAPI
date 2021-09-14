@@ -95,7 +95,7 @@ class TestLAC(object):
 
         fetch = ["crf_decode"]
 
-        client = HttpClient(ip='127.0.0.1', port='9292')
+        client = HttpClient()
         client.load_client_config(self.serving_util.client_config)
         if mode == "proto":
             client.set_http_proto(True)
@@ -108,6 +108,7 @@ class TestLAC(object):
         if compress:
             client.set_response_compress(True)
             client.set_request_compress(True)
+        client.connect(["127.0.0.1:9292"])
 
         fetch_map = client.predict(feed=feed_dict, fetch=fetch, batch=True)
         result_dict = {}

@@ -14,9 +14,6 @@ class TestBert(object):
         serving_util = ServingTest(data_path="bert", example_path="bert", model_dir="bert_seq128_model",
                                    client_dir="bert_seq128_client")
         self.serving_util = serving_util
-        os.chdir(self.serving_util.example_path)
-        print("======================cur path======================")
-        os.system("pwd")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
 

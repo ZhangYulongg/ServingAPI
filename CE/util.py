@@ -21,6 +21,9 @@ class ServingTest(object):
         self.model_dir = model_dir
         self.client_config = f"{client_dir}/serving_client_conf.prototxt"
 
+        os.chdir(self.example_path)
+        print("======================cur path======================")
+        os.system("pwd")
         self.check_model_data_exist()
 
     def check_model_data_exist(self):

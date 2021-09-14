@@ -99,7 +99,7 @@ class TestEncryption(object):
         fetch = ["price"]
         endpoint_list = ['127.0.0.1:9494']
 
-        client = HttpClient(ip='127.0.0.1', port='9494')
+        client = HttpClient()
         client.load_client_config(self.serving_util.client_config)
         if encryption:
             # http client加密预测
@@ -115,6 +115,7 @@ class TestEncryption(object):
         if compress:
             client.set_response_compress(True)
             client.set_request_compress(True)
+        client.connect(endpoint_list, encryption=encryption)
 
         if batch_size == 1:
             fetch_map = client.predict(feed={"x": data}, fetch=client.get_fetch_names(), batch=False)
