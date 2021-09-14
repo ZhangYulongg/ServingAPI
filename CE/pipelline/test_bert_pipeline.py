@@ -24,6 +24,7 @@ class TestBertPipeline(object):
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
         self.serving_util = serving_util
+        os.system("sh get_data.sh")
         # TODO 为校验精度将模型输出存入npy文件，通过修改server端代码实现，考虑更优雅的方法
         os.system("sed -i '47 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict\", fetch_dict)' web_service.py")
         # 读取yml文件

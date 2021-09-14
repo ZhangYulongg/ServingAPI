@@ -18,7 +18,7 @@ from util import *
 
 class TestIMDBPipeline(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="imdb", example_path="pipeline/imdb", model_dir="imdb_cnn_model",
+        serving_util = ServingTest(data_path="imdb", example_path="pipeline/imdb_model_ensemble", model_dir="imdb_cnn_model",
                                    client_dir="imdb_cnn_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
