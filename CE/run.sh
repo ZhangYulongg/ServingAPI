@@ -1,5 +1,6 @@
 export FLAGS_call_stack_level=2
-cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
+cases=`find ./ -name "test*.py" | sort`
+#cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
 echo $cases
 ignore=""
 bug=0
@@ -11,7 +12,7 @@ do
     if [[ ${ignore} =~ ${file##*/} ]]; then
         echo "跳过"
     else
-        $py_version -m pytest --disable-warnings -v ${file}
+        $py_version -m pytest --disable-warnings -sv ${file}
         if [ $? -ne 0 ]; then
             echo ${file} >> result.txt
             bug=`expr ${bug} + 1`
