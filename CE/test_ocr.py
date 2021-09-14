@@ -380,7 +380,7 @@ class TestOCR(object):
         # 5.release
         kill_process(9292)
 
-    def test_cpu_only_rec_local_local(self):
+    def test_gpu_only_rec_local(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} rec_debugger_server.py gpu",
