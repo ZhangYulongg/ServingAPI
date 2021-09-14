@@ -9,6 +9,7 @@ from paddle_serving_app.reader import SegPostprocess
 from paddle_serving_app.reader import *
 import paddle.inference as paddle_infer
 
+sys.path.append("../")
 from util import *
 
 

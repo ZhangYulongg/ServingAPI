@@ -11,7 +11,7 @@ do
     if [[ ${ignore} =~ ${file##*/} ]]; then
         echo "跳过"
     else
-        python -m pytest --disable-warnings -v ${file}
+        $py_version -m pytest --disable-warnings -v ${file}
         if [ $? -ne 0 ]; then
             echo ${file} >> result.txt
             bug=`expr ${bug} + 1`
