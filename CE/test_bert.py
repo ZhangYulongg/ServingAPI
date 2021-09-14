@@ -15,6 +15,7 @@ class TestBert(object):
                                    client_dir="bert_seq128_client")
         self.serving_util = serving_util
         serving_util.check_model_data_exist()
+        os.system("wget https://paddle-serving.bj.bcebos.com/bert_example/vocab.txt")
         self.get_truth_val_by_inference(self)
 
     def teardown_method(self):
