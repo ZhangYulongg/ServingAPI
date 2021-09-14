@@ -81,8 +81,7 @@ class TestTTFNet(object):
         filename = "000000570688.jpg"
         im = preprocess(filename)
 
-        # todo fetch save_infer_model/scale_1.tmp_1 时报错，暂时不取这个输出
-        fetch = ["save_infer_model/scale_0.tmp_1"]
+        fetch = ["save_infer_model/scale_0.tmp_1", "save_infer_model/scale_1.tmp_1"]
         endpoint_list = ['127.0.0.1:9494']
 
         client = Client()
@@ -96,10 +95,13 @@ class TestTTFNet(object):
             },
             fetch=fetch,
             batch=False)
-        print(fetch_map)
+        print(fetch_map, fetch_map["save_infer_model/scale_0.tmp_1"].shape, fetch_map["save_infer_model/scale_1.tmp_1"].shape)
         dict_ = copy.deepcopy(fetch_map)
         dict_["image"] = filename
-        postprocess(dict_)
+        dict_["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 101], dtype=np.int32)
+        del dict_["save_infer_model/scale_1.tmp_1"]
+        # TODO 未生成lod信息，暂不输出图片
+        # postprocess(dict_)
         return fetch_map
 
     def test_gpu(self):
@@ -119,9 +121,11 @@ class TestTTFNet(object):
 
         # 4.predict
         result_data = self.predict_brpc(batch_size=1)
+        # TODO 未生成lod信息
         # 删除 lod信息
-        # del result_data["save_infer_model/scale_0.tmp_1.lod"]
-        # self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        del result_data["save_infer_model/scale_0.tmp_1.lod"]
+        del result_data["save_infer_model/scale_1.tmp_1"]
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
         kill_process(9494, 2)
