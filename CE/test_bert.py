@@ -13,9 +13,12 @@ class TestBert(object):
     def setup_class(self):
         serving_util = ServingTest(data_path="bert", example_path="bert", model_dir="bert_seq128_model",
                                    client_dir="bert_seq128_client")
+        self.serving_util = serving_util
+        os.chdir(self.serving_util.example_path)
+        print("======================cur path======================")
+        os.system("pwd")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
-        self.serving_util = serving_util
 
     def teardown_method(self):
         print("======================stderr.log after predict======================")
@@ -108,7 +111,7 @@ class TestBert(object):
     def predict_http(self, mode="proto", compress=False, batch_size=1):
         reader = ChineseBertReader({"max_seq_len": 128})
         fetch = ["pooled_output", "sequence_output"]
-        client = HttpClient(ip='127.0.0.1', port='9292')
+        client = HttpClient()
         client.load_client_config(self.serving_util.client_config)
         if mode == "proto":
             client.set_http_proto(True)
@@ -121,6 +124,7 @@ class TestBert(object):
         if compress:
             client.set_response_compress(True)
             client.set_request_compress(True)
+        client.connect(["127.0.0.1:9292"])
 
         feed_dict = reader.process("送晚了，饿得吃得很香")
         if batch_size == 1:
@@ -146,6 +150,7 @@ class TestBert(object):
         return result_dict
 
     def test_cpu(self, delta=1e-3):
+
         # 1.start server
         self.serving_util.start_server_by_shell(f"{self.serving_util.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292")
 
