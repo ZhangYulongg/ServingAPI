@@ -16,14 +16,11 @@ class ServingTest(object):
         """
         code_path = os.environ.get("CODE_PATH")
         self.data_path = f"{os.environ.get('DATA_PATH')}/{data_path}/"
-        example_path = f"{code_path}/Serving/python/examples/{example_path}/"
+        self.example_path = f"{code_path}/Serving/python/examples/{example_path}/"
         self.py_version = os.environ.get("py_version")
         self.model_dir = model_dir
-        self.client_config = f"{example_path}/{client_dir}/serving_client_conf.prototxt"
+        self.client_config = f"{client_dir}/serving_client_conf.prototxt"
 
-        os.system(f"cd {example_path}")
-        print("======================cur path======================")
-        print(example_path)
         self.check_model_data_exist()
 
     def check_model_data_exist(self):
