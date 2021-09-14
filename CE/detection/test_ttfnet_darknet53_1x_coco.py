@@ -123,7 +123,7 @@ class TestTTFNet(object):
         result_data = self.predict_brpc(batch_size=1)
         # TODO 未生成lod信息
         # 删除 lod信息
-        del result_data["save_infer_model/scale_0.tmp_1.lod"]
+        # del result_data["save_infer_model/scale_0.tmp_1.lod"]
         del result_data["save_infer_model/scale_1.tmp_1"]
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
