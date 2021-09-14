@@ -63,9 +63,14 @@ class ServingTest(object):
 
         # compare
         for key in predict_result.keys():
-            for i, data in enumerate(predict_result[key]):
-                diff = sig_fig_compare(data, truth_result[key][i])
-                assert diff < delta, f"data:{data} truth:{truth_result[key][i]} diff is {diff} > {delta}, index:{i}"
+            diff_array = diff_compare(predict_result[key], truth_result[key])
+            diff_count = np.sum(diff_array > delta)
+            assert diff_count == 0, f"diff count:{diff_count} max:{np.max(diff_array)}"
+
+        # for key in predict_result.keys():
+        #     for i, data in enumerate(predict_result[key]):
+        #         diff = sig_fig_compare(data, truth_result[key][i])
+        #         assert diff < delta, f"data:{data} truth:{truth_result[key][i]} diff is {diff} > {delta}, index:{i}"
 
     @staticmethod
     def parse_http_result(output):
@@ -137,6 +142,11 @@ def sig_fig_compare(num0, num1, delta=5):
             return abs(num0_padding - num1_padding) / (10 * scale)
     elif num0_int_length != num1_int_length:
         return difference
+
+
+def diff_compare(array1, array2):
+    diff = np.abs(array1 - array2)
+    return diff
 
 
 def default_args():
