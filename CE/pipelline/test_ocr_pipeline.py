@@ -6,6 +6,7 @@ import cv2
 import requests
 import json
 import yaml
+import sys
 
 from paddle_serving_server.pipeline import PipelineClient
 from paddle_serving_app.reader import OCRReader
@@ -14,6 +15,7 @@ from paddle_serving_app.reader import Div, Normalize, Transpose, File2Image
 from paddle_serving_app.reader import DBPostProcess, FilterBoxes, GetRotateCropImage, SortedBoxes
 import paddle.inference as paddle_infer
 
+sys.path.append("../")
 from util import *
 
 
