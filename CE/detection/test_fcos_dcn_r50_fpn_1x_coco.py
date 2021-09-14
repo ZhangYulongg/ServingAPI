@@ -3,6 +3,7 @@ import subprocess
 import numpy as np
 import copy
 import cv2
+import sys
 
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_app.reader import SegPostprocess
