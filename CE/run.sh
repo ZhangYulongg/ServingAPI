@@ -1,4 +1,5 @@
 export FLAGS_call_stack_level=2
+rm -rf result.txt
 cases=`find ./ -name "test*.py" | sort`
 #cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
 echo $cases
@@ -21,4 +22,5 @@ do
 done
 
 echo "total bugs: "${bug} >> result.txt
+cat result.txt
 exit ${bug}
