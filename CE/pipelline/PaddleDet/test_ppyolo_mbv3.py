@@ -6,6 +6,7 @@ import cv2
 import requests
 import json
 import sys
+import yaml
 
 from paddle_serving_server.pipeline import PipelineClient
 from paddle_serving_app.reader import CenterCrop, RGB2BGR, Transpose, Div, Normalize, RCNNPostprocess
@@ -25,6 +26,11 @@ class TestPPYOLO_mbv3(object):
         self.serving_util = serving_util
         # TODO 为校验精度将模型输出存入npy文件，通过修改server端代码实现，考虑更优雅的方法
         os.system("sed -i '61 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict\", fetch_dict)' web_service.py")
+        # 读取yml文件
+        with open("config.yml", "r") as file:
+            dict_ = yaml.safe_load(file)
+        dict_["op"]["ppyolo_mbv3"]["local_service_conf"]["devices"] = "0"
+        self.default_config = dict_
 
     def teardown_method(self):
         print("======================stderr.log after predict======================")
@@ -128,6 +134,9 @@ class TestPPYOLO_mbv3(object):
 
     def test_gpu(self):
         # 1.start server
+        config = copy.deepcopy(self.default_config)
+        with open("config.yml", "w") as f:
+            yaml.dump(config, f)
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} web_service.py",
             sleep=10,
