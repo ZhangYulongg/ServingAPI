@@ -6,12 +6,14 @@ import cv2
 import requests
 import json
 import yaml
+import sys
 
 from paddle_serving_server.pipeline import PipelineClient
 from paddle_serving_app.reader import CenterCrop, RGB2BGR, Transpose, Div, Normalize, RCNNPostprocess
 from paddle_serving_app.reader import Sequential, File2Image, Resize, Transpose, BGR2RGB, SegPostprocess
 import paddle.inference as paddle_infer
 
+sys.path.append("../../")
 from util import *
 
 
