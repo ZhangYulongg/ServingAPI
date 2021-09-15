@@ -6,6 +6,7 @@ echo $cases
 ignore=""
 bug=0
 
+job_bt=`date '+%Y%m%d%H%M%S'`
 echo "============ failed cases =============" >> result.txt
 for file in ${cases}
 do
@@ -20,7 +21,10 @@ do
         fi
     fi
 done
+job_et=`date '+%Y%m%d%H%M%S'`
 
 echo "total bugs: "${bug} >> result.txt
 cat result.txt
+cost=$(expr $job_et - $job_et)
+echo $cost
 exit ${bug}
