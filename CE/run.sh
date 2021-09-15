@@ -25,6 +25,6 @@ job_et=`date '+%Y%m%d%H%M%S'`
 
 echo "total bugs: "${bug} >> result.txt
 cat result.txt
-cost=$(expr $job_et - $job_et)
+cost=$(expr $job_et - $job_bt)
 echo $cost
 exit ${bug}
