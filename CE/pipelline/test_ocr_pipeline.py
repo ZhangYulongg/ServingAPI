@@ -15,8 +15,6 @@ from paddle_serving_app.reader import Div, Normalize, Transpose, File2Image
 from paddle_serving_app.reader import DBPostProcess, FilterBoxes, GetRotateCropImage, SortedBoxes
 import paddle.inference as paddle_infer
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
 sys.path.append("../")
 from util import *
 
@@ -42,7 +40,7 @@ class TestOCRPipeline(object):
         os.system("sed -i '59 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_dict)' web_service.py")
         os.system("sed -i '154 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_data)' web_service.py")
         # 读取yml文件
-        with open("config.yml", "r") as file:
+        with open("config.yml", "r", encoding="utf-8") as file:
             dict_ = yaml.safe_load(file)
         self.default_config = dict_
 
