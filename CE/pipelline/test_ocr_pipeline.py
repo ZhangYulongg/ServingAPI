@@ -15,6 +15,8 @@ from paddle_serving_app.reader import Div, Normalize, Transpose, File2Image
 from paddle_serving_app.reader import DBPostProcess, FilterBoxes, GetRotateCropImage, SortedBoxes
 import paddle.inference as paddle_infer
 
+reload(sys)
+sys.setdefaultencoding("utf-8")
 sys.path.append("../")
 from util import *
 
