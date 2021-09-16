@@ -29,6 +29,7 @@ class TestEncryption(object):
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
         self.serving_util = serving_util
+        serving_encryption()
 
     def teardown_method(self):
         print("======================stderr.log after predict======================")
