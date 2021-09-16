@@ -2,7 +2,7 @@
 
 # 进入serving目录
 serving_dir=${CODE_PATH}/Serving/
-py_version=python3.6
+py_version=$py_version
 # 脚本目录
 shell_path=${CODE_PATH}/CE/
 # 输出颜色
@@ -97,9 +97,9 @@ function py_requirements () {
     echo -e "${RED_COLOR}Error cuda version$1${RES}"
     exit
   fi
-  set_proxy
-  $py_version -m pip install paddlepaddle*
+  $py_version -m pip install paddlepaddle* -i https://mirror.baidu.com/pypi/simple
   rm -rf paddlepaddle*
+  set_proxy
   echo -e "${YELOW_COLOR}---------complete---------\n${RES}"
 }
 
@@ -145,40 +145,14 @@ function pip_install_serving() {
       fi
   done
   if [ $1 == 38 ]; then
-    $py_version -m pip install sentencepiece
+    $py_version -m pip install sentencepiece -i https://mirror.baidu.com/pypi/simple
   fi
   $py_version -m pip install * -i https://mirror.baidu.com/pypi/simple
   set_proxy
 }
 
-function pip_install_test() {
-  cd ${CODE_PATH}
-  rm -rf whl_packages
-  mkdir whl_packages && cd whl_packages
-  wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_app-0.6.1-cp36-cp36m-linux_x86_64.whl
-  if [ $1 == 36 ]; then
-      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_client-0.6.1-cp36-cp36m-linux_x86_64.whl
-  elif [ $1 == 37 ]; then
-      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_client-0.6.1-cp37-cp37m-linux_x86_64.whl
-  elif [ $1 == 38 ]; then
-      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_client-0.6.1-cp38-cp38-linux_x86_64.whl
-  fi
-  if [ $2 == "cpu" ]; then
-      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_server-0.6.1-cp36-cp36m-linux_x86_64.whl
-  elif [ $2 == 101 ]; then
-      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_server_gpu-0.6.1.post101-cp36-cp36m-linux_x86_64.whl
-  elif [ $2 == 102 ]; then
-      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_server_gpu-0.6.1.post102-cp36-cp36m-linux_x86_64.whl
-  elif [ $2 == 110 ]; then
-      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_server_gpu-0.6.1.post11-cp36-cp36m-linux_x86_64.whl
-  fi
-  set_proxy
-  $py_version -m pip install *
-}
-
 cd $serving_dir
 set_proxy
-git submodule update --init --recursive
 echo "-----------cur path: `pwd`"
 echo -e "${GREEN_COLOR}-----------env lists: ${RES}"
 env | grep -E "PYTHONROOT|PYTHON_INCLUDE_DIR|PYTHON_LIBRARIES|PYTHON_EXECUTABLE|CUDA_PATH|CUDA_PATH|CUDNN_LIBRARY|CUDA_CUDART_LIBRARY|TENSORRT_LIBRARY_PATH"
@@ -213,3 +187,7 @@ else
         exit 1
     fi
 fi
+
+echo "server:`tail -1 /usr/local/lib/${py_version}/site-packages/paddle_serving_server/version.py`"
+echo "client:`tail -1 /usr/local/lib/${py_version}/site-packages/paddle_serving_client/version.py`"
+echo "app:`tail -1 /usr/local/lib/${py_version}/site-packages/paddle_serving_app/version.py`"
