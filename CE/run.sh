@@ -24,6 +24,9 @@ done
 job_et=`date '+%Y%m%d%H%M%S'`
 
 echo "total bugs: "${bug} >> result.txt
+if [ ${bug} != 0 ]; then
+    cp result.txt ${output_dir}/result_${py_version}.txt
+fi
 cat result.txt
 cost=$(expr $job_et - $job_bt)
 echo "$cost s"
