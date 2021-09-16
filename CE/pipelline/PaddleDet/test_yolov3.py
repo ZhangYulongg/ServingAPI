@@ -31,8 +31,7 @@ class TestYOLOv3(object):
             dict_ = yaml.safe_load(file)
         print(dict_)
         dict_["op"]["yolov3"]["local_service_conf"]["devices"] = "0"
-        with open("config.yml", "w") as f:
-            yaml.dump(dict_, f)
+        self.default_config = dict_
 
     def teardown_method(self):
         print("======================stderr.log after predict======================")
@@ -137,6 +136,10 @@ class TestYOLOv3(object):
 
     def test_gpu(self):
         # 1.start server
+        config = copy.deepcopy(self.default_config)
+        config["op"]["yolov3"]["concurrency"] = 1
+        with open("config.yml", "w") as f:
+            yaml.dump(config, f)
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} web_service.py",
             sleep=10,
