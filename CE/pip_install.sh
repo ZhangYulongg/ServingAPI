@@ -147,8 +147,8 @@ function pip_install_serving() {
   if [ $1 == 38 ]; then
     $py_version -m pip install sentencepiece
   fi
+  $py_version -m pip install * -i https://mirror.baidu.com/pypi/simple
   set_proxy
-  $py_version -m pip install *
 }
 
 function pip_install_test() {
