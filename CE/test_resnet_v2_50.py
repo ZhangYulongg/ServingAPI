@@ -3,13 +3,38 @@ import subprocess
 import numpy as np
 import copy
 import cv2
+import time
 
 from paddle_serving_client import Client, HttpClient
+from paddle_serving_client.utils import MultiThreadRunner
+from paddle_serving_client.utils import benchmark_args, show_latency
 from paddle_serving_app.reader import Sequential, URL2Image, Resize, File2Image
 from paddle_serving_app.reader import CenterCrop, RGB2BGR, Transpose, Div, Normalize
 import paddle.inference as paddle_infer
 
 from util import *
+
+
+def single_func(idx, resource):
+    total_number = 0
+    latency_list = []
+
+    client = Client()
+    client.load_client_config("resnet_v2_50_imagenet_client/serving_client_conf.prototxt")
+    client.connect(resource["endpoint"])
+    start = time.time()
+    for i in range(resource["turns"]):
+        l_start = time.time()
+        result = client.predict(
+            feed={"image": resource["feed_data"]},
+            fetch=["save_infer_model/scale_0.tmp_0"],
+            batch=True)
+        assert result is not None, "fetch_map is None，infer failed..."
+        l_end = time.time()
+        latency_list.append(l_end * 1000 - l_start * 1000)
+        total_number = total_number + 1
+    end = time.time()
+    return [[end - start], latency_list, [total_number]]
 
 
 class TestResnetV2(object):
@@ -26,7 +51,7 @@ class TestResnetV2(object):
         print("======================stdout.log after predict======================")
         os.system("cat stdout.log")
         print("====================================================================")
-        kill_process(9393)
+        kill_process(9696)
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
@@ -76,7 +101,7 @@ class TestResnetV2(object):
 
         # 2.init client
         fetch = ["score"]
-        endpoint_list = ["127.0.0.1:9393"]
+        endpoint_list = ["127.0.0.1:9696"]
         client = Client()
         client.load_client_config(self.serving_util.client_config)
         client.connect(endpoint_list)
@@ -115,7 +140,7 @@ class TestResnetV2(object):
         if compress:
             client.set_response_compress(True)
             client.set_request_compress(True)
-        client.connect(["127.0.0.1:9393"])
+        client.connect(["127.0.0.1:9696"])
 
         # 3.predict for fetch_map
         if batch_size == 1:
@@ -130,15 +155,73 @@ class TestResnetV2(object):
         # print(result_dict)
         return result_dict
 
+    def test_gpu_async_concurrent(self):
+        """放在前面，放在test_gpu后报错，原因未知"""
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9696 --gpu_ids 1 --thread 16 --op_num 2",
+            sleep=7,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9696) == 1
+        # assert check_gpu_memory(0) is False
+        assert check_gpu_memory(1) is True
+
+        # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU", filename="stderr.log")
+        check_keywords_in_server_log("Enable batch schedule framework, thread_num:2, batch_size:32, enable_overrun:0, allow_split_request:1", filename="stderr.log")
+
+        # 4.predict by brpc 多client并发
+        multi_thread_runner = MultiThreadRunner()
+        endpoint_list = ["127.0.0.1:9696"]
+        turns = 100
+        thread_num = 20  # client并发数
+        batch_size = 1
+        # prepare feed_data
+        seq = Sequential([
+            File2Image(), Resize(256), CenterCrop(224), RGB2BGR(),
+            Transpose((2, 0, 1)), Div(255), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True)
+        ])
+        image_file = "daisy.jpg"
+        img = seq(image_file)
+        feed_data = np.array(img)
+        feed_data = np.expand_dims(feed_data, 0).repeat(batch_size, axis=0)
+
+        start = time.time()
+        result = multi_thread_runner.run(
+            single_func, thread_num, {"endpoint": endpoint_list, "turns": turns, "feed_data": feed_data}
+        )
+        end = time.time()
+        total_cost = end - start
+        total_number = 0
+        avg_cost = 0
+        for i in range(thread_num):
+            avg_cost += result[0][i]
+            total_number += result[2][i]
+        avg_cost = avg_cost / thread_num
+
+        print("total cost-include init: {}s".format(total_cost))
+        print("each thread cost: {}s. ".format(avg_cost))
+        print("qps: {}samples/s".format(batch_size * total_number / avg_cost))
+        print("total count: {} ".format(total_number))
+        show_latency(result[1])
+
+        # check server
+        assert count_process_num_on_port(9696) == 1
+
+        # 5.release
+        kill_process(9696, 2)
+
     def test_gpu(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9393 --gpu_ids 0",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9696 --gpu_ids 0",
             sleep=5,
         )
 
         # 2.resource check
-        assert count_process_num_on_port(9393) == 1
+        assert count_process_num_on_port(9696) == 1
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is False
 
@@ -179,7 +262,7 @@ class TestResnetV2(object):
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
 
         # 5.release
-        kill_process(9393, 2)
+        kill_process(9696, 2)
 
 
 if __name__ == '__main__':
