@@ -117,7 +117,7 @@ class TestYOLOv4(object):
         # 4.predict
         result_data = self.predict_brpc(batch_size=1)
         # TODO cpu和gpu结果均有较大diff，待排查
-        # self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
         kill_process(9393, 2)
