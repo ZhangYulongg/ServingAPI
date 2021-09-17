@@ -65,7 +65,7 @@ class ServingTest(object):
         for key in predict_result.keys():
             diff_array = diff_compare(predict_result[key], truth_result[key])
             diff_count = np.sum(diff_array > delta)
-            assert diff_count == 0, f"diff count:{diff_count} max:{np.max(diff_array)}"
+            assert diff_count == 0, f"total: {np.size(diff_array)} diff count:{diff_count} max:{np.max(diff_array)}"
 
         # for key in predict_result.keys():
         #     for i, data in enumerate(predict_result[key]):
