@@ -3,7 +3,7 @@ rm -rf result.txt
 cases=`find ./ -name "test*.py" | sort`
 #cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
 echo $cases
-ignore=""
+ignore="test_ocr_concate.py"
 bug=0
 
 job_bt=`date '+%Y%m%d%H%M%S'`
