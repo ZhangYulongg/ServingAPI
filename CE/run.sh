@@ -14,8 +14,12 @@ do
     if [[ ${ignore} =~ ${file##*/} ]]; then
         echo "跳过"
     else
-        $py_version -m pytest --disable-warnings -sv ${file}
-        if [ $? -ne 0 ]; then
+        if [[ ${ce_name} =~ "cpu" ]]; then
+            $py_version -m pytest --disable-warnings -sv ${file} -k "cpu"
+        else
+            $py_version -m pytest --disable-warnings -sv ${file}
+        fi
+        if [[ $? -ne 0 && $? -ne 5 ]]; then
             echo ${file} >> result.txt
             bug=`expr ${bug} + 1`
         fi
