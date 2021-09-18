@@ -332,10 +332,10 @@ function pre_loading() {
     n=1
     while [ ${n} -le 12 ]; do
       sleep 10
-      cat ${log_dir}/cpu_pre_loading.txt
+      tail ${log_dir}/cpu_pre_loading.txt
       # 检查日志
       echo "-----check for next step n=${n}-----"
-      cat ${log_dir}/cpu_pre_loading.txt | grep -E "ir_graph_to_program_pass" ${log_dir}/cpu_pre_loading.txt > /dev/null
+      tail ${log_dir}/cpu_pre_loading.txt | grep -E "ir_graph_to_program_pass" ${log_dir}/cpu_pre_loading.txt > /dev/null
       if [ $? == 0 ]; then
         # 预加载成功
         echo "----------cpu_server loaded----------"
@@ -351,7 +351,7 @@ function pre_loading() {
       fi
       n=$((n + 1))
     done
-    cat ${log_dir}/cpu_pre_loading.txt
+    head ${log_dir}/cpu_pre_loading.txt
     echo "----------cpu_server loaded----------"
 #    kill_process
   fi
