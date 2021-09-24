@@ -29,12 +29,12 @@ class LogHandler(object):
 def handle_benchmark(benchmark_config, benchmark_raw, indentifier):
     model_info = {
         'model_name': benchmark_config["model_name"],
-        'precision': benchmark_config["precision"]
+        'precision': benchmark_config["precision"],
     }
     data_info = {
         'batch_size': benchmark_config["batch_size"],
         'shape': benchmark_config["input_shape"],
-        'data_num': benchmark_config["num_of_samples"]
+        'data_num': int(benchmark_raw["Total count"]),
     }
     perf_info = {
         'client_mode' : benchmark_raw["client_mode"],
@@ -53,11 +53,11 @@ def handle_benchmark(benchmark_config, benchmark_raw, indentifier):
         'cpu_vms_mb': "",
         'cpu_shared_mb': "",
         'cpu_dirty_mb': "",
-        'cpu_util': benchmark_raw["CPU_UTIL"],
+        'cpu_util': benchmark_raw["CPU_UTILIZATION"],
         'gpu_rss_mb': "",
-        'gpu_util': f'{float(benchmark_raw["GPU_UTIL"].split(" ")[0]):.4f}',
-        'gpu_mem': benchmark_raw["GPU_MEM"],
-        'gpu_mem_util': int(benchmark_raw["GPU_MEM"].split(" ")[0]) / total_memory * 100
+        'gpu_util': f'{float(benchmark_raw["GPU_UTILIZATION"].split(" ")[0]):.2f}',
+        'gpu_mem': benchmark_raw["MAX_GPU_MEMORY"],
+        'gpu_mem_util': int(benchmark_raw["MAX_GPU_MEMORY"].split(" ")[0]) / total_memory * 100
     }
 
     server_log = PaddleInferBenchmark(

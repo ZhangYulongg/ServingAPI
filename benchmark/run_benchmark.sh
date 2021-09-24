@@ -3,7 +3,9 @@
 # 日志目录
 log_dir=${CODE_PATH}/logs/
 demo_dir=${CODE_PATH}/Serving/python/examples/
+shell_dir=${CODE_PATH}/benchmark/
 dir=`pwd`
+export SERVING_BIN=${CODE_PATH}/Serving/server-build-gpu-opencv/core/general-server/serving
 # 数据目录
 data=/mnt/serving/dataset/data/
 # 输出颜色
@@ -87,68 +89,6 @@ function link_data () {
   done
 }
 
-function pre_loading() {
-  cd ${demo_dir}/bert
-  # 链接模型数据
-  data_dir=${data}bert/
-  link_data ${data_dir}
-  if [ $1 == "cpu" ]; then
-    $py_version -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292 > ${log_dir}/cpu_pre_loading.txt 2>&1 &
-    n=1
-    while [ ${n} -le 12 ]; do
-      sleep 10
-      tail -2 ${log_dir}/cpu_pre_loading.txt
-      # 检查日志
-      echo "-----check for next step n=${n}-----"
-      tail ${log_dir}/cpu_pre_loading.txt | grep -E "ir_graph_to_program_pass" ${log_dir}/cpu_pre_loading.txt > /dev/null
-      if [ $? == 0 ]; then
-        # 预加载成功
-        echo "----------gpu_server loaded----------"
-        break
-      elif [ $n == 12 ]; then
-        tail ${log_dir}/cpu_pre_loading.txt | grep -E "failed|Error" ${log_dir}/cpu_pre_loading.txt > /dev/null
-        if [ $? == 0 ]; then
-          # 下载出错
-          exit
-        fi
-        n=10
-      fi
-      n=$((n + 1))
-    done
-    tail ${log_dir}/cpu_pre_loading.txt
-    echo "----------cpu_server loaded----------"
-    kill_process
-  else
-    $py_version -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292 --gpu_ids 0 > ${log_dir}/gpu_pre_loading.txt 2>&1 &
-    n=1
-    while [ ${n} -le 50 ]; do
-      sleep 10
-      tail -2 ${log_dir}/gpu_pre_loading.txt
-      # 检查日志
-      echo "-----check for next step n=${n}-----"
-  #    tail ${log_dir}/gpu_pre_loading.txt | grep -E "Succ load model" ${log_dir}/gpu_pre_loading.txt > /dev/null
-      tail ${log_dir}/gpu_pre_loading.txt | grep -E "ir_graph_to_program_pass" ${log_dir}/gpu_pre_loading.txt > /dev/null
-      if [ $? == 0 ]; then
-        # 预加载成功
-        echo "----------gpu_server loaded----------"
-        head ${log_dir}/gpu_pre_loading.txt
-        break
-      elif [ $n == 50 ]; then
-        tail ${log_dir}/cpu_pre_loading.txt | grep -E "failed|Error" ${log_dir}/cpu_pre_loading.txt > /dev/null
-        if [ $? == 0 ]; then
-          # 下载出错
-          exit
-        fi
-        n=45
-      fi
-      n=$((n + 1))
-    done
-    tail ${log_dir}/gpu_pre_loading.txt
-    echo "----------gpu_server loaded----------"
-    kill_process
-  fi
-}
-
 # check命令并保存日志
 function check_save () {
   if [ $? == 0 ]
@@ -185,7 +125,7 @@ function check_save () {
 }
 
 # 提取错误日志
-function error_log () {
+function error_log() {
   # 记录模型、部署方式、环境信息
   arg=${1//\//_} # 将所有/替换为_
   echo "-----------------------------" | tee -a ${log_dir}error_models.txt
@@ -210,111 +150,6 @@ function error_log () {
   do
   	cp ${file} ${log_dir}error/${prefix}_${file##*/}
   done
-}
-
-# 安装python依赖包
-function py_requirements () {
-  cd ${CODE_PATH}/Serving
-  echo -e "${YELOW_COLOR}---------install python requirements---------${RES}"
-  unset_proxy
-  echo "---------Python Version: $py_version"
-  set_proxy
-  $py_version -m pip install --upgrade pip==21.1.3
-  unset_proxy
-  $py_version -m pip install -r python/requirements.txt -i https://mirror.baidu.com/pypi/simple
-  if [ $2 == 101 ]; then
-    if [ $1 == 36 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.1-cudnn7-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post101-cp36-cp36m-linux_x86_64.whl
-    elif [ $1 == 37 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.1-cudnn7-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post101-cp37-cp37m-linux_x86_64.whl
-    elif [ $1 == 38 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.1-cudnn7-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post101-cp38-cp38-linux_x86_64.whl
-    fi
-  elif [ $2 == 102 ]; then
-    if [ $1 == 36 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.2-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0-cp36-cp36m-linux_x86_64.whl
-    elif [ $1 == 37 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.2-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0-cp37-cp37m-linux_x86_64.whl
-    elif [ $1 == 38 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.2-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0-cp38-cp38-linux_x86_64.whl
-    fi
-  elif [ $2 == 110 ]; then
-    if [ $1 == 36 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda11.0-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post110-cp36-cp36m-linux_x86_64.whl
-    elif [ $1 == 37 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda11.0-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post110-cp37-cp37m-linux_x86_64.whl
-    elif [ $1 == 38 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda11.0-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post110-cp38-cp38-linux_x86_64.whl
-    fi
-  elif [ $2 == "cpu" ]; then
-    if [ $1 == 36 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/2.1.0-cpu-avx-mkl/paddlepaddle-2.1.0-cp36-cp36m-linux_x86_64.whl
-    elif [ $1 == 37 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/2.1.0-cpu-avx-mkl/paddlepaddle-2.1.0-cp37-cp37m-linux_x86_64.whl
-    elif [ $1 == 38 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/2.1.0-cpu-avx-mkl/paddlepaddle-2.1.0-cp38-cp38-linux_x86_64.whl
-    fi
-  else
-    echo -e "${RED_COLOR}Error cuda version$1${RES}"
-    exit
-  fi
-  set_proxy
-  $py_version -m pip install paddlepaddle*
-  ${py_version} -m pip install psutil
-  ${py_version} -m pip install pandas
-  ${py_version} -m pip install openpyxl
-  rm -rf paddlepaddle*
-  echo -e "${YELOW_COLOR}---------complete---------\n${RES}"
-}
-
-
-function pip_install_serving() {
-  unset_proxy
-  if [ ${test_branch} == "develop" ]; then
-    version=0.0.0
-  else
-    version=${test_branch: 1}
-  fi
-  # whl包数组
-  whl_list=()
-  whl_list[0]=app-${version}-py3
-  if [ $1 == 36 ]; then
-    whl_list[1]=client-${version}-cp36
-  elif [ $1 == 37 ]; then
-    whl_list[1]=client-${version}-cp37
-  elif [ $1 == 38 ]; then
-    whl_list[1]=client-${version}-cp38
-  fi
-  if [ $2 == 101 ]; then
-    whl_list[2]=server_gpu-${version}.post101-py3
-  elif [ $2 == 102 ]; then
-    whl_list[2]=server_gpu-${version}.post102-py3
-  elif [ $2 == 110 ]; then
-    whl_list[2]=server_gpu-${version}.post11-py3
-  elif [ $2 == "cpu" ]; then
-    whl_list[2]=server-${version}-py3
-  fi
-  echo "----------whl_list: "
-  echo ${whl_list[*]}
-  cd ${CODE_PATH}
-  rm -rf whl_packages
-  mkdir whl_packages && cd whl_packages
-  echo "----------cur path: `pwd`"
-  for whl_item in ${whl_list[@]}
-  do
-      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_${whl_item}-none-any.whl
-      if [ $? -eq 0 ]; then
-          echo "--------------download ${whl_item} succ"
-      else
-          echo "--------------download ${whl_item} failed"
-      fi
-  done
-  set_proxy
-  if [ $1 == 38 ]; then
-    $py_version -m pip install sentencepiece
-  fi
-  $py_version -m pip install *
-  ${py_version} -m pip install pandas
 }
 
 function generate_logs() {
@@ -358,75 +193,20 @@ function pipeline_darknet53() {
     # benchmark
     sed -i "s/python3.6/${py_version}/g" benchmark.sh
     sed -i "s/id=3/id=0/g" benchmark.sh
+    sed -i "s/CPU_UTIL/CPU_UTILIZATION/g" benchmark.sh
+    sed -i "s/GPU_MEM/MAX_GPU_MEMORY/g" benchmark.sh
+    sed -i 's/1000/100/g' benchmark.sh
+    sed -i "s/GPU_UTIL/GPU_UTILIZATION/g" benchmark.sh
     sh benchmark.sh
     tail -n 16 profile_log_clas-DarkNet53
     # 日志处理
-    cp /mnt/serving/zyl/shell_zyl/benchmark_utils.py ./
-    cp /mnt/serving/zyl/shell_zyl/parse_profile.py ./
+    cp ${shell_dir}/benchmark_utils.py ./
+    cp ${shell_dir}/parse_profile.py ./
     sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
     sed -i 's/model_name: "imagenet"/model_name: "DarkNet53"/g' benchmark_cfg.yaml
     $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_clas-DarkNet53 > ${dir}/client_log.txt 2>&1
     tail -n 31 ${dir}/client_log.txt
     cp -r benchmark_logs ${log_dir}/benchmark_logs/DarkNet53
-    kill_process
-}
-
-function pipeline_HRNet_W18_C() {
-    cd ${demo_dir}/pipeline/PaddleClas/HRNet_W18_C
-    # 链接模型数据
-    data_dir=${data}pipeline/HRNet_W18_C/
-    link_data ${data_dir}
-    data_dir=${data}pipeline/images/
-    link_data ${data_dir}
-    # 启动服务
-    echo -e "${GREEN_COLOR}pipeline_clas_HRNet_W18_C_GPU_pipeline server started${RES}"
-    $py_version resnet50_web_service.py > ${dir}server_log.txt 2>&1 &
-    # 命令检查
-    check_save server 8
-    # benchmark
-    sed -i "s/python3.6/${py_version}/g" benchmark.sh
-    sed -i "s/id=3/id=0/g" benchmark.sh
-    sh benchmark.sh
-    tail profile_log_clas-HRNet_W18_C
-    # 日志处理
-    cp /mnt/serving/zyl/shell_zyl/benchmark_utils.py ./
-    cp /mnt/serving/zyl/shell_zyl/parse_profile.py ./
-#    cp /mnt/serving/zyl/shell_zyl/benchmark_analysis.py ./
-    cp /mnt/serving/zyl/shell_zyl/benchmark_cfg.yaml ./
-    sed -i "s/runtime_device: "cpu"/runtime_device: "gpu"/g" benchmark_cfg.yaml
-    sed -i "s/model_name: "imagenet"/model_name: "HRNet_W18_C"/g" benchmark_cfg.yaml
-    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_clas-HRNet_W18_C
-#    $py_version benchmark_analysis.py --log_path ${CODE_PATH}/benchmark_logs
-#    cp benchmark_excel.xlsx ${log_dir}/benchmark_excel
-    cp -r benchmark_logs/* ${log_dir}
-    kill_process
-}
-
-function pipeline_MobileNetV1() {
-    cd ${demo_dir}/pipeline/PaddleClas/MobileNetV1
-    # 链接模型数据
-    data_dir=${data}pipeline/MobileNetV1/
-    link_data ${data_dir}
-    data_dir=${data}pipeline/images/
-    link_data ${data_dir}
-    # 启动服务
-    echo -e "${GREEN_COLOR}pipeline_clas_MobileNetV1_GPU_pipeline server started${RES}"
-    $py_version resnet50_web_service.py > ${dir}server_log.txt 2>&1 &
-    # 命令检查
-    check_save server 8
-    # benchmark
-    sed -i "s/python3.6/${py_version}/g" benchmark.sh
-    sed -i "s/id=3/id=0/g" benchmark.sh
-    sh benchmark.sh
-    tail profile_log_clas-MobileNetV1
-    # 日志处理
-    cp /mnt/serving/zyl/shell_zyl/benchmark_utils.py ./
-    cp /mnt/serving/zyl/shell_zyl/parse_profile.py ./
-    cp /mnt/serving/zyl/shell_zyl/benchmark_cfg.yaml ./
-    sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
-    sed -i 's/model_name: "imagenet"/model_name: "MobileNetV1"/g' benchmark_cfg.yaml
-    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_clas-MobileNetV1
-#    cp -r benchmark_logs/* ${log_dir}
     kill_process
 }
 
@@ -449,9 +229,7 @@ function pipeline_PaddleClas() {
     sed -i "s/id=3/id=0/g" benchmark.sh
 #    sed -i "s/1 2 4 8 12 16/8 12/g" benchmark.sh
     sed -i 's/----/#----/g' benchmark.sh
-    sed -i "s/CPU_UTILIZATION/CPU_UTIL/g" benchmark.sh
-    sed -i "s/MAX_GPU_MEMORY/GPU_MEM/g" benchmark.sh
-    sed -i "s/GPU_UTILIZATION/GPU_UTIL/g" benchmark.sh
+    sed -i 's/1000/100/g' benchmark.sh
     sed -i "s/AVG QPS/AVG_QPS/g" benchmark.py
     sed -i "s/18000/18080/g" benchmark.py
     if [ $1 == "ResNet_V2_50" ]; then
@@ -460,9 +238,9 @@ function pipeline_PaddleClas() {
     sh benchmark.sh
     tail -n 16 profile_log_clas-$1
     # 日志处理
-    cp -rf /mnt/serving/zyl/shell_zyl/benchmark_utils.py ./
-    cp -rf /mnt/serving/zyl/shell_zyl/parse_profile.py ./
-    cp -rf /mnt/serving/zyl/shell_zyl/benchmark_cfg.yaml ./
+    cp -rf ${shell_dir}/benchmark_utils.py ./
+    cp -rf ${shell_dir}/parse_profile.py ./
+    cp -rf ${shell_dir}/benchmark_cfg.yaml ./
     sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
     sed -i "s/imagenet/$1/g" benchmark_cfg.yaml
     $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_clas-$1 > ${dir}/client_log.txt 2>&1
@@ -489,19 +267,17 @@ function pipeline_ocr() {
     sed -i "s/id=3/id=0/g" benchmark.sh
 #    sed -i "s/1 2 4 8 12 16/8 12/g" benchmark.sh
     sed -i 's/----/#----/g' benchmark.sh
-    sed -i "s/CPU_UTILIZATION/CPU_UTIL/g" benchmark.sh
-    sed -i "s/MAX_GPU_MEMORY/GPU_MEM/g" benchmark.sh
-    sed -i "s/GPU_UTILIZATION/GPU_UTIL/g" benchmark.sh
+    sed -i 's/1000/100/g' benchmark.sh
     sed -i "s/AVG QPS/AVG_QPS/g" benchmark.py
-    sed -i "78d" benchmark.py
+    sed -i "76d" benchmark.py
     sh benchmark.sh
     tail -n 16 profile_log_ocr
     # 日志处理
-    cp -rf /mnt/serving/zyl/shell_zyl/benchmark_utils.py ./
-    cp -rf /mnt/serving/zyl/shell_zyl/parse_profile.py ./
-    cp -rf /mnt/serving/zyl/shell_zyl/benchmark_cfg.yaml ./
+    cp -rf ${shell_dir}/benchmark_utils.py ./
+    cp -rf ${shell_dir}/parse_profile.py ./
+    cp -rf ${shell_dir}/benchmark_cfg.yaml ./
     sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
-    sed -i "s/imagenet/ocr/g" benchmark_cfg.yaml
+    sed -i "s/imagenet/OCR/g" benchmark_cfg.yaml
     $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_ocr > ${dir}/client_log.txt 2>&1
     tail -n 31 ${dir}/client_log.txt
     cp -r benchmark_logs ${log_dir}/benchmark_logs/ocr
@@ -514,50 +290,21 @@ check_dir ${log_dir}/benchmark_logs
 # 设置py版本
 set_py $1
 env | grep -E "PYTHONROOT|PYTHON_INCLUDE_DIR|PYTHON_LIBRARIES|PYTHON_EXECUTABLE"
-# 测试
-py_requirements $1 $2
-pip_install_serving $1 $2
-
-echo "--------pip list after pip: "
-$py_version -m pip list
-# whl包检查
-if [ `$py_version -m pip list | grep -c paddlepaddle` != 1 ]; then
-    py_requirements $1 $2
-    if [ `$py_version -m pip list | grep -c paddlepaddle` != 1 ]; then
-        echo "----------paddle install failed!----------"
-        exit 2
-    fi
-fi
-
-if [ `$py_version -m pip list | egrep "paddle-serving" | wc -l` -eq 3 ]; then
-    echo "-----------whl_packages succ"
-else
-    echo "----------whl_packages failed"
-    pip_install_serving $1 $2
-    if [ `$py_version -m pip list | egrep "paddle-serving" | wc -l` -eq 3 ]; then
-       echo "-----------whl_packages succ ---2"
-    else
-        echo "----------whl_packages failed ---2"
-        exit 1
-    fi
-fi
-
-pre_loading $2
 
 # 性能测试
 unset_proxy
-pipeline_darknet53
-pipeline_PaddleClas HRNet_W18_C
-pipeline_PaddleClas MobileNetV1
-pipeline_PaddleClas MobileNetV2
-pipeline_PaddleClas MobileNetV3_large_x1_0
-pipeline_PaddleClas ResNeXt101_vd_64x4d
-pipeline_PaddleClas ResNet50_vd
-pipeline_PaddleClas ResNet50_vd_FPGM
-pipeline_PaddleClas ResNet50_vd_KL
-pipeline_PaddleClas ResNet50_vd_PACT
+#pipeline_darknet53
+#pipeline_PaddleClas HRNet_W18_C
+#pipeline_PaddleClas MobileNetV1
+#pipeline_PaddleClas MobileNetV2
+#pipeline_PaddleClas MobileNetV3_large_x1_0
+#pipeline_PaddleClas ResNeXt101_vd_64x4d
+#pipeline_PaddleClas ResNet50_vd
+#pipeline_PaddleClas ResNet50_vd_FPGM
+#pipeline_PaddleClas ResNet50_vd_KL
+#pipeline_PaddleClas ResNet50_vd_PACT
 pipeline_PaddleClas ResNet_V2_50
-pipeline_PaddleClas ShuffleNetV2_x1_0
+#pipeline_PaddleClas ShuffleNetV2_x1_0
 pipeline_ocr
 
 # 生成excel
