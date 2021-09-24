@@ -3,6 +3,7 @@
 # $1 36、37、38
 # $2 cpu、101、102、110
 # $3 opencv
+export serving_dir=${CODE_PATH}/Serving
 
 if [ ${serving_dir} != "" ]; then
     cd ${serving_dir}
