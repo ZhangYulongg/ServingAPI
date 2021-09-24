@@ -1,8 +1,12 @@
 #!/bin/bash
-#Serving 根目录下运行，提前设置proxy
+# Serving 根目录下运行，提前设置serving_dir, proxy, opencv_dir(/mnt/serving/opencv-3.4.7/opencv3)
 # $1 36、37、38
 # $2 cpu、101、102、110
 # $3 opencv
+
+if [ ${serving_dir} != "" ]; then
+    cd ${serving_dir}
+fi
 
 if [ ${proxy} == "" ]; then
     echo "no proxy set"
@@ -109,7 +113,7 @@ function compile_server_cpu() {
 }
 
 function compile_server_gpu_withopencv() {
-    export OPENCV_DIR=/mnt/serving/opencv-3.4.7/opencv3
+    export OPENCV_DIR=${opencv_dir}
     export CUDA_PATH='/usr/local/cuda'
     export CUDNN_LIBRARY='/usr/local/cuda/lib64/'
     export CUDA_CUDART_LIBRARY="/usr/local/cuda/lib64/"
