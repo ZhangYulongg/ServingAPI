@@ -241,4 +241,4 @@ else
 fi
 compile_client
 compile_app
-py_requirements
+py_requirements $1 $2
