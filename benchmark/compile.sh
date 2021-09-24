@@ -49,6 +49,7 @@ function set_py () {
         echo -e "Error py version$1"
         exit 1
     fi
+    ${py_version} -m pip install --upgrade pip==21.1.3
     unset_proxy
     ${py_version} -m pip install -r python/requirements.txt -i https://mirror.baidu.com/pypi/simple
     set_proxy
@@ -68,7 +69,7 @@ function install_go() {
     set_proxy
 }
 
-function compile_server_gpu() {
+function compile_server() {
     export CUDA_PATH='/usr/local/cuda'
     export CUDNN_LIBRARY='/usr/local/cuda/lib64/'
     export CUDA_CUDART_LIBRARY="/usr/local/cuda/lib64/"
@@ -78,33 +79,30 @@ function compile_server_gpu() {
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
     elif [ $1 == 110 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
+    elif [ $1 == "cpu" ]; then
+        echo $1
     else
         echo -e "Error cuda version$1"
         exit 1
     fi
-    mkdir server-build-gpu && cd server-build-gpu
-    cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR \
-        -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
-        -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
-        -DCUDA_TOOLKIT_ROOT_DIR=${CUDA_PATH} \
-        -DCUDNN_LIBRARY=${CUDNN_LIBRARY} \
-        -DCUDA_CUDART_LIBRARY=${CUDA_CUDART_LIBRARY} \
-        -DTENSORRT_ROOT=${TENSORRT_LIBRARY_PATH} \
-        -DSERVER=ON \
-        -DWITH_GPU=ON ..
-    make -j10
-    unset_proxy
-    ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
-    set_proxy
-    cd ..
-}
-
-function compile_server_cpu() {
-    mkdir server-build-cpu && cd server-build-cpu
-    cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR/ \
-        -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
-        -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
-        -DSERVER=ON ..
+    if [ $1 == "cpu" ]; then
+        mkdir server-build-cpu && cd server-build-cpu
+        cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR/ \
+            -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
+            -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
+            -DSERVER=ON ..
+    else
+        mkdir server-build-gpu && cd server-build-gpu
+        cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR \
+            -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
+            -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
+            -DCUDA_TOOLKIT_ROOT_DIR=${CUDA_PATH} \
+            -DCUDNN_LIBRARY=${CUDNN_LIBRARY} \
+            -DCUDA_CUDART_LIBRARY=${CUDA_CUDART_LIBRARY} \
+            -DTENSORRT_ROOT=${TENSORRT_LIBRARY_PATH} \
+            -DSERVER=ON \
+            -DWITH_GPU=ON ..
+    fi
     make -j10
     unset_proxy
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
@@ -129,8 +127,8 @@ function compile_server_withopencv() {
         echo -e "Error cuda version$1"
         exit 1
     fi
-    mkdir server-build-gpu-opencv && cd server-build-gpu-opencv
     if [ $1 == "cpu" ]; then
+        mkdir server-build-cpu-opencv && cd server-build-cpu-opencv
         cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR \
             -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
             -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
@@ -138,6 +136,7 @@ function compile_server_withopencv() {
             -DWITH_OPENCV=ON \
             -DSERVER=ON ..
     else
+        mkdir server-build-gpu-opencv && cd server-build-gpu-opencv
         cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR \
             -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
             -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
@@ -187,10 +186,7 @@ function compile_app() {
 function py_requirements () {
     echo -e "${YELOW_COLOR}---------install python requirements---------${RES}"
     echo "---------Python Version: $py_version"
-    set_proxy
-    $py_version -m pip install --upgrade pip==21.1.3
     unset_proxy
-    $py_version -m pip install -r python/requirements.txt -i https://mirror.baidu.com/pypi/simple
     $py_version -m pip install paddlehub -i https://mirror.baidu.com/pypi/simple
     if [ $2 == 101 ]; then
         if [ $1 == 36 ]; then
@@ -240,10 +236,8 @@ set_py $1
 install_go
 if [ $3 == "opencv" ]; then
     compile_server_withopencv $2
-elif [ $2 == "cpu" ]; then
-    compile_server_cpu
 else
-    compile_server_gpu $2
+    compile_server $2
 fi
 compile_client
 compile_app
