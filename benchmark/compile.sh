@@ -113,6 +113,7 @@ function compile_server() {
 
 function compile_server_withopencv() {
     export OPENCV_DIR=${opencv_dir}
+    echo "OPENCV_DIR:${OPENCV_DIR}"
     export CUDA_PATH='/usr/local/cuda'
     export CUDNN_LIBRARY='/usr/local/cuda/lib64/'
     export CUDA_CUDART_LIBRARY="/usr/local/cuda/lib64/"
