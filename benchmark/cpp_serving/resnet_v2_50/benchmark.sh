@@ -13,8 +13,8 @@ else
 fi
 model_name="resnet_v2_50"
 #start server
-${py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9393 --thread 16 --gpu_ids $gpu_id >  elog  2>&1 &
-sleep 10
+#${py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9393 --thread 16 --gpu_ids $gpu_id >  elog  2>&1 &
+#sleep 10
 
 #warm up
 echo -e "import psutil\ncpu_utilization=psutil.cpu_percent(1,False)\nprint('CPU_UTILIZATION:', cpu_utilization)\n" > cpu_utilization.py

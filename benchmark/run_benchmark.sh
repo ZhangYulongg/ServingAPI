@@ -284,7 +284,7 @@ function pipeline_ocr() {
     kill_process
 }
 
-function cpp_resnet_v2_50() {
+function cpp_sync_resnet_v2_50() {
     cd ${demo_dir}/resnet_v2_50/
     dir=${log_dir}/cpp/resnet_v2_50/
     check_dir $dir
@@ -292,9 +292,9 @@ function cpp_resnet_v2_50() {
     data_dir=${data}resnet_v2_50/
     link_data ${data_dir}
     # 拷贝shell
-    \cp -r ${shell_dir}/cpp_serving/* ./
+    \cp -r ${shell_dir}/cpp_serving/resnet_v2_50/* ./
     # 启动服务
-    echo -e "${GREEN_COLOR}cpp_OCR_GPU_pipeline server started${RES}"
+    echo -e "${GREEN_COLOR}cpp_ResNet_V2_50_GPU_pipeline server started${RES}"
     ${py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9393 --thread 16 --gpu_ids 1 > ${dir}server_log.txt 2>&1 &
     check_save server 15
     bash benchmark.sh
@@ -308,6 +308,40 @@ function cpp_resnet_v2_50() {
     $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_resnet_v2_50 > ${dir}/client_log.txt 2>&1
     tail -n 31 ${dir}/client_log.txt
     cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp/resnet_v2_50
+    kill_process
+}
+
+function cpp_sync_ocr() {
+    cd ${demo_dir}/ocr/
+    dir=${log_dir}/cpp/ocr/
+    check_dir $dir
+    # 链接模型数据
+    data_dir=${data}ocr/
+    link_data ${data_dir}
+    # 修改feed_var
+    cp -r ocr_det_client/ ./ocr_det_client_cp
+    rm -rf ocr_det_client
+    mv ocr_det_client_cp ocr_det_client
+    sed -i "s/feed_type: 1/feed_type: 20/g" ocr_det_client/serving_client_conf.prototxt
+    sed -i "s/shape: 3/shape: 1/g" ocr_det_client/serving_client_conf.prototxt
+    sed -i '7,8d' ocr_det_client/serving_client_conf.prototxt
+    # 拷贝shell
+    \cp -r ${shell_dir}/cpp_serving/ocr/* ./
+    # 启动服务
+    echo -e "${GREEN_COLOR}cpp_OCR_GPU_pipeline server started${RES}"
+    ${py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --port 9293 --gpu_ids 1 > ${dir}server_log.txt 2>&1 &
+    check_save server 15
+    bash benchmark.sh
+    tail -n 31 profile_log_ocr
+    # 日志处理
+    cp -rf ${shell_dir}/benchmark_utils.py ./
+    cp -rf ${shell_dir}/parse_profile.py ./
+    cp -rf ${shell_dir}/benchmark_cfg.yaml ./
+    sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
+    sed -i "s/imagenet/OCR/g" benchmark_cfg.yaml
+    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_ocr > ${dir}/client_log.txt 2>&1
+    tail -n 31 ${dir}/client_log.txt
+    cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp/profile_log_ocr
     kill_process
 }
 
@@ -334,14 +368,16 @@ unset_proxy
 pipeline_PaddleClas ResNet_V2_50
 #pipeline_PaddleClas ShuffleNetV2_x1_0
 pipeline_ocr
-cpp_resnet_v2_50
+cpp_sync_resnet_v2_50
+cpp_sync_ocr
 
 # 生成excel
 cd ${CODE_PATH}/benchmark/
-$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs --server_mode Pipeline
+$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/pipeline --server_mode Pipeline --output_name benchmark_excel_pipeline.xlsx --output_html_name benchmark_data_pipeline.html
+$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/cpp --server_mode Pipeline --output_name benchmark_excel_cpp.xlsx --output_html_name benchmark_data_cpp.html
 cp benchmark_excel.xlsx ${log_dir}/benchmark_excel
 # 写入数据库
 $py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/pipeline --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode Pipeline
-$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/cpp --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode Pipeline
+$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/cpp --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode CPP
 
 generate_logs $1 $2
