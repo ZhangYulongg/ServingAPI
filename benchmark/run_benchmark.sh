@@ -334,6 +334,7 @@ unset_proxy
 pipeline_PaddleClas ResNet_V2_50
 #pipeline_PaddleClas ShuffleNetV2_x1_0
 pipeline_ocr
+cpp_resnet_v2_50
 
 # 生成excel
 cd ${CODE_PATH}/benchmark/
