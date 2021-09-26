@@ -284,6 +284,15 @@ function pipeline_ocr() {
     kill_process
 }
 
+function cpp_resnet_v2_50() {
+    cd ${demo_dir}/resnet_v2_50/
+    dir=${log_dir}/cpp/resnet_v2_50/
+    check_dir $dir
+    # 链接模型数据
+    data_dir=${data}resnet_v2_50//
+    link_data ${data_dir}
+}
+
 # 创建日志目录
 check_dir ${log_dir}/benchmark_excel
 check_dir ${log_dir}/benchmark_logs
@@ -308,7 +317,7 @@ pipeline_PaddleClas ResNet_V2_50
 pipeline_ocr
 
 # 生成excel
-cd ${CODE_PATH}/shell_zyl
+cd ${CODE_PATH}/benchmark/
 $py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs --server_mode Pipeline
 cp benchmark_excel.xlsx ${log_dir}/benchmark_excel
 # 写入数据库
