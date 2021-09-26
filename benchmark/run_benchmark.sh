@@ -245,7 +245,7 @@ function pipeline_PaddleClas() {
     sed -i "s/imagenet/$1/g" benchmark_cfg.yaml
     $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_clas-$1 > ${dir}/client_log.txt 2>&1
     tail -n 31 ${dir}/client_log.txt
-    cp -r benchmark_logs ${log_dir}/benchmark_logs/$1
+    cp -r benchmark_logs ${log_dir}/benchmark_logs/pipeline/$1
     kill_process
 }
 
@@ -280,7 +280,7 @@ function pipeline_ocr() {
     sed -i "s/imagenet/OCR/g" benchmark_cfg.yaml
     $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_ocr > ${dir}/client_log.txt 2>&1
     tail -n 31 ${dir}/client_log.txt
-    cp -r benchmark_logs ${log_dir}/benchmark_logs/ocr
+    cp -r benchmark_logs ${log_dir}/benchmark_logs/pipeline/ocr
     kill_process
 }
 
@@ -289,13 +289,32 @@ function cpp_resnet_v2_50() {
     dir=${log_dir}/cpp/resnet_v2_50/
     check_dir $dir
     # 链接模型数据
-    data_dir=${data}resnet_v2_50//
+    data_dir=${data}resnet_v2_50/
     link_data ${data_dir}
+    # 拷贝shell
+    \cp -r ${shell_dir}/cpp_serving/* ./
+    # 启动服务
+    echo -e "${GREEN_COLOR}cpp_OCR_GPU_pipeline server started${RES}"
+    ${py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9393 --thread 16 --gpu_ids 1 > ${dir}server_log.txt 2>&1 &
+    check_save server 15
+    bash benchmark.sh
+    tail -n 31 profile_log_resnet_v2_50
+    # 日志处理
+    cp -rf ${shell_dir}/benchmark_utils.py ./
+    cp -rf ${shell_dir}/parse_profile.py ./
+    cp -rf ${shell_dir}/benchmark_cfg.yaml ./
+    sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
+    sed -i "s/imagenet/ResNet_V2_50/g" benchmark_cfg.yaml
+    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_resnet_v2_50 > ${dir}/client_log.txt 2>&1
+    tail -n 31 ${dir}/client_log.txt
+    cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp/resnet_v2_50
+    kill_process
 }
 
 # 创建日志目录
 check_dir ${log_dir}/benchmark_excel
-check_dir ${log_dir}/benchmark_logs
+check_dir ${log_dir}/benchmark_logs/cpp
+check_dir ${log_dir}/benchmark_logs/pipeline
 # 设置py版本
 set_py $1
 env | grep -E "PYTHONROOT|PYTHON_INCLUDE_DIR|PYTHON_LIBRARIES|PYTHON_EXECUTABLE"
@@ -321,6 +340,7 @@ cd ${CODE_PATH}/benchmark/
 $py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs --server_mode Pipeline
 cp benchmark_excel.xlsx ${log_dir}/benchmark_excel
 # 写入数据库
-$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode Pipeline
+$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/pipeline --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode Pipeline
+$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/cpp --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode Pipeline
 
 generate_logs $1 $2

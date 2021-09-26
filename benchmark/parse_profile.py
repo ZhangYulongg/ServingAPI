@@ -99,16 +99,18 @@ if __name__ == "__main__":
     benchmark_log_filename = args.benchmark_log
     f = open(benchmark_log_filename, 'r')
     lines = f.readlines()
+    lines.append("\n")
     line_no = 0
     while line_no < len(lines):
         if len(lines[line_no]) > 5 and lines[line_no].startswith("#---"):
             iden = lines[line_no][5: -5]
             line_no += 1
-            sub_log = lines[line_no: line_no + 13]
+            line_count = lines[line_no:].index("\n")
+            sub_log = lines[line_no: line_no + line_count]
             sub_dict = yaml.safe_load("".join(sub_log))
             mode = iden.split(" ")[7][5:]
             sub_dict["client_mode"] = mode
             handle_benchmark(benchmark_config, sub_dict, iden)
-            line_no += 13
+            line_no += line_count
         else:
             line_no += 1
