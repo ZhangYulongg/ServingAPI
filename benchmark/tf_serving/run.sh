@@ -1,7 +1,7 @@
 #!/bin/bash
 
 model_dir=${tf_model_dir}
-log_dir=${CODE_PATH}/tf_logs/
+log_dir=${CODE_PATH}/logs/
 workspace=${CODE_PATH}/tf_test
 shell_dir=${CODE_PATH}/benchmark/
 # 输出颜色
@@ -69,7 +69,7 @@ tf_serving_resnet
 
 # 生成excel
 cd ${CODE_PATH}/benchmark/
-#$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/tf_serving --server_mode TensorFlow --output_name benchmark_excel_tf.xlsx --output_html_name benchmark_data_tf.html
-#cp benchmark_excel.xlsx ${log_dir}/benchmark_excel
+$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/tf_serving --server_mode TensorFlow --output_name benchmark_excel_tf.xlsx --output_html_name benchmark_data_tf.html
+cp benchmark_excel.xlsx ${log_dir}/benchmark_excel
 # 写入数据库
-#$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/tf_serving --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode TensorFlow
+$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/tf_serving --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode TensorFlow
