@@ -6,8 +6,8 @@ export FLAGS_serving_latency=1
 cur_dir=$(cd `dirname $0`; pwd)
 model_name=ResNet
 echo ${cur_dir}
-tensorflow_model_server --port=8500 --enable_batching=true --model_name="serving_default" --model_base_path="/mnt/serving/zyl/tf_serving/tf_test/model/resnet_v1" --batching_parameters_file="batch_config" > tf_serving.log &
-sleep 10
+#tensorflow_model_server --port=8500 --enable_batching=true --model_name="serving_default" --model_base_path="/mnt/serving/zyl/tf_serving/tf_test/model/resnet_v1" --batching_parameters_file="batch_config" > tf_serving.log &
+#sleep 10
 
 #save cpu and gpu utilization log
 if [ -d utilization ];then
