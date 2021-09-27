@@ -58,6 +58,7 @@ function tf_serving_resnet() {
 /usr/bin/python3 -m pip install paddle-serving-app==0.6.2 -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install psutil -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install openpyxl -i https://mirror.baidu.com/pypi/simple
+/usr/bin/python3 -m pip install pandas -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install -r ${CODE_PATH}/Serving/python/requirements.txt -i https://mirror.baidu.com/pypi/simple
 mkdir -p ${workspace}
 mkdir -p ${log_dir}
@@ -67,7 +68,7 @@ tf_serving_resnet
 
 # 生成excel
 cd ${CODE_PATH}/benchmark/
-$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/tf_serving --server_mode TensorFlow --output_name benchmark_excel_tf.xlsx --output_html_name benchmark_data_tf.html
-cp benchmark_excel.xlsx ${log_dir}/benchmark_excel
+#$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/tf_serving --server_mode TensorFlow --output_name benchmark_excel_tf.xlsx --output_html_name benchmark_data_tf.html
+#cp benchmark_excel.xlsx ${log_dir}/benchmark_excel
 # 写入数据库
-$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/tf_serving --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode TensorFlow
+#$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/tf_serving --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode TensorFlow
