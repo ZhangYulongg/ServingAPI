@@ -41,7 +41,7 @@ function tf_serving_resnet() {
 #    cat server_log.txt
 #    echo "============client begin==========="
     bash benchmark_tf.sh resnet
-    tail -n 16 profile_log_resnet
+    cat profile_log_resnet
     # 日志处理
     cp -rf ${shell_dir}/benchmark_utils.py ./
     cp -rf ${shell_dir}/parse_profile.py ./
