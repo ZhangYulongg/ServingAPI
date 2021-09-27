@@ -51,7 +51,6 @@ function tf_serving_resnet() {
     $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_resnet > ${dir}/client_log.txt 2>&1
     tail -n 31 ${dir}/client_log.txt
     cp -r benchmark_logs ${log_dir}/benchmark_logs/tf_serving/profile_log_ocr
-    kill_process
 }
 
 /usr/bin/python3 -m pip install paddle-serving-client==0.6.2 -i https://mirror.baidu.com/pypi/simple
@@ -60,6 +59,8 @@ function tf_serving_resnet() {
 /usr/bin/python3 -m pip install openpyxl -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install pandas -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install -r ${CODE_PATH}/Serving/python/requirements.txt -i https://mirror.baidu.com/pypi/simple
+wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.2-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0-cp36-cp36m-linux_x86_64.whl
+/usr/bin/python3 -m pip install paddlepaddle* -i https://mirror.baidu.com/pypi/simple
 mkdir -p ${workspace}
 mkdir -p ${log_dir}
 mkdir -p ${log_dir}/benchmark_logs/tf_serving
