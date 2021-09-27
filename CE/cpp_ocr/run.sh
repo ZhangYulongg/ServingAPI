@@ -1,6 +1,7 @@
 shell_path=${CODE_PATH}/CE/cpp_ocr
 cd ${shell_path}
 bash compile_server_withopencv.sh $1 $2
+$py_version -m pip install -r ${CODE_PATH}/CE/requirements.txt -i https://mirror.baidu.com/pypi/simple
 
 unset http_proxy && unset https_proxy
 
