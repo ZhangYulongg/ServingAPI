@@ -13,7 +13,7 @@ RES='\E[0m'
 error_words="Fail|DENIED|None"
 
 function link_data () {
-    for file in $1*
+    for file in $1/*
     do
     if [ ! -h ${file##*/} ]; then
         ln -s ${file} ./${file##*/}
@@ -58,6 +58,7 @@ function tf_serving_resnet() {
 /usr/bin/python3 -m pip install paddle-serving-app==0.6.2 -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install psutil -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install openpyxl -i https://mirror.baidu.com/pypi/simple
+/usr/bin/python3 -m pip install -r ${CODE_PATH}/Serving/python/requirements.txt -i https://mirror.baidu.com/pypi/simple
 mkdir -p ${workspace}
 mkdir -p ${log_dir}
 mkdir -p ${log_dir}/benchmark_logs/tf_serving
