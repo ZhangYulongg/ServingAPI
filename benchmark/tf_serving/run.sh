@@ -36,10 +36,10 @@ function tf_serving_resnet() {
     # 启动服务
     export CUDA_VISIBLE_DEVICES=1
     echo -e "${GREEN_COLOR}tf_serving_ResNet_GPU server started${RES}"
-    tensorflow_model_server --port=8500 --enable_batching=true --model_name="serving_default" --model_base_path="${workspace}/model/resnet_v1" --batching_parameters_file="batch_config" > server_log.txt 2>&1 &
-    sleep 15
-    cat server_log.txt
-    echo "============client begin==========="
+#    tensorflow_model_server --port=8500 --enable_batching=true --model_name="serving_default" --model_base_path="${workspace}/model/resnet_v1" --batching_parameters_file="batch_config" > server_log.txt 2>&1 &
+#    sleep 15
+#    cat server_log.txt
+#    echo "============client begin==========="
     bash benchmark_tf.sh resnet
     tail -n 16 profile_log_resnet
     # 日志处理
