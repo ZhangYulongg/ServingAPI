@@ -33,9 +33,6 @@ class TestOCR(object):
         })
         self.ocr_reader = OCRReader()
         self.get_truth_val_by_inference(self)
-        # TODO 为校验精度将模型输出存入npy文件，通过修改server端代码实现，考虑更优雅的方法
-        os.system("sed -i '96 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_map)' ocr_debugger_server.py")
-        os.system("sed -i '60 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_map)' det_web_server.py")
 
     def teardown_method(self):
         print("======================stderr.log after predict======================")
@@ -142,57 +139,40 @@ class TestOCR(object):
         print(self.truth_val_rec, self.truth_val_rec["ctc_greedy_decoder_0.tmp_0"].shape,
               self.truth_val_rec["softmax_0.tmp_0"].shape)
 
-    def predict_http(self, batch_size=1):
+    def predict_brpc(self, batch_size=1):
         # 1.prepare feed_data
         filename = "imgs/1.jpg"
         with open(filename, "rb") as f:
             image_data = f.read()
         image = cv2_to_base64(image_data)
-        feed_dict = {
-            "feed": [{"image": image}],
-            "fetch": ["res"],
-        }
+        feed_dict = {"image": image}
 
-        # 2.predict for fetch_map
-        url = "http://127.0.0.1:9292/ocr/prediction"
-        headers = {"Content-type": "application/json"}
-        r = requests.post(url=url, headers=headers, data=json.dumps(feed_dict))
-        print(r.json())
-        return r.json()["result"]
+        # 2.init client
+        client = Client()
+        client.load_client_config(["ocr_det_client", "ocr_rec_client"])
+        client.connect(["127.0.0.1:9293"])
 
-    def predict_http_rec(self, batch_size=1):
-        # 1.prepare feed_data
-        filename = "rec_img/ch_doc3.jpg"
-        with open(filename, "rb") as f:
-            image_data = f.read()
-        image = cv2_to_base64(image_data)
-        feed_dict = {
-            "feed": [{"image": image}] * batch_size,
-            "fetch": ["res"],
-        }
-        # 2.predict for fetch_map
-        url = "http://127.0.0.1:9292/ocr/prediction"
-        headers = {"Content-type": "application/json"}
-        r = requests.post(url=url, headers=headers, data=json.dumps(feed_dict))
-        print(r.json())
-        return r.json()["result"]
+        # 3.predict for fetch_map
+        fetch_map = client.predict(feed=feed_dict, fetch=["ctc_greedy_decoder_0.tmp_0", "softmax_0.tmp_0"], batch=True)
+        print(fetch_map)
+        return fetch_map
 
     def test_cpu_local(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} ocr_debugger_server.py cpu",
-            sleep=5,
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --port 9293",
+            sleep=8,
         )
 
         # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
+        assert count_process_num_on_port(9293) == 1  # web Server
         assert check_gpu_memory(0) is False
 
         # 3.keywords check
 
         # 4.predict by http
         # batch_size=1
-        self.predict_http(batch_size=1)
+        self.predict_brpc(batch_size=1)
         # 从npy文件读取
         rec_result = np.load("fetch_dict_rec.npy", allow_pickle=True).item()
         # 删除文件
