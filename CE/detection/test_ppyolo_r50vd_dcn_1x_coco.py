@@ -5,14 +5,25 @@ import numpy as np
 import copy
 import cv2
 import sys
+import time
 
 from paddle_serving_client import Client, HttpClient
+from paddle_serving_client.io import inference_model_to_serving
 from paddle_serving_app.reader import SegPostprocess
 from paddle_serving_app.reader import *
 import paddle.inference as paddle_infer
 
 sys.path.append("../")
 from util import *
+
+
+def serving_encryption():
+    inference_model_to_serving(
+        dirname="./serving_server",
+        params_filename="__params__",
+        serving_server="encrypt_server",
+        serving_client="encrypt_client",
+        encryption=True)
 
 
 class TestPPYOLO(object):
@@ -22,6 +33,7 @@ class TestPPYOLO(object):
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
         self.serving_util = serving_util
+        serving_encryption()
 
     def teardown_method(self):
         print("======================stderr.log after predict======================")
@@ -70,13 +82,21 @@ class TestPPYOLO(object):
         self.truth_val = output_data_dict
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape, self.truth_val["save_infer_model/scale_1.tmp_0"].shape)
 
+        # 输出预测库结果，框位置正确
+        postprocess = RCNNPostprocess("label_list.txt", "output")
+        output_data_dict["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 100], dtype="int32")
+        dict_ = copy.deepcopy(output_data_dict)
+        del dict_["save_infer_model/scale_1.tmp_0"]
+        dict_["image"] = filename
+        postprocess(dict_)
+
     def predict_brpc(self, batch_size=1):
         preprocess = Sequential([
             File2Image(), BGR2RGB(), Div(255.0),
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
             Resize((608, 608)), Transpose((2, 0, 1))
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output")
+        postprocess = RCNNPostprocess("label_list.txt", "output1")
         filename = "000000570688.jpg"
         im = preprocess(filename)
 
@@ -102,6 +122,41 @@ class TestPPYOLO(object):
         postprocess(dict_)
         return fetch_map
 
+    def predict_brpc_encrypt(self, batch_size=1):
+        preprocess = Sequential([
+            File2Image(), BGR2RGB(), Div(255.0),
+            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
+            Resize((608, 608)), Transpose((2, 0, 1))
+        ])
+        postprocess = RCNNPostprocess("label_list.txt", "output2")
+        filename = "000000570688.jpg"
+        im = preprocess(filename)
+
+        fetch = ["save_infer_model/scale_0.tmp_0"]
+        endpoint_list = ['127.0.0.1:9494']
+
+        client = Client()
+        client.load_client_config("encrypt_client/serving_client_conf.prototxt")
+        client.use_key("./key")
+        client.connect(endpoint_list, encryption=True)
+        time.sleep(60)
+
+        fetch_map = client.predict(
+            feed={
+                "image": im,
+                "im_shape": np.array(list(im.shape[1:])).reshape(-1),
+                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
+            },
+            fetch=fetch,
+            batch=False)
+        print(fetch_map)
+        dict_ = copy.deepcopy(fetch_map)
+        dict_["image"] = filename
+        # TODO fetch_map中缺少lod信息，手动添加后画框
+        dict_["save_infer_model/scale_0.tmp_0.lod"] = np.array([0, 100], dtype="int32")
+        postprocess(dict_)
+        return fetch_map
+
     def test_gpu_trt_fp32(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
@@ -122,6 +177,34 @@ class TestPPYOLO(object):
         result_data = self.predict_brpc(batch_size=1)
         # 删除 lod信息
         del result_data["save_infer_model/scale_0.tmp_1.lod"]
+        # TODO 开启TRT精度diff较大，非Serving Bug，暂不校验精度
+        # self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1e-1)
+
+        # 5.release
+        kill_process(9494, 2)
+
+    def test_gpu_trt_fp32_encrypt(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model encrypt_server --use_encryption_model --port 9494 --use_trt --gpu_ids 0 2>&1",
+            sleep=5,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9494) == 1
+        # 加密部署时，client带着key请求后才起brpc-server(默认端口12000, --port指定的为http server端口)
+
+        # 3.keywords check
+
+        # 4.predict
+        result_data = self.predict_brpc_encrypt(batch_size=1)
+        assert count_process_num_on_port(12000) == 1
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is False
+        check_keywords_in_server_log("Prepare TRT engine")
+        check_keywords_in_server_log("Sync params from CPU to GPU")
+        # 删除 lod信息 加密部署的模型fetch_map没有lod信息
+        # del result_data["save_infer_model/scale_0.tmp_1.lod"]
         # TODO 开启TRT精度diff较大，非Serving Bug，暂不校验精度
         # self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1e-1)
 

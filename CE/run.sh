@@ -3,7 +3,7 @@ rm -rf result.txt
 cases=`find ./ -name "test*.py" | sort`
 #cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
 echo $cases
-ignore="test_ocr_concate.py"
+ignore="test_ocr_concate.py" # 需要编译opencv才能跑
 bug=0
 
 job_bt=`date '+%Y%m%d%H%M%S'`
