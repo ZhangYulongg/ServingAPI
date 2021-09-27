@@ -50,8 +50,8 @@ function set_py () {
         echo -e "Error py version$1"
         exit 1
     fi
-    ${py_version} -m pip install --upgrade pip==21.1.3
     unset_proxy
+    ${py_version} -m pip install --upgrade pip==21.1.3 -i https://mirror.baidu.com/pypi/simple
     ${py_version} -m pip install -r python/requirements.txt -i https://mirror.baidu.com/pypi/simple
     set_proxy
 }
