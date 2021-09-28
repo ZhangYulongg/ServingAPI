@@ -171,7 +171,8 @@ function generate_logs() {
   mkdir -p ../logs_output/${today}_${commit_id}/${ce_name}/
   # 汇总信息
   rm -rf ../logs_output/daily_logs/${ce_name}/benchmark_excel/benchmark_excel.xlsx
-  cp logs/benchmark_excel/benchmark_excel.xlsx ../logs_output/daily_logs/${ce_name}/benchmark_excel/
+  cp logs/benchmark_excel/*.xlsx ../logs_output/daily_logs/${ce_name}/benchmark_excel/
+  cp logs/benchmark_excel/*.html ../logs_output/daily_logs/${ce_name}/benchmark_excel/
   # 详细日志
   mv logs ../logs_output/${today}_${commit_id}/${ce_name}/logs_$1_$2
 }
