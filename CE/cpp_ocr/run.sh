@@ -1,7 +1,6 @@
 shell_path=${CODE_PATH}/CE/cpp_ocr
 cd ${shell_path}
 bash compile_server_withopencv.sh $1 $2
-$py_version -m pip install -r ${CODE_PATH}/CE/requirements.txt -i https://mirror.baidu.com/pypi/simple
 
 unset http_proxy && unset https_proxy
 
@@ -20,6 +19,7 @@ bug=0
 
 for py_version in python3.6 python3.7 python3.8
 do
+    $py_version -m pip install -r ${CODE_PATH}/CE/requirements.txt -i https://mirror.baidu.com/pypi/simple
     echo "========= ${py_version} start ========="
     job_bt=`date '+%Y%m%d%H%M%S'`
     echo "============ failed cases =============" >> result.txt
