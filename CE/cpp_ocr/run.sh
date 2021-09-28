@@ -17,10 +17,11 @@ echo $cases
 ignore=""
 bug=0
 
-for py_version in python3.6 python3.7 python3.8
+for test_version in python3.6 python3.7 python3.8
 do
-    $py_version -m pip install -r ${CODE_PATH}/CE/requirements.txt -i https://mirror.baidu.com/pypi/simple
-    echo "========= ${py_version} start ========="
+    ${test_version} -m pip install -r ${CODE_PATH}/CE/requirements.txt -i https://mirror.baidu.com/pypi/simple
+    export py_version=${test_version}
+    echo "========= ${test_version} start ========="
     job_bt=`date '+%Y%m%d%H%M%S'`
     echo "============ failed cases =============" >> result.txt
     for file in ${cases}
