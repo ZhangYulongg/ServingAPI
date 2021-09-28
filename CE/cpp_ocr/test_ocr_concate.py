@@ -228,3 +228,33 @@ class TestOCR(object):
 
         # 5.release
         kill_process(9292, 2)
+
+    def test_gpu_cpp_async(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op_num 2 4 --gpu_ids 0 --port 9293",
+            sleep=17,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9293) == 1  # web Server
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is False
+
+        # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU")
+        check_keywords_in_server_log("BSF thread init done")
+        check_keywords_in_server_log("runtime_thread_num: 2", "workdir_9293/general_detection_0/model_toolkit.prototxt")
+        check_keywords_in_server_log("runtime_thread_num: 4", "workdir_9293/general_infer_0/model_toolkit.prototxt")
+
+        # 4.predict by http
+        # batch_size=1
+        result = self.predict_brpc(batch_size=1)
+        print(result["ctc_greedy_decoder_0.tmp_0"].shape, result["softmax_0.tmp_0"].shape)
+        # TODO 输出少一句话，暂未进行精度校验
+        # # 删除lod信息
+        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
+        # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
+
+        # 5.release
+        kill_process(9292, 2)

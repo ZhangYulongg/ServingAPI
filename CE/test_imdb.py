@@ -195,4 +195,41 @@ class TestIMDB(object):
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
+        kill_process(9292, 2)
+
+    def test_gpu_async(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model imdb_cnn_model --thread 10 --op_num 4 --port 9292 --gpu_ids 0",
+            sleep=6,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9292) == 1
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is False
+
+        # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU", filename="stderr.log")
+        check_keywords_in_server_log("Enable batch schedule framework, thread_num:4, batch_size:32, enable_overrun:0, allow_split_request:1", filename="stderr.log")
+
+        # 4.predict by brpc
+        # batch_size 1
+        result_data = self.predict_brpc(batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        # predict by http
+        # batch_size 1
+        result_data = self.predict_http(mode="proto", batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        result_data = self.predict_http(mode="json", batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        result_data = self.predict_http(mode="grpc", batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        # compress
+        result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        result_data = self.predict_http(mode="json", compress=True, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+
+        # 5.release
         kill_process(9292)

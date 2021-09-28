@@ -196,7 +196,41 @@ class TestLAC(object):
         # 5.release
         kill_process(9292, 2)
 
+    def test_gpu_async(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model lac_model --port 9292 --op_num 2 --gpu_ids 0",
+            sleep=8,
+        )
 
-if __name__ == '__main__':
-    sss = TestLAC()
-    sss.get_truth_val_by_inference()
+        # 2.resource check
+        assert count_process_num_on_port(9292) == 1
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is False
+
+        # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU", filename="stderr.log")
+        check_keywords_in_server_log("Enable batch schedule framework, thread_num:2, batch_size:32, enable_overrun:0, allow_split_request:1", filename="stderr.log")
+
+        # 4.predict by brpc
+        # batch_size 2
+        result_data = self.predict_brpc(batch_size=2)
+        # 删除lod信息
+        del result_data["crf_decode.lod"]
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1)
+        # predict by http
+        # batch_size 2
+        result_data = self.predict_http(mode="proto", batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1)
+        result_data = self.predict_http(mode="json", batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1)
+        result_data = self.predict_http(mode="grpc", batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1)
+        # # compress
+        result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1)
+        result_data = self.predict_http(mode="json", compress=True, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1)
+
+        # 5.release
+        kill_process(9292, 2)
