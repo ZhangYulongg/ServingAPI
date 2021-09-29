@@ -108,7 +108,7 @@ function pip_install_serving() {
   echo "----------cur path: `pwd`"
   for whl_item in ${whl_list[@]}
   do
-      wget https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_${whl_item}-none-any.whl
+      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_${whl_item}-none-any.whl
       if [ $? -eq 0 ]; then
           echo "--------------download ${whl_item} succ"
       else
