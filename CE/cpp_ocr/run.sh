@@ -6,9 +6,9 @@ unset http_proxy && unset https_proxy
 
 export FLAGS_call_stack_level=2
 if [ $2 == "cpu" ]; then
-    export SERVING_BIN=${CODE_PATH}/Serving/server-build-cpu/core/general-server/serving
+    export SERVING_BIN=${CODE_PATH}/Serving/server-build-cpu-opencv/core/general-server/serving
 else
-    export SERVING_BIN=${CODE_PATH}/Serving/server-build-gpu/core/general-server/serving
+    export SERVING_BIN=${CODE_PATH}/Serving/server-build-gpu-opencv/core/general-server/serving
 fi
 rm -rf result.txt
 cases=`find ./ -name "test*.py" | sort`
