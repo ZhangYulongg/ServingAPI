@@ -109,6 +109,7 @@ class TestFitALineXPU(object):
         assert count_process_num_on_port(9393) == 1
 
         # 3.keywords check
+        check_keywords_in_server_log("Running pass: __xpu__", filename="stderr.log")
 
         # 4.predict
         # by pybind-brpc_client
@@ -118,18 +119,16 @@ class TestFitALineXPU(object):
         print(result_data["price"].shape)
 
         # by HTTP-proto
-        result_data = self.predict_http(mode="proto", compress=False, batch_size=1)
-        print(result_data["price"].shape)
-        result_data = self.predict_http(mode="proto", compress=True, batch_size=2)
-        print(result_data["price"].shape)
-        result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        print(result_data["price"].shape)
-        # by HTTP-json
-        result_data = self.predict_http(mode="json", compress=True, batch_size=1)
-        print(result_data["price"].shape)
-        # by HTTP-grpc
-        result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
-        print(result_data["price"].shape)
+        # result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
+        # print(result_data["price"].shape)
+        # result_data = self.predict_http(mode="proto", compress=True, batch_size=2)
+        # print(result_data["price"].shape)
+        # # by HTTP-json
+        # result_data = self.predict_http(mode="json", compress=True, batch_size=1)
+        # print(result_data["price"].shape)
+        # # by HTTP-grpc
+        # result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
+        # print(result_data["price"].shape)
         # 5.release
         kill_process(9393)
 
@@ -153,18 +152,16 @@ class TestFitALineXPU(object):
         print(result_data["price"].shape)
 
         # by HTTP-proto
-        result_data = self.predict_http(mode="proto", compress=False, batch_size=1)
-        print(result_data["price"].shape)
-        result_data = self.predict_http(mode="proto", compress=True, batch_size=2)
-        print(result_data["price"].shape)
-        result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        print(result_data["price"].shape)
-        # by HTTP-json
-        result_data = self.predict_http(mode="json", compress=True, batch_size=1)
-        print(result_data["price"].shape)
-        # by HTTP-grpc
-        result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
-        print(result_data["price"].shape)
+        # result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
+        # print(result_data["price"].shape)
+        # result_data = self.predict_http(mode="proto", compress=True, batch_size=2)
+        # print(result_data["price"].shape)
+        # # by HTTP-json
+        # result_data = self.predict_http(mode="json", compress=True, batch_size=1)
+        # print(result_data["price"].shape)
+        # # by HTTP-grpc
+        # result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
+        # print(result_data["price"].shape)
         # 5.release
         kill_process(9393)
 
@@ -188,22 +185,15 @@ class TestFitALineXPU(object):
         print(result_data["price"].shape)
 
         # by HTTP-proto
-        result_data = self.predict_http(mode="proto", compress=False, batch_size=1)
-        print(result_data["price"].shape)
-        result_data = self.predict_http(mode="proto", compress=True, batch_size=2)
-        print(result_data["price"].shape)
-        result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        print(result_data["price"].shape)
-        # by HTTP-json
-        result_data = self.predict_http(mode="json", compress=True, batch_size=1)
-        print(result_data["price"].shape)
-        # by HTTP-grpc
-        result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
-        print(result_data["price"].shape)
+        # result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
+        # print(result_data["price"].shape)
+        # result_data = self.predict_http(mode="proto", compress=True, batch_size=2)
+        # print(result_data["price"].shape)
+        # # by HTTP-json
+        # result_data = self.predict_http(mode="json", compress=True, batch_size=1)
+        # print(result_data["price"].shape)
+        # # by HTTP-grpc
+        # result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
+        # print(result_data["price"].shape)
         # 5.release
         kill_process(9393)
-
-
-
-
-

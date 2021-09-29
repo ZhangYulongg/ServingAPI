@@ -114,6 +114,7 @@ class TestResnetV2XPU(object):
         assert count_process_num_on_port(9393) == 1
 
         # 3.keywords check
+        check_keywords_in_server_log("Running pass: __xpu__", filename="stderr.log")
 
         # 4.predict by brpc
         # batch_size 1
@@ -125,14 +126,14 @@ class TestResnetV2XPU(object):
         # predict by http
         # TODO 必须开启压缩，否则超过默认buffer space报错
         # batch_size 1
-        result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        print("shape:", result_data["score"].shape)
-        # compress
-        result_data = self.predict_http(mode="json", compress=True, batch_size=1)
-        print("shape:", result_data["score"].shape)
-
-        result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
-        print("shape:", result_data["score"].shape)
+        # result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
+        # print("shape:", result_data["score"].shape)
+        # # compress
+        # result_data = self.predict_http(mode="json", compress=True, batch_size=1)
+        # print("shape:", result_data["score"].shape)
+        #
+        # result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
+        # print("shape:", result_data["score"].shape)
         # 5.release
         kill_process(9393, 2)
 
@@ -158,12 +159,12 @@ class TestResnetV2XPU(object):
         # predict by http
         # TODO 必须开启压缩，否则超过默认buffer space报错
         # batch_size 1
-        result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        print("shape:", result_data["score"].shape)
-        result_data = self.predict_http(mode="json", compress=True, batch_size=1)
-        print("shape:", result_data["score"].shape)
-        result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
-        print("shape:", result_data["score"].shape)
+        # result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
+        # print("shape:", result_data["score"].shape)
+        # result_data = self.predict_http(mode="json", compress=True, batch_size=1)
+        # print("shape:", result_data["score"].shape)
+        # result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
+        # print("shape:", result_data["score"].shape)
         # 5.release
         kill_process(9393)
 
@@ -189,13 +190,13 @@ class TestResnetV2XPU(object):
         # predict by http
         # TODO 必须开启压缩，否则超过默认buffer space报错
         # batch_size 1
-        result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
-        print("shape:", result_data["score"].shape)
-        result_data = self.predict_http(mode="json", compress=True, batch_size=1)
-        print("shape:", result_data["score"].shape)
-
-        result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
-        print("shape:", result_data["score"].shape)
+        # result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
+        # print("shape:", result_data["score"].shape)
+        # result_data = self.predict_http(mode="json", compress=True, batch_size=1)
+        # print("shape:", result_data["score"].shape)
+        #
+        # result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
+        # print("shape:", result_data["score"].shape)
         # 5.release
         kill_process(9393)
 

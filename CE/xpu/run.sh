@@ -1,0 +1,55 @@
+#!/bin/bash
+
+shell_path=${CODE_PATH}/CE/xpu
+export https_proxy=${proxy}
+export http_proxy=${proxy}
+apt-get install -y libgeos-dev
+
+export LD_LIBRARY_PATH=/usr/local/lib/${py_version}/site-packages/paddle/libs/:/usr/local/lib/${py_version}/site-packages/paddle_serving_server/serving-xpu-x86_64-0.0.0/:$LD_LIBRARY_PATH
+
+cd ${shell_path}
+bash pip_install.sh $1 $2
+
+unset http_proxy && unset https_proxy
+
+export FLAGS_call_stack_level=2
+rm -rf result.txt
+cases=`find ./ -name "test*.py" | sort`
+#cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
+echo $cases
+ignore=""
+bug=0
+
+job_bt=`date '+%Y%m%d%H%M%S'`
+echo "============ failed cases =============" >> result.txt
+for file in ${cases}
+do
+    echo ${file}
+    if [[ ${ignore} =~ ${file##*/} ]]; then
+        echo "跳过"
+    else
+        if [[ ${ce_name} =~ "cpu" ]]; then
+            $py_version -m pytest --disable-warnings -sv ${file} -k "cpu"
+        else
+            $py_version -m pytest --disable-warnings -sv ${file}
+        fi
+        # pytest跳过returncode=5
+        if [[ $? -ne 0 && $? -ne 5 ]]; then
+            echo ${file} >> result.txt
+            bug=`expr ${bug} + 1`
+        fi
+    fi
+done
+job_et=`date '+%Y%m%d%H%M%S'`
+
+echo "total bugs: "${bug} >> result.txt
+if [ ${bug} != 0 ]; then
+    cp result.txt ${output_dir}/result_${py_version}.txt
+fi
+cat result.txt
+cost=$(expr $job_et - $job_bt)
+echo "$cost s"
+exit ${bug}
+
+
+

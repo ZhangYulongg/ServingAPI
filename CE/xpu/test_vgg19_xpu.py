@@ -114,6 +114,7 @@ class TestVGG19XPU(object):
         assert count_process_num_on_port(9393) == 1
 
         # 3.keywords check
+        check_keywords_in_server_log("Running pass: __xpu__", filename="stderr.log")
 
         # 4.predict by brpc
         # batch_size 1
