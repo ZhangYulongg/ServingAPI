@@ -4,6 +4,7 @@ shell_path=${CODE_PATH}/CE/xpu
 export https_proxy=${proxy}
 export http_proxy=${proxy}
 apt-get install -y libgeos-dev
+apt-get install -y net-tools
 
 export LD_LIBRARY_PATH=/usr/local/lib/${py_version}/site-packages/paddle/libs/:/usr/local/lib/${py_version}/site-packages/paddle_serving_server/serving-xpu-x86_64-0.0.0/:$LD_LIBRARY_PATH
 
