@@ -180,7 +180,7 @@ class TestOCR(object):
     def test_cpu_cpp(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --port 9293",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --port 9293 2>&1",
             sleep=8,
         )
 

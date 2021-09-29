@@ -37,7 +37,7 @@ do
         if [[ ${ignore} =~ ${file##*/} ]]; then
             echo "跳过"
         else
-            if [[ ${ce_name} =~ "cpu" ]]; then
+            if [[ $2 =~ "cpu" ]]; then
                 $py_version -m pytest --disable-warnings -sv ${file} -k "cpu"
             else
                 $py_version -m pytest --disable-warnings -sv ${file}
