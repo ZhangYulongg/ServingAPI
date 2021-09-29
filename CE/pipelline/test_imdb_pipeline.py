@@ -127,7 +127,6 @@ class TestIMDBPipeline(object):
         assert check_gpu_memory(0) is False
 
         # 3.keywords check
-        check_keywords_in_server_log("MKLDNN is enabled", filename="stderr.log")
 
         # 4.predict by rpc
         # batch_size=1
