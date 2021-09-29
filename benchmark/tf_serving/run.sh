@@ -63,6 +63,7 @@ wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.2-cudnn8-mk
 /usr/bin/python3 -m pip install paddlepaddle* -i https://mirror.baidu.com/pypi/simple
 mkdir -p ${workspace}
 mkdir -p ${log_dir}
+mkdir -p ${log_dir}/benchmark_excel
 mkdir -p ${log_dir}/benchmark_logs/tf_serving
 
 tf_serving_resnet
