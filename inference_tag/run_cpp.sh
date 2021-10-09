@@ -1,5 +1,8 @@
 #!/bin/bash
+# 需设置
+# tag_path (2.2.0-rc0)
 
+tag_path=${tag_path}
 cuda=$1
 cudnn=$2
 gcc=$3
@@ -8,8 +11,7 @@ trt_path=$5
 
 function get_tar() {
     rm -rf paddle_inference*
-    wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0-rc0/cxx_c/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddle_inference.tgz
-#    wget https://paddle-inference-lib.bj.bcebos.com/2.1.2/linux-gpu-cuda10.1-cudnn7-mkl-gcc5.4-trt6-avx/paddle_inference.tgz
+    wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/cxx_c/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddle_inference.tgz
     tar -xf paddle_inference.tgz
 }
 
@@ -31,4 +33,8 @@ export PYTHON_FLAGS='-DPYTHON_EXECUTABLE:FILEPATH=/opt/_internal/cpython-3.7.0/b
 get_tar
 cmake
 
-bash bin/run-new-api-case-mini.sh > log_${cuda}_${cudnn}_${gcc}_${trt}.txt 2>&1
+bash -x bin/run-new-api-case-mini.sh | tee log_${cuda}_${cudnn}_${gcc}_${trt}.txt
+
+echo "=======result========"
+grep FAILED log_${cuda}_${cudnn}_${gcc}_${trt}.txt
+echo "====================="
