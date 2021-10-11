@@ -12,6 +12,7 @@ else
 fi
 
 # 修改det feed type
+rm -rf ${CODE_PATH}/Serving/python/examples/ocr/ocr_det_client
 cp -r ${DATA_PATH}/ocr/ocr_det_client ${CODE_PATH}/Serving/python/examples/ocr/
 sed -i "s/feed_type: 1/feed_type: 20/g" ${CODE_PATH}/Serving/python/examples/ocr/ocr_det_client/serving_client_conf.prototxt
 sed -i "s/shape: 3/shape: 1/g" ${CODE_PATH}/Serving/python/examples/ocr/ocr_det_client/serving_client_conf.prototxt
