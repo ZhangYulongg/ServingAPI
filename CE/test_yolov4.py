@@ -64,8 +64,8 @@ class TestYOLOv4(object):
         self.truth_val = output_data_dict
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_0"].shape)
 
-        # postprocess = RCNNPostprocess("label_list.txt", "output", [608, 608])
-        # output_data_dict["save_infer_model/scale_0.tmp_0.lod"] = np.array([ 0, 71], dtype="int32")
+        # postprocess = RCNNPostprocess("label_list.txt", "output_infer", [608, 608])
+        # output_data_dict["save_infer_model/scale_0.tmp_0.lod"] = np.array([0, 858], dtype="int32")
         # dict_ = copy.deepcopy(output_data_dict)
         # dict_["image"] = filename
         # postprocess(dict_)
@@ -94,6 +94,7 @@ class TestYOLOv4(object):
         # 3.predict for fetch_map
         fetch_map = client.predict(feed=feed_dict, fetch=fetch, batch=False)
         print(fetch_map)
+        print(fetch_map["save_infer_model/scale_0.tmp_0"].shape, fetch_map["save_infer_model/scale_0.tmp_0.lod"].shape)
         dict_ = copy.deepcopy(fetch_map)
         dict_["image"] = filename
         postprocess(dict_)
