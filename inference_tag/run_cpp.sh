@@ -21,7 +21,7 @@ function cmake() {
     mv /usr/bin/gcc /usr/bin/gcc.bak
     ln -s /usr/local/gcc-${gcc}/bin/c++ /usr/bin/
     ln -s /usr/local/gcc-${gcc}/bin/gcc /usr/bin/
-    bash build.sh /home/zhangyulong04/continuous_integration/inference/inference_api_test/cpp_api_test/paddle_inference ON ON ON ${trt_path}
+    bash build.sh ${code_path}/continuous_integration/inference/inference_api_test/cpp_api_test/paddle_inference ON ON ON ${trt_path}
 }
 
 
