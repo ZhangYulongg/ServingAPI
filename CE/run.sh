@@ -8,7 +8,8 @@ test_bert_xpu.py \
 test_ernie_xpu.py \
 test_fit_a_line_xpu.py \
 test_resnet_v2_50_xpu.py \
-test_vgg19_xpu.py" # 需要编译opencv才能跑或XPU case
+test_vgg19_xpu.py \
+test_cpp_client.py" # 需要编译opencv才能跑或XPU case或需要编译拿到simple_client
 bug=0
 
 job_bt=`date '+%Y%m%d%H%M%S'`

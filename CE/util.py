@@ -37,11 +37,13 @@ class ServingTest(object):
                 abs_path = os.path.join(dir_path, file)
                 os.system(f"ln -s {abs_path} {file}")
 
-    def start_server_by_shell(self, cmd: str, sleep: int = 5, err="stderr.log", out="stdout.log"):
+    def start_server_by_shell(self, cmd: str, sleep: int = 5, err="stderr.log", out="stdout.log", wait=False):
         self.err = open(err, "w")
         self.out = open(out, "w")
         p = subprocess.Popen(cmd, shell=True, stdout=self.out, stderr=self.err)
         os.system(f"sleep {sleep}")
+        if wait:
+            p.wait()
 
         print(f"======================{err}======================")
         os.system(f"cat {err}")
