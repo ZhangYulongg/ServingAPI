@@ -81,12 +81,13 @@ class TestFasterRCNN(object):
               self.truth_val["save_infer_model/scale_1.tmp_1"].shape)
 
         # 输出预测库结果，框位置正确
-        # postprocess = RCNNPostprocess("label_list.txt", "output")
-        # output_data_dict["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 92], dtype="int32")
-        # dict_ = copy.deepcopy(output_data_dict)
-        # del dict_["save_infer_model/scale_1.tmp_1"]
-        # dict_["image"] = file_name
-        # postprocess(dict_)
+        postprocess = RCNNPostprocess("label_list.txt", "output")
+        output_data_dict["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 92], dtype="int32")
+        dict_ = copy.deepcopy(output_data_dict)
+        del dict_["save_infer_model/scale_1.tmp_1"]
+        dict_["image"] = file_name
+        postprocess(dict_)
+        os.system("ps -ef")
 
     def predict_pipeline_http(self, batch_size=1):
         # 1.prepare feed_data
@@ -97,7 +98,7 @@ class TestFasterRCNN(object):
         for i in range(batch_size):
             feed_dict["key"].append(f"image_{i}")
             feed_dict["value"].append(image)
-        postprocess = RCNNPostprocess("label_list.txt", "output")
+        postprocess = RCNNPostprocess("label_list.txt", "output_pipeline")
 
         # 2.predict for fetch_map
         url = "http://127.0.0.1:18082/faster_rcnn/prediction"
