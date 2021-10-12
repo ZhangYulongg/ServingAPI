@@ -213,7 +213,6 @@ class TestOCR(object):
         assert check_gpu_memory(0) is False
 
         # 3.keywords check
-        check_keywords_in_server_log("Running IR pass", filename="stderr.log")  # local模式
 
         # 4.predict by http
         # batch_size=1
