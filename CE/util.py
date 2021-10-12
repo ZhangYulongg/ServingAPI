@@ -149,10 +149,13 @@ def diff_compare(array1, array2):
 
 def print_log(file_list, iden=""):
     for file in file_list:
-        print(f"======================{file} {iden}=====================")
-        with open(file, "r") as f:
-            print(f.read())
-        print("======================================================")
+        if os.path.exists(file):
+            print(f"======================{file} {iden}=====================")
+            with open(file, "r") as f:
+                print(f.read())
+            print("======================================================")
+        else:
+            print(f"{file} not exist")
 
 
 def default_args():
