@@ -79,14 +79,14 @@ class TestLowPrecision(object):
         client.connect(endpoint_list)
 
         fetch_map = client.predict(feed=feed_dict, fetch=fetch)
-        print(fetch_map)
+        print(fetch_map["save_infer_model/scale_0.tmp_0"].shape)
         return fetch_map
 
     def test_gpu_trt_int8(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9393 --gpu_ids 0 --use_trt --precision int8",
-            sleep=15,
+            sleep=27,
         )
 
         # 2.resource check
@@ -96,7 +96,7 @@ class TestLowPrecision(object):
 
         # 3.keywords check
         check_keywords_in_server_log("Sync params from CPU to GPU", filename="stderr.log")
-        # TODO trt开启逻辑错误，暂不验证trt日志
+        check_keywords_in_server_log("Prepare TRT engine")
 
         # 4.predict
         result_data = self.predict_brpc(batch_size=1)
