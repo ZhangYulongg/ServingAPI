@@ -57,6 +57,16 @@ class TestPPYOLO(object):
         pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
         pd_config.disable_gpu()
         pd_config.switch_ir_optim(False)
+        # TRT结果能够对齐
+        # pd_config.enable_use_gpu(1000, 0)
+        # pd_config.enable_tensorrt_engine(
+        #     workspace_size=1 << 30,
+        #     max_batch_size=1,
+        #     min_subgraph_size=3,
+        #     precision_mode=paddle_infer.PrecisionType.Float32,
+        #     use_static=False,
+        #     use_calib_mode=False,
+        # )
 
         predictor = paddle_infer.create_predictor(pd_config)
 
@@ -146,13 +156,40 @@ class TestPPYOLO(object):
             },
             fetch=fetch,
             batch=False)
-        print(fetch_map)
+        # 对齐serving output
+        fetch_map["save_infer_model/scale_0.tmp_1"] = fetch_map["save_infer_model/scale_0.tmp_0"]
+        del fetch_map["save_infer_model/scale_0.tmp_0"]
+        print(fetch_map, fetch_map["save_infer_model/scale_0.tmp_1"].shape)
         dict_ = copy.deepcopy(fetch_map)
         dict_["image"] = filename
         # TODO fetch_map中缺少lod信息，手动添加后画框
-        dict_["save_infer_model/scale_0.tmp_0.lod"] = np.array([0, 100], dtype="int32")
+        dict_["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 100], dtype="int32")
         postprocess(dict_)
         return fetch_map
+
+    def test_gpu(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9494 --gpu_ids 0",
+            sleep=10,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9494) == 1
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is False
+
+        # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU")
+
+        # 4.predict
+        result_data = self.predict_brpc(batch_size=1)
+        # 删除 lod信息
+        del result_data["save_infer_model/scale_0.tmp_1.lod"]
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1e-1)
+
+        # 5.release
+        kill_process(9494, 2)
 
     def test_gpu_trt_fp32(self):
         # 1.start server
@@ -174,7 +211,7 @@ class TestPPYOLO(object):
         result_data = self.predict_brpc(batch_size=1)
         # 删除 lod信息
         del result_data["save_infer_model/scale_0.tmp_1.lod"]
-        # TODO 开启TRT精度diff较大，非Serving Bug，暂不校验精度
+        # TODO 开启TRT精度diff较大，为已知问题，非Serving Bug，暂不校验精度
         # self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1e-1)
 
         # 5.release
@@ -198,11 +235,10 @@ class TestPPYOLO(object):
         assert count_process_num_on_port(12000) == 1
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is False
-        check_keywords_in_server_log("Prepare TRT engine")
-        check_keywords_in_server_log("Sync params from CPU to GPU")
+        check_keywords_in_server_log("Prepare TRT engine", "stdout.log")
+        check_keywords_in_server_log("Sync params from CPU to GPU", "stdout.log")
         # 删除 lod信息 加密部署的模型fetch_map没有lod信息
-        # del result_data["save_infer_model/scale_0.tmp_1.lod"]
-        # TODO 开启TRT精度diff较大，非Serving Bug，暂不校验精度
+        # TODO 开启TRT精度diff较大，为已知问题，非Serving Bug，暂不校验精度
         # self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1e-1)
 
         # 5.release
