@@ -37,7 +37,8 @@ class TestOCR(object):
         self.get_truth_val_by_inference(self)
 
     def teardown_method(self):
-        print_log(["stderr.log", "stdout.log"], iden="after predict")
+        print_log(["stderr.log", "stdout.log",
+                   "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
         kill_process(9293)
         self.serving_util.release(keywords="server.py")
 
