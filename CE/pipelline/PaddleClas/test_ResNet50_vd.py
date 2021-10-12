@@ -25,7 +25,8 @@ class TestResNet50_vd(object):
         self.serving_util = serving_util
 
     def teardown_method(self):
-        print_log(["stderr.log", "stdout.log"], iden="after predict")
+        print_log(["stderr.log", "stdout.log",
+                   "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
         kill_process(9993)
         self.serving_util.release()
 
