@@ -23,7 +23,7 @@ class ServingTest(object):
 
         os.chdir(self.example_path)
         print("======================cur path======================")
-        os.system("pwd")
+        print(os.getcwd())
         self.check_model_data_exist()
 
     def check_model_data_exist(self):
@@ -45,15 +45,7 @@ class ServingTest(object):
         if wait:
             p.wait()
 
-        print(f"======================{err}======================")
-        # os.system(f"cat {err}")
-        with open(f"{err}", "r") as f:
-            print(f.read())
-        print(f"======================{out}======================")
-        # os.system(f"cat {out}")
-        with open(f"{out}", "r") as f:
-            print(f.read())
-        print("======================================================")
+        print_log([err, out])
 
     @staticmethod
     def check_result(result_data: dict, truth_data: dict, batch_size=1, delta=1e-3):
@@ -153,6 +145,14 @@ def sig_fig_compare(num0, num1, delta=5):
 def diff_compare(array1, array2):
     diff = np.abs(array1 - array2)
     return diff
+
+
+def print_log(file_list, iden=""):
+    for file in file_list:
+        print(f"======================{file} {iden}=====================")
+        with open(file, "r") as f:
+            print(f.read())
+        print("======================================================")
 
 
 def default_args():
