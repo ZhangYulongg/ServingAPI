@@ -34,7 +34,8 @@ class TestYOLOv3(object):
         self.default_config = dict_
 
     def teardown_method(self):
-        print_log(["stderr.log", "stdout.log"], iden="after predict")
+        print_log(["stderr.log", "stdout.log",
+                   "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
         kill_process(9993)
         self.serving_util.release()
 
