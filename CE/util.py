@@ -46,9 +46,13 @@ class ServingTest(object):
             p.wait()
 
         print(f"======================{err}======================")
-        os.system(f"cat {err}")
+        # os.system(f"cat {err}")
+        with open(f"{err}", "r") as f:
+            print(f.read())
         print(f"======================{out}======================")
-        os.system(f"cat {out}")
+        # os.system(f"cat {out}")
+        with open(f"{out}", "r") as f:
+            print(f.read())
         print("======================================================")
 
     @staticmethod

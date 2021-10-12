@@ -26,14 +26,22 @@ class TestIMDBPipeline(object):
 
     def teardown_method(self):
         print("======================stderr_cnn.log after predict======================")
-        os.system("cat stderr_cnn.log")
+        # os.system("cat stderr_cnn.log")
+        with open("stderr_cnn.log", "r") as f:
+            print(f.read())
         print("======================stdout_cnn.log after predict======================")
-        os.system("cat stdout_cnn.log")
+        # os.system("cat stdout_cnn.log")
+        with open("stdout_cnn.log", "r") as f:
+            print(f.read())
         print("====================================================================")
         print("======================stderr_bow.log after predict======================")
-        os.system("cat stderr_bow.log")
+        # os.system("cat stderr_bow.log")
+        with open("stderr_bow.log", "r") as f:
+            print(f.read())
         print("======================stdout_bow.log after predict======================")
-        os.system("cat stdout_bow.log")
+        # os.system("cat stdout_bow.log")
+        with open("stdout_bow.log", "r") as f:
+            print(f.read())
         print("====================================================================")
         kill_process(18070)
         self.serving_util.release(keywords="pipeline_server.py")
