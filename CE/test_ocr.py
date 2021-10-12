@@ -38,11 +38,8 @@ class TestOCR(object):
         os.system("sed -i '60 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_map)' det_web_server.py")
 
     def teardown_method(self):
-        print("======================stderr.log after predict======================")
-        os.system("cat stderr.log")
-        print("======================stdout.log after predict======================")
-        os.system("cat stdout.log")
-        print("====================================================================")
+        print_log(["stderr.log", "stdout.log",
+                   "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
         kill_process(9293)
         self.serving_util.release(keywords="server.py")
 

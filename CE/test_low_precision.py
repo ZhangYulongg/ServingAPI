@@ -21,11 +21,8 @@ class TestLowPrecision(object):
         self.serving_util = serving_util
 
     def teardown_method(self):
-        print("======================stderr.log after predict======================")
-        os.system("cat stderr.log")
-        print("======================stdout.log after predict======================")
-        os.system("cat stdout.log")
-        print("====================================================================")
+        print_log(["stderr.log", "stdout.log",
+                   "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
         kill_process(9393)
         self.serving_util.release()
 
