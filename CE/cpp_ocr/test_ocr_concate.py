@@ -18,6 +18,20 @@ sys.path.append("../")
 from util import *
 
 
+def parse_prototxt(file):
+    with open(file, "r") as f:
+        lines = [i.strip().split(":") for i in f.readlines()]
+
+    engines = {}
+    for i in lines:
+        if len(i) > 1:
+            if i[0] in engines:
+                engines[i[0]].append(i[1].strip())
+            else:
+                engines[i[0]] = [i[1].strip()]
+    return engines
+
+
 class TestOCR(object):
     def setup_class(self):
         serving_util = ServingTest(data_path="ocr", example_path="ocr", model_dir="ocr_det_model",
@@ -229,20 +243,24 @@ class TestOCR(object):
     def test_gpu_cpp_async(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op_num 2 4 --op_max_batch 16 --gpu_ids 0 --port 9293",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op_num 2 4 --op_max_batch 16 --gpu_ids 0,1 1 --port 9293",
             sleep=17,
         )
 
         # 2.resource check
         assert count_process_num_on_port(9293) == 1  # web Server
         assert check_gpu_memory(0) is True
-        assert check_gpu_memory(1) is False
+        assert check_gpu_memory(1) is True
 
         # 3.keywords check
         check_keywords_in_server_log("Sync params from CPU to GPU")
         check_keywords_in_server_log("BSF thread init done")
         check_keywords_in_server_log("runtime_thread_num: 2", "workdir_9293/general_detection_0/model_toolkit.prototxt")
         check_keywords_in_server_log("runtime_thread_num: 4", "workdir_9293/general_infer_0/model_toolkit.prototxt")
+        detection_op = parse_prototxt("workdir_9293/general_detection_0/model_toolkit.prototxt")
+        infer_op = parse_prototxt("workdir_9293/general_infer_0/model_toolkit.prototxt")
+        assert detection_op["gpu_ids"] == ["0", "1"]
+        assert infer_op["gpu_ids"] == ["1"]
 
         # 4.predict by http
         # batch_size=1
