@@ -35,5 +35,5 @@ get_tar
 run
 
 echo "=======result========"
-grep FAILED log_${cuda}_${cudnn}_${gcc}_${trt}.txt
+cat log_${cuda}_${cudnn}_${gcc}_${trt}.txt
 echo "====================="
