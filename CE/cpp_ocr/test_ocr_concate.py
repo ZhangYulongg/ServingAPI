@@ -211,7 +211,7 @@ class TestOCR(object):
         # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
-        kill_process(9292)
+        kill_process(9293)
 
     def test_gpu_cpp(self):
         # 1.start server
@@ -238,7 +238,7 @@ class TestOCR(object):
         # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
-        kill_process(9292, 2)
+        kill_process(9293, 2)
 
     def test_gpu_cpp_async(self):
         # 1.start server
@@ -272,4 +272,4 @@ class TestOCR(object):
         # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
-        kill_process(9292, 2)
+        kill_process(9293, 2)
