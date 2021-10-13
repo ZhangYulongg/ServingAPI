@@ -153,6 +153,8 @@ def print_log(file_list, iden=""):
         if os.path.exists(file):
             with open(file, "r") as f:
                 print(f.read())
+            if file.startswith("log") or file.startswith("PipelineServingLogs"):
+                os.remove(file)
         else:
             print(f"{file} not exist")
         print("======================================================")
