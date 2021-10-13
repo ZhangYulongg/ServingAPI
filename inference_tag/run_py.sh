@@ -1,5 +1,8 @@
 #!/bin/bash
+# 需设置
+# tag_path (2.2.0-rc0)
 
+tag_path=${tag_path}
 cuda=$1
 cudnn=$2
 gcc=$3
@@ -32,13 +35,13 @@ function set_py() {
 
 function get_whl() {
     if [ $cuda == "10.1" ]; then
-        wget https://paddle-inference-lib.bj.bcebos.com/2.2.0-rc0/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0.post101-cp${py}-cp${flag}-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0.post101-cp${py}-cp${flag}-linux_x86_64.whl
     elif [ $cuda == "10.2" ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0-rc0/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0-cp${py}-cp${flag}-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0-cp${py}-cp${flag}-linux_x86_64.whl
     elif [ $cuda == "11.1" ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0-rc0/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0.post111-cp${py}-cp${flag}-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0.post111-cp${py}-cp${flag}-linux_x86_64.whl
     elif [ $cuda == "11.2" ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0-rc0/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0.post112-cp${py}-cp${flag}-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0.post112-cp${py}-cp${flag}-linux_x86_64.whl
     fi
 }
 
