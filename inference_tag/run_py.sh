@@ -59,4 +59,4 @@ python -m pip install paddlepaddle* -i https://mirror.baidu.com/pypi/simple
 
 ln -s /usr/lib64/libnvidia-ml.so.* /usr/lib64/libnvidia-ml.so.1;
 
-bash -x run.sh > log_${cuda}_${cudnn}_${gcc}_${trt}_${py}.txt 2>&1
+bash -x run.sh | tee log_${cuda}_${cudnn}_${gcc}_${trt}_${py}.txt
