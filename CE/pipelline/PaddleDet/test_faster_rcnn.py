@@ -87,7 +87,6 @@ class TestFasterRCNN(object):
         del dict_["save_infer_model/scale_1.tmp_1"]
         dict_["image"] = file_name
         postprocess(dict_)
-        os.system("ps -ef")
 
     def predict_pipeline_http(self, batch_size=1):
         # 1.prepare feed_data
@@ -141,7 +140,6 @@ class TestFasterRCNN(object):
 
         # 4.predict by http
         result = self.predict_pipeline_http(batch_size=1)  # batch_size=1
-        # TODO CPU和GPU结果均存在diff，待排查
         self.serving_util.check_result(result_data=result, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
