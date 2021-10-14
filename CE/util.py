@@ -160,6 +160,20 @@ def print_log(file_list, iden=""):
         print("======================================================")
 
 
+def parse_prototxt(file):
+    with open(file, "r") as f:
+        lines = [i.strip().split(":") for i in f.readlines()]
+
+    engines = {}
+    for i in lines:
+        if len(i) > 1:
+            if i[0] in engines:
+                engines[i[0]].append(i[1].strip())
+            else:
+                engines[i[0]] = [i[1].strip()]
+    return engines
+
+
 def default_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args([])
