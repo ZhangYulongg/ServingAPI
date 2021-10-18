@@ -54,6 +54,7 @@ get_whl
 unset http_proxy
 unset https_proxy
 
+python -m pip install --upgrade pip==21.1.3 -i https://mirror.baidu.com/pypi/simple
 python -m pip install -r requirements.txt -i https://mirror.baidu.com/pypi/simple
 python -m pip install paddlepaddle* -i https://mirror.baidu.com/pypi/simple
 
