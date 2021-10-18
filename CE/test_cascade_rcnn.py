@@ -2,6 +2,7 @@ import os
 import subprocess
 import numpy as np
 import copy
+import cv2
 
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_app.reader import BlazeFacePostprocess
@@ -27,18 +28,17 @@ class TestCascadeRCNN(object):
 
     def get_truth_val_by_inference(self):
         preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize(800, 1333), Transpose((2, 0, 1)), PadStride(32)
+            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
+            Transpose((2, 0, 1))
         ])
         im = preprocess('000000570688.jpg')
         im = im[np.newaxis, :]
         input_dict = {}
-        input_dict["im_shape"] = np.array(list(im.shape[2:]) + [1.0]).astype("float32")[np.newaxis, :]
+        input_dict["im_shape"] = np.array(list(im.shape[2:])).astype("float32")[np.newaxis, :]
         input_dict["image"] = im.astype("float32")
-        input_dict["im_info"] = np.array(list(im.shape[2:]) + [1.0]).astype("float32")[np.newaxis, :]
+        input_dict["scale_factor"] = np.array([1.0, 1.0]).reshape(-1).astype("float32")[np.newaxis, :]
 
-        pd_config = paddle_infer.Config("serving_server")
+        pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
         pd_config.enable_use_gpu(1000, 0)
         pd_config.switch_ir_optim(False)
 
@@ -57,8 +57,11 @@ class TestCascadeRCNN(object):
             output_handle = predictor.get_output_handle(output_data_name)
             output_data = output_handle.copy_to_cpu()
             output_data_dict[output_data_name] = output_data
+        # 对齐serving output
+        output_data_dict["save_infer_model/scale_0.tmp_1"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
+        del output_data_dict["save_infer_model/scale_0.tmp_0"]
         self.truth_val = output_data_dict
-        # print(self.truth_val, self.truth_val["multiclass_nms_0.tmp_0"].shape)
+        print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape)
 
     def check_result(self, result_data, truth_data, batch_size=1, delta=1e-3):
         # flatten
@@ -76,14 +79,13 @@ class TestCascadeRCNN(object):
 
     def predict_brpc(self, batch_size=1):
         preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize(800, 1333), Transpose((2, 0, 1)), PadStride(32)
+            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
+            Transpose((2, 0, 1))
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output")
+        postprocess = RCNNPostprocess("label_list.txt", "output", [608, 608])
         im = preprocess('000000570688.jpg')
 
-        fetch = ["multiclass_nms_0.tmp_0"]
+        fetch = ["save_infer_model/scale_0.tmp_1"]
         endpoint_list = ['127.0.0.1:9292']
 
         client = Client()
@@ -93,10 +95,10 @@ class TestCascadeRCNN(object):
         fetch_map = client.predict(
             feed={
                 "image": im,
-                "im_info": np.array(list(im.shape[1:]) + [1.0]),
-                "im_shape": np.array(list(im.shape[1:]) + [1.0])
+                "im_shape": np.array(list(im.shape[1:])),
+                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
             },
-            fetch=["multiclass_nms_0.tmp_0"],
+            fetch=["save_infer_model/scale_0.tmp_1"],
             batch=False)
         print(fetch_map)
         dict_ = copy.deepcopy(fetch_map)
@@ -121,7 +123,10 @@ class TestCascadeRCNN(object):
 
         # 4.predict
         result_data = self.predict_brpc(batch_size=1)
-        self.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        # 删除lod信息
+        del result_data["save_infer_model/scale_0.tmp_1.lod"]
+        # TODO 分类结果有误，待更新
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
         kill_process(9292, 2)
