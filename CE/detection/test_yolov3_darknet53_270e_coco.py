@@ -31,9 +31,8 @@ class TestYOLOv3(object):
 
     def get_truth_val_by_inference(self):
         preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize((608, 608)), Transpose((2, 0, 1))
+            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
+            Transpose((2, 0, 1))
         ])
         filename = "000000570688.jpg"
         im = preprocess(filename)[np.newaxis, :]
@@ -71,16 +70,14 @@ class TestYOLOv3(object):
 
     def predict_brpc(self, batch_size=1):
         preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize((608, 608)), Transpose((2, 0, 1))
+            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
+            Transpose((2, 0, 1))
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output")
+        postprocess = RCNNPostprocess("label_list.txt", "output", [608, 608])
         filename = "000000570688.jpg"
         im = preprocess(filename)
 
-        # todo fetch save_infer_model/scale_1.tmp_1 时报错，暂时不取这个输出
-        fetch = ["save_infer_model/scale_0.tmp_1"]
+        fetch = ["save_infer_model/scale_0.tmp_1", "save_infer_model/scale_1.tmp_1"]
         endpoint_list = ['127.0.0.1:9494']
 
         client = Client()
@@ -97,6 +94,7 @@ class TestYOLOv3(object):
             batch=False)
         print(fetch_map)
         dict_ = copy.deepcopy(fetch_map)
+        del dict_["save_infer_model/scale_1.tmp_1"]
         dict_["image"] = filename
         postprocess(dict_)
         return fetch_map

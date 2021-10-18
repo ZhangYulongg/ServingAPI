@@ -43,9 +43,8 @@ class TestPPYOLO(object):
 
     def get_truth_val_by_inference(self):
         preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize((608, 608)), Transpose((2, 0, 1))
+            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
+            Transpose((2, 0, 1))
         ])
         filename = "000000570688.jpg"
         im = preprocess(filename)[np.newaxis, :]
@@ -90,7 +89,7 @@ class TestPPYOLO(object):
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape, self.truth_val["save_infer_model/scale_1.tmp_0"].shape)
 
         # 输出预测库结果，框位置正确
-        postprocess = RCNNPostprocess("label_list.txt", "output")
+        postprocess = RCNNPostprocess("label_list.txt", "output_infer", [608, 608])
         output_data_dict["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 100], dtype="int32")
         dict_ = copy.deepcopy(output_data_dict)
         del dict_["save_infer_model/scale_1.tmp_0"]
@@ -99,15 +98,13 @@ class TestPPYOLO(object):
 
     def predict_brpc(self, batch_size=1):
         preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize((608, 608)), Transpose((2, 0, 1))
+            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
+            Transpose((2, 0, 1))
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output1")
+        postprocess = RCNNPostprocess("label_list.txt", "output", [608, 608])
         filename = "000000570688.jpg"
         im = preprocess(filename)
 
-        # todo fetch save_infer_model/scale_1.tmp_1 时报错，暂时不取这个输出
         fetch = ["save_infer_model/scale_0.tmp_1"]
         endpoint_list = ['127.0.0.1:9494']
 
@@ -131,11 +128,10 @@ class TestPPYOLO(object):
 
     def predict_brpc_encrypt(self, batch_size=1):
         preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize((608, 608)), Transpose((2, 0, 1))
+            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
+            Transpose((2, 0, 1))
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output2")
+        postprocess = RCNNPostprocess("label_list.txt", "output_encrypt", [608, 608])
         filename = "000000570688.jpg"
         im = preprocess(filename)
 

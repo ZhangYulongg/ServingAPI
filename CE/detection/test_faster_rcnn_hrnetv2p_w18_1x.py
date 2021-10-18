@@ -30,18 +30,17 @@ class TestFasterRCNN(object):
 
     def get_truth_val_by_inference(self):
         preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize(640, 640), Transpose((2, 0, 1))
+            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
+            Transpose((2, 0, 1))
         ])
         file_name = "000000570688.jpg"
         im = preprocess(file_name)[np.newaxis, :]
         input_dict = {}
-        input_dict["im_shape"] = np.array(list(im.shape[2:]) + [1.0]).astype("float32")[np.newaxis, :]
+        input_dict["im_shape"] = np.array(list(im.shape[2:])).astype("float32")[np.newaxis, :]
         input_dict["image"] = im.astype("float32")
-        input_dict["im_info"] = np.array(list(im.shape[2:]) + [1.0]).astype("float32")[np.newaxis, :]
+        input_dict["scale_factor"] = np.array([1.0, 1.0]).reshape(-1).astype("float32")[np.newaxis, :]
 
-        pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
+        pd_config = paddle_infer.Config("serving_server/model.pdmodel", "serving_server/model.pdiparams")
         pd_config.disable_gpu()
         pd_config.switch_ir_optim(False)
 
@@ -61,22 +60,19 @@ class TestFasterRCNN(object):
             output_data = output_handle.copy_to_cpu()
             output_data_dict[output_data_name] = output_data
         # 对齐 Serving output
-        output_data_dict["multiclass_nms_0.tmp_0"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
-        del output_data_dict["save_infer_model/scale_0.tmp_0"]
         self.truth_val = output_data_dict
-        print(self.truth_val, self.truth_val["multiclass_nms_0.tmp_0"].shape)
+        print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape)
 
     def predict_brpc(self, batch_size=1):
         preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize(640, 640), Transpose((2, 0, 1))
+            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
+            Transpose((2, 0, 1))
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output")
+        postprocess = RCNNPostprocess("label_list.txt", "output", [608, 608])
         file_name = "000000570688.jpg"
         im = preprocess(file_name)
 
-        fetch = ["multiclass_nms_0.tmp_0"]
+        fetch = ["save_infer_model/scale_0.tmp_1"]
         endpoint_list = ['127.0.0.1:9292']
 
         client = Client()
@@ -86,8 +82,8 @@ class TestFasterRCNN(object):
         fetch_map = client.predict(
             feed={
                 "image": im,
-                "im_info": np.array(list(im.shape[1:]) + [1.0]),
-                "im_shape": np.array(list(im.shape[1:]) + [1.0])
+                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
+                "im_shape": np.array(list(im.shape[1:]))
             },
             fetch=fetch,
             batch=False)
@@ -115,7 +111,7 @@ class TestFasterRCNN(object):
         # 4.predict
         result_data = self.predict_brpc(batch_size=1)
         # 删除lod信息
-        del result_data["multiclass_nms_0.tmp_0.lod"]
+        del result_data["save_infer_model/scale_0.tmp_1.lod"]
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
