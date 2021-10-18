@@ -63,20 +63,6 @@ class TestCascadeRCNN(object):
         self.truth_val = output_data_dict
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape)
 
-    def check_result(self, result_data, truth_data, batch_size=1, delta=1e-3):
-        # flatten
-        predict_result = {}
-        truth_result = {}
-        for key, value in result_data.items():
-            predict_result[key] = value.flatten()
-        for key, value in truth_data.items():
-            truth_result[key] = np.repeat(value, repeats=batch_size, axis=0).flatten()
-
-        # compare
-        for i, data in enumerate(predict_result["multiclass_nms_0.tmp_0"]):
-            diff = sig_fig_compare(data, truth_result["multiclass_nms_0.tmp_0"][i])
-            assert diff < delta, f"diff is {diff} > {delta}"
-
     def predict_brpc(self, batch_size=1):
         preprocess = Sequential([
             File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
