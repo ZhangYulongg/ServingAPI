@@ -61,11 +61,11 @@ class TestYOLOv4(object):
         self.truth_val = output_data_dict
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_0"].shape)
 
-        # postprocess = RCNNPostprocess("label_list.txt", "output_infer", [608, 608])
-        # output_data_dict["save_infer_model/scale_0.tmp_0.lod"] = np.array([0, 858], dtype="int32")
-        # dict_ = copy.deepcopy(output_data_dict)
-        # dict_["image"] = filename
-        # postprocess(dict_)
+        postprocess = RCNNPostprocess("label_list.txt", "output_infer", [608, 608])
+        output_data_dict["save_infer_model/scale_0.tmp_0.lod"] = np.array([0, 858], dtype="int32")
+        dict_ = copy.deepcopy(output_data_dict)
+        dict_["image"] = filename
+        postprocess(dict_)
 
     def predict_brpc(self, batch_size=1):
         # 1.prepare feed_data
@@ -114,7 +114,6 @@ class TestYOLOv4(object):
 
         # 4.predict
         result_data = self.predict_brpc(batch_size=1)
-        # TODO cpu和gpu结果均有较大diff，待排查
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
