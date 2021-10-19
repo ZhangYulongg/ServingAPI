@@ -205,10 +205,10 @@ class TestOCR(object):
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
         print(result["ctc_greedy_decoder_0.tmp_0"].shape, result["softmax_0.tmp_0"].shape)
-        # TODO 输出少一句话，暂未进行精度校验
-        # # 删除lod信息
-        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
-        # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
+        # 删除lod信息
+        assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
+        del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"], result["ctc_greedy_decoder_0.tmp_0"]
+        # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
         kill_process(9293)
@@ -232,10 +232,10 @@ class TestOCR(object):
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
         print(result["ctc_greedy_decoder_0.tmp_0"].shape, result["softmax_0.tmp_0"].shape)
-        # TODO 输出少一句话，暂未进行精度校验
-        # # 删除lod信息
-        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
-        # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
+        # 删除lod信息
+        assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
+        del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
+        # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
         kill_process(9293, 2)
@@ -266,10 +266,10 @@ class TestOCR(object):
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
         print(result["ctc_greedy_decoder_0.tmp_0"].shape, result["softmax_0.tmp_0"].shape)
-        # TODO 输出少一句话，暂未进行精度校验
-        # # 删除lod信息
-        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
-        # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
+        # 删除lod信息
+        assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
+        del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
+        # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
         kill_process(9293, 2)
