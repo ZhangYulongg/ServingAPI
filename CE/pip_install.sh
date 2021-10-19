@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# 需要CODE_PATH、test_branch
 # 进入serving目录
 serving_dir=${CODE_PATH}/Serving/
 py_version=$py_version
