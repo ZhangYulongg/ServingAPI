@@ -96,10 +96,3 @@ class TestCPPClient(object):
 
         # 5.release
         kill_process(9494)
-
-
-if __name__ == '__main__':
-    sss = TestCPPClient()
-    sss.get_truth_val_by_inference()
-
-

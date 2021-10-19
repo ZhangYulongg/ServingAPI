@@ -260,10 +260,3 @@ class TestResnetV2(object):
 
         # 5.release
         kill_process(9696, 2)
-
-
-if __name__ == '__main__':
-    sss = TestResnetV2()
-    sss.get_truth_val_by_inference()
-
-

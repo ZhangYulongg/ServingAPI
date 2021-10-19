@@ -118,10 +118,3 @@ class TestYOLOv4(object):
 
         # 5.release
         kill_process(9393, 2)
-
-
-if __name__ == '__main__':
-    sss = TestYOLOv4()
-    sss.get_truth_val_by_inference()
-
-

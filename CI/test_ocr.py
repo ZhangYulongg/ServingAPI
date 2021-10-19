@@ -33,7 +33,6 @@ class TestOCR(object):
         })
         self.ocr_reader = OCRReader()
         self.get_truth_val_by_inference(self)
-        # TODO 为校验精度将模型输出存入npy文件，通过修改server端代码实现，考虑更优雅的方法
         os.system("sed -i '96 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_map)' ocr_debugger_server.py")
         os.system("sed -i '60 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_map)' det_web_server.py")
 
