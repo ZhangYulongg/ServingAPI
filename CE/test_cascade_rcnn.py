@@ -39,7 +39,7 @@ class TestCascadeRCNN(object):
         input_dict["scale_factor"] = np.array([1.0, 1.0]).reshape(-1).astype("float32")[np.newaxis, :]
 
         pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
-        pd_config.enable_use_gpu(1000, 0)
+        pd_config.disable_gpu()
         pd_config.switch_ir_optim(False)
 
         predictor = paddle_infer.create_predictor(pd_config)
@@ -112,7 +112,7 @@ class TestCascadeRCNN(object):
         # 删除lod信息
         del result_data["save_infer_model/scale_0.tmp_1.lod"]
         # TODO 分类结果有误，待更新
-        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1, delta=1e-2)
 
         # 5.release
         kill_process(9292, 2)
