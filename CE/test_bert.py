@@ -64,23 +64,6 @@ class TestBert(object):
         self.truth_val = output_data_dict
         print(self.truth_val, self.truth_val["pooled_output"].shape, self.truth_val["sequence_output"].shape)
 
-    def check_result(self, result_data, truth_data, batch_size=1, delta=1e-3):
-        # flatten
-        predict_result = {}
-        truth_result = {}
-        for key, value in result_data.items():
-            predict_result[key] = value.flatten()
-        for key, value in truth_data.items():
-            truth_result[key] = np.repeat(value, repeats=batch_size, axis=0).flatten()
-
-        # compare
-        for i, data in enumerate(predict_result["pooled_output"]):
-            diff = sig_fig_compare(data, truth_result["save_infer_model/scale_0.tmp_0"][i])
-            assert diff < delta, f"diff is {diff} > {delta}"
-        for i, data in enumerate(predict_result["sequence_output"]):
-            diff = sig_fig_compare(data, truth_result["save_infer_model/scale_1.tmp_0"][i])
-            assert diff < delta, f"diff is {diff} > {delta}"
-
     def predict_brpc(self, batch_size=1):
         reader = ChineseBertReader({"max_seq_len": 128})
         fetch = ["pooled_output", "sequence_output"]
