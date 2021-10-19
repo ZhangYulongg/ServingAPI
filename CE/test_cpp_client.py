@@ -20,6 +20,7 @@ class TestCPPClient(object):
         serving_util = ServingTest(data_path="fit_a_line", example_path="fit_a_line", model_dir="uci_housing_model",
                                    client_dir="uci_housing_client")
         serving_util.check_model_data_exist()
+        os.system("\cp -r ${CODE_PATH}/Serving/client-build/core/general-client/simple_client ./")
         self.get_truth_val_by_inference(self)
         self.serving_util = serving_util
 
