@@ -21,7 +21,7 @@ echo -e "import psutil\ncpu_utilization=psutil.cpu_percent(1,False)\nprint('CPU_
 
 ${py_version} benchmark.py --thread 10 --batch_size 1 --model ocr_det_client/serving_client_conf.prototxt,ocr_rec_client/serving_client_conf.prototxt --request rpc > profile 2>&1
 echo -e "import psutil\nimport time\nwhile True:\n\tcpu_res = psutil.cpu_percent()\n\twith open('cpu.txt', 'a+') as f:\n\t\tf.write(f'{cpu_res}\\\n')\n\ttime.sleep(0.1)" > cpu.py
-for thread_num in 1 2 4 6 8 12 16
+for thread_num in 1 5 10 15 20 25
 do
 for batch_size in 1
 do

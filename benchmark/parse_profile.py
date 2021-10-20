@@ -94,7 +94,7 @@ if __name__ == "__main__":
     memory_str = sub.stdout.read() or "16160 Mib"
     total_memory = int(memory_str.split(' ')[0])
     f = open(benchmark_cfg_filename, 'r')
-    benchmark_config = yaml.load(f)
+    benchmark_config = yaml.load(f, yaml.FullLoader)
     f.close()
     benchmark_log_filename = args.benchmark_log
     f = open(benchmark_log_filename, 'r')
