@@ -447,8 +447,6 @@ $py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/cpp --ser
 $py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/cpp_async --server_mode Pipeline --output_name benchmark_excel_cpp.xlsx --output_html_name benchmark_data_cpp.html
 cp *.xlsx ${log_dir}/benchmark_excel
 cp *.html ${log_dir}/benchmark_excel
-cp *.xlsx ${output_dir}/
-cp *.html ${output_dir}/
 # 写入数据库
 $py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/pipeline --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode Pipeline
 $py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/cpp --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode CPP
