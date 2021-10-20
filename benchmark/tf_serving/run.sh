@@ -50,7 +50,7 @@ function tf_serving_resnet() {
     sed -i "s/imagenet/ResNet/g" benchmark_cfg.yaml
     $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_resnet > ${dir}/client_log.txt 2>&1
     tail -n 31 ${dir}/client_log.txt
-    cp -r benchmark_logs ${log_dir}/benchmark_logs/tf_serving/profile_log_ocr
+    cp -r benchmark_logs ${log_dir}/benchmark_logs/tf_serving/profile_log_res
 }
 
 /usr/bin/python3 -m pip install paddle-serving-client==0.6.2 -i https://mirror.baidu.com/pypi/simple
