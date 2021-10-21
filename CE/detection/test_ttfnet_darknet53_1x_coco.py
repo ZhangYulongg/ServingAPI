@@ -30,18 +30,22 @@ class TestTTFNet(object):
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(),
-            Normalize([123.675, 116.28, 103.53], [58.395, 57.12, 57.375], False),
-            Resize((512, 512)), Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionResize((512, 512), False, interpolation=cv2.INTER_LINEAR),
+            DetectionNormalize([123.675, 116.28, 103.53], [58.395, 57.12, 57.375], False),
+            DetectionTranspose((2, 0, 1))
         ])
         filename = "000000570688.jpg"
-        im = preprocess(filename)[np.newaxis, :]
+        im, im_info = preprocess(filename)
+        print("im_info:", im_info)
+        im = im[np.newaxis, :]
         input_dict = {}
         input_dict["image"] = im.astype("float32")
-        input_dict["scale_factor"] = np.array([1.0, 1.0]).astype("float32")[np.newaxis, :]
+        input_dict["im_shape"] = np.array(list(im.shape[2:])).reshape(-1).astype("float32")
+        input_dict["scale_factor"] = im_info['scale_factor'][np.newaxis, :]
 
-        pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
+        pd_config = paddle_infer.Config("serving_server/model.pdmodel", "serving_server/model.pdiparams")
         pd_config.disable_gpu()
         pd_config.switch_ir_optim(False)
 
@@ -61,22 +65,29 @@ class TestTTFNet(object):
             output_data = output_handle.copy_to_cpu()
             output_data_dict[output_data_name] = output_data
         # 对齐serving output
-        output_data_dict["save_infer_model/scale_0.tmp_1"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
-        output_data_dict["save_infer_model/scale_1.tmp_1"] = output_data_dict["save_infer_model/scale_1.tmp_0"]
-        del output_data_dict["save_infer_model/scale_0.tmp_0"], output_data_dict["save_infer_model/scale_1.tmp_0"]
         self.truth_val = output_data_dict
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape,
               self.truth_val["save_infer_model/scale_1.tmp_1"].shape)
 
+        # 输出预测库结果，框位置正确
+        postprocess = RCNNPostprocess("label_list.txt", "output_infer")
+        output_data_dict["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 100], dtype="int32")
+        dict_ = copy.deepcopy(output_data_dict)
+        del dict_["save_infer_model/scale_1.tmp_1"]
+        dict_["image"] = filename
+        postprocess(dict_)
+
     def predict_brpc(self, batch_size=1):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(),
-            Normalize([123.675, 116.28, 103.53], [58.395, 57.12, 57.375], False),
-            Resize((512, 512)), Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionResize((512, 512), False, interpolation=cv2.INTER_LINEAR),
+            DetectionNormalize([123.675, 116.28, 103.53], [58.395, 57.12, 57.375], False),
+            DetectionTranspose((2, 0, 1))
         ])
         postprocess = RCNNPostprocess("label_list.txt", "output")
         filename = "000000570688.jpg"
-        im = preprocess(filename)
+        im, im_info = preprocess(filename)
+        print("im_info:", im_info)
 
         fetch = ["save_infer_model/scale_0.tmp_1", "save_infer_model/scale_1.tmp_1"]
         endpoint_list = ['127.0.0.1:9494']
@@ -88,17 +99,18 @@ class TestTTFNet(object):
         fetch_map = client.predict(
             feed={
                 "image": im,
-                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
+                "im_shape": np.array(list(im.shape[1:])).reshape(-1),
+                "scale_factor": im_info['scale_factor'],
             },
             fetch=fetch,
             batch=False)
         print(fetch_map, fetch_map["save_infer_model/scale_0.tmp_1"].shape, fetch_map["save_infer_model/scale_1.tmp_1"].shape)
         dict_ = copy.deepcopy(fetch_map)
         dict_["image"] = filename
-        dict_["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 101], dtype=np.int32)
+        dict_["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 100], dtype=np.int32)
         del dict_["save_infer_model/scale_1.tmp_1"]
         # TODO 未生成lod信息，暂不输出图片
-        # postprocess(dict_)
+        postprocess(dict_)
         return fetch_map
 
     def test_gpu(self):
@@ -119,15 +131,7 @@ class TestTTFNet(object):
         # 4.predict
         result_data = self.predict_brpc(batch_size=1)
         # TODO 未生成lod信息
-        # 删除 lod信息
-        # del result_data["save_infer_model/scale_0.tmp_1.lod"]
-        del result_data["save_infer_model/scale_1.tmp_1"]
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
         kill_process(9494, 2)
-
-
-if __name__ == '__main__':
-    sss = TestTTFNet()
-    sss.get_truth_val_by_inference()
