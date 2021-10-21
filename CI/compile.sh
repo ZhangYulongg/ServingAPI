@@ -78,7 +78,7 @@ function compile_server() {
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT6-cuda10.1-cudnn7/targets/x86_64-linux-gnu/"
     elif [ $1 == 102 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
-    elif [ $1 == 110 ]; then
+    elif [ $1 == 112 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
     elif [ $1 == "cpu" ]; then
         echo $1
@@ -121,7 +121,7 @@ function compile_server_withopencv() {
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT6-cuda10.1-cudnn7/targets/x86_64-linux-gnu/"
     elif [ $1 == 102 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
-    elif [ $1 == 110 ]; then
+    elif [ $1 == 112 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
     elif [ $1 == "cpu" ]; then
         echo $1
@@ -209,13 +209,13 @@ function py_requirements () {
     elif [ $1 == 38 ]; then
         wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.2-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0-cp38-cp38-linux_x86_64.whl > /dev/null 2>&1
     fi
-  elif [ $2 == 110 ]; then
+  elif [ $2 == 112 ]; then
     if [ $1 == 36 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda11.0-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post110-cp36-cp36m-linux_x86_64.whl > /dev/null 2>&1
+        wget -q https://paddle-wheel.bj.bcebos.com/2.2.0-rc0/linux/linux-gpu-cuda11.2-cudnn8-mkl-gcc8.2-avx/paddlepaddle_gpu-2.2.0rc0.post112-cp36-cp36m-linux_x86_64.whl > /dev/null 2>&1
     elif [ $1 == 37 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda11.0-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post110-cp37-cp37m-linux_x86_64.whl > /dev/null 2>&1
+        wget -q https://paddle-wheel.bj.bcebos.com/2.2.0-rc0/linux/linux-gpu-cuda11.2-cudnn8-mkl-gcc8.2-avx/paddlepaddle_gpu-2.2.0rc0.post112-cp37-cp37m-linux_x86_64.whl > /dev/null 2>&1
     elif [ $1 == 38 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda11.0-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post110-cp38-cp38-linux_x86_64.whl > /dev/null 2>&1
+        wget -q https://paddle-wheel.bj.bcebos.com/2.2.0-rc0/linux/linux-gpu-cuda11.2-cudnn8-mkl-gcc8.2-avx/paddlepaddle_gpu-2.2.0rc0.post112-cp38-cp38-linux_x86_64.whl > /dev/null 2>&1
     fi
   elif [ $2 == "cpu" ]; then
     if [ $1 == 36 ]; then

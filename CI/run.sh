@@ -1,4 +1,11 @@
 export FLAGS_call_stack_level=2
+
+# check bin
+if [ ! -f "${CODE_PATH}/Serving/server-build-gpu-opencv/core/general-server/serving" ]; then
+    echo "compile failed!"
+    exit 1
+fi
+
 rm -rf result.txt
 cases=`find ./ -name "test*.py" | sort`
 #cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
