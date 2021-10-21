@@ -105,14 +105,14 @@ class TestFasterRCNN(object):
     def test_gpu_multicard(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9292 --gpu_ids 2,3",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9292 --gpu_ids 0,1",
             sleep=18,
         )
 
         # 2.resource check
         assert count_process_num_on_port(9292) == 1
-        assert check_gpu_memory(2) is True
-        assert check_gpu_memory(3) is True
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
 
         # 3.keywords check
         check_keywords_in_server_log("Sync params from CPU to GPU")
