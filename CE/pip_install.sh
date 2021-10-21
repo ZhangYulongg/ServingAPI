@@ -78,13 +78,13 @@ function py_requirements () {
     elif [ $1 == 38 ]; then
         wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda10.2-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0-cp38-cp38-linux_x86_64.whl > /dev/null 2>&1
     fi
-  elif [ $2 == 110 ]; then
+  elif [ $2 == 112 ]; then
     if [ $1 == 36 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda11.0-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post110-cp36-cp36m-linux_x86_64.whl > /dev/null 2>&1
+        wget -q https://paddle-wheel.bj.bcebos.com/2.2.0-rc0/linux/linux-gpu-cuda11.2-cudnn8-mkl-gcc8.2-avx/paddlepaddle_gpu-2.2.0rc0.post112-cp36-cp36m-linux_x86_64.whl > /dev/null 2>&1
     elif [ $1 == 37 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda11.0-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post110-cp37-cp37m-linux_x86_64.whl > /dev/null 2>&1
+        wget -q https://paddle-wheel.bj.bcebos.com/2.2.0-rc0/linux/linux-gpu-cuda11.2-cudnn8-mkl-gcc8.2-avx/paddlepaddle_gpu-2.2.0rc0.post112-cp37-cp37m-linux_x86_64.whl > /dev/null 2>&1
     elif [ $1 == 38 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/with-trt/2.1.0-gpu-cuda11.0-cudnn8-mkl-gcc8.2/paddlepaddle_gpu-2.1.0.post110-cp38-cp38-linux_x86_64.whl > /dev/null 2>&1
+        wget -q https://paddle-wheel.bj.bcebos.com/2.2.0-rc0/linux/linux-gpu-cuda11.2-cudnn8-mkl-gcc8.2-avx/paddlepaddle_gpu-2.2.0rc0.post112-cp38-cp38-linux_x86_64.whl > /dev/null 2>&1
     fi
   elif [ $2 == "cpu" ]; then
     if [ $1 == 36 ]; then
@@ -125,8 +125,8 @@ function pip_install_serving() {
     whl_list[2]=server_gpu-${version}.post101-py3
   elif [ $2 == 102 ]; then
     whl_list[2]=server_gpu-${version}.post102-py3
-  elif [ $2 == 110 ]; then
-    whl_list[2]=server_gpu-${version}.post11-py3
+  elif [ $2 == 112 ]; then
+    whl_list[2]=server_gpu-${version}-py3
   elif [ $2 == "cpu" ]; then
     whl_list[2]=server-${version}-py3
   fi
