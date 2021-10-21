@@ -1,4 +1,3 @@
-# todo fetch取值错误示例 + 框bug示例
 import os
 import subprocess
 import numpy as np
@@ -30,17 +29,20 @@ class TestSSDVGG16(object):
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(),
-            Normalize([123.675, 116.28, 103.53], [58.395, 57.12, 57.375], False),
-            Resize((512, 512)), Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionResize((300, 300), False, interpolation=cv2.INTER_LINEAR),
+            DetectionNormalize([104.0, 117.0, 123.0], [1.0, 1.0, 1.0], False),
+            DetectionTranspose((2, 0, 1)),
         ])
-        filename = "000000570688.jpg"
-        im = preprocess(filename)[np.newaxis, :]
+        filename = "000000014439.jpg"
+        im, im_info = preprocess(filename)
+        print("im_info:", im_info)
+        im = im[np.newaxis, :]
         input_dict = {}
         input_dict["image"] = im.astype("float32")
-        input_dict["im_shape"] = np.array([512, 512]).astype("float32")[np.newaxis, :]
-        input_dict["scale_factor"] = np.array([1.0, 1.0]).astype("float32")[np.newaxis, :]
+        input_dict["im_shape"] = np.array(list(im.shape[2:])).reshape(-1).astype("float32")[np.newaxis, :]
+        input_dict["scale_factor"] = im_info['scale_factor'][np.newaxis, :]
 
         pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
         pd_config.disable_gpu()
@@ -70,16 +72,17 @@ class TestSSDVGG16(object):
               self.truth_val["save_infer_model/scale_1.tmp_1"].shape)
 
     def predict_brpc(self, batch_size=1):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(),
-            Normalize([123.675, 116.28, 103.53], [58.395, 57.12, 57.375], False),
-            Resize((512, 512)), Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionResize((300, 300), False, interpolation=cv2.INTER_LINEAR),
+            DetectionNormalize([104.0, 117.0, 123.0], [1.0, 1.0, 1.0], False),
+            DetectionTranspose((2, 0, 1)),
         ])
         postprocess = RCNNPostprocess("label_list.txt", "output")
-        filename = "000000570688.jpg"
-        im = preprocess(filename)
+        filename = "000000014439.jpg"
+        im, im_info = preprocess(filename)
+        print("im_info:", im_info)
 
-        # todo fetch save_infer_model/scale_1.tmp_1 时报错，暂时不取这个输出
         fetch = ["save_infer_model/scale_0.tmp_1"]
         endpoint_list = ['127.0.0.1:9494']
 
@@ -90,8 +93,8 @@ class TestSSDVGG16(object):
         fetch_map = client.predict(
             feed={
                 "image": im,
-                "im_shape": np.array([512, 512]),
-                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
+                "im_shape": np.array(list(im.shape[1:])).reshape(-1),
+                "scale_factor": im_info['scale_factor'],
             },
             fetch=fetch,
             batch=False)
