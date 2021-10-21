@@ -27,16 +27,20 @@ class TestCascadeRCNN(object):
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
-            Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionResize((800, 1333), True, interpolation=2),
+            DetectionNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            DetectionTranspose((2, 0, 1)),
+            DetectionPadStride(32)
         ])
-        im = preprocess('000000570688.jpg')
+        im, im_info = preprocess('000000570688.jpg')
+        print("im_info:", im_info)
         im = im[np.newaxis, :]
         input_dict = {}
         input_dict["im_shape"] = np.array(list(im.shape[2:])).astype("float32")[np.newaxis, :]
         input_dict["image"] = im.astype("float32")
-        input_dict["scale_factor"] = np.array([1.0, 1.0]).reshape(-1).astype("float32")[np.newaxis, :]
+        input_dict["scale_factor"] = im_info['scale_factor'][np.newaxis, :]
 
         pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
         pd_config.disable_gpu()
@@ -64,12 +68,16 @@ class TestCascadeRCNN(object):
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape)
 
     def predict_brpc(self, batch_size=1):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
-            Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionResize((800, 1333), True, interpolation=2),
+            DetectionNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            DetectionTranspose((2, 0, 1)),
+            DetectionPadStride(32)
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output", [608, 608])
-        im = preprocess('000000570688.jpg')
+        postprocess = RCNNPostprocess("label_list.txt", "output")
+        im, im_info = preprocess('000000570688.jpg')
+        print("im_info:", im_info)
 
         fetch = ["save_infer_model/scale_0.tmp_1"]
         endpoint_list = ['127.0.0.1:9292']
@@ -82,7 +90,7 @@ class TestCascadeRCNN(object):
             feed={
                 "image": im,
                 "im_shape": np.array(list(im.shape[1:])),
-                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
+                "scale_factor": im_info['scale_factor'],
             },
             fetch=["save_infer_model/scale_0.tmp_1"],
             batch=False)
