@@ -12,6 +12,7 @@ from paddle_serving_app.reader import SegPostprocess
 from paddle_serving_app.reader import *
 import paddle.inference as paddle_infer
 
+sys.path.append("../")
 from util import *
 
 
@@ -40,16 +41,20 @@ class TestPPYOLO(object):
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
-            Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            DetectionResize((608, 608), False, interpolation=2),
+            DetectionTranspose((2, 0, 1))
         ])
         filename = "000000570688.jpg"
-        im = preprocess(filename)[np.newaxis, :]
+        im, im_info = preprocess(filename)
+        print("im_info:", im_info)
+        im = im[np.newaxis, :]
         input_dict = {}
         input_dict["image"] = im.astype("float32")
         input_dict["im_shape"] = np.array(im.shape[2:]).astype("float32")[np.newaxis, :]
-        input_dict["scale_factor"] = np.array([1.0, 1.0]).astype("float32")[np.newaxis, :]
+        input_dict["scale_factor"] = im_info['scale_factor'][np.newaxis, :]
 
         pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
         pd_config.disable_gpu()
@@ -87,7 +92,7 @@ class TestPPYOLO(object):
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape, self.truth_val["save_infer_model/scale_1.tmp_0"].shape)
 
         # 输出预测库结果，框位置正确
-        postprocess = RCNNPostprocess("label_list.txt", "output_infer", [608, 608])
+        postprocess = RCNNPostprocess("label_list.txt", "output_infer")
         output_data_dict["save_infer_model/scale_0.tmp_1.lod"] = np.array([0, 100], dtype="int32")
         dict_ = copy.deepcopy(output_data_dict)
         del dict_["save_infer_model/scale_1.tmp_0"]
@@ -95,13 +100,15 @@ class TestPPYOLO(object):
         postprocess(dict_)
 
     def predict_brpc(self, batch_size=1):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
-            Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            DetectionResize((608, 608), False, interpolation=2),
+            DetectionTranspose((2, 0, 1))
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output", [608, 608])
+        postprocess = RCNNPostprocess("label_list.txt", "output")
         filename = "000000570688.jpg"
-        im = preprocess(filename)
+        im, im_info = preprocess(filename)
 
         fetch = ["save_infer_model/scale_0.tmp_1"]
         endpoint_list = ['127.0.0.1:9494']
@@ -114,24 +121,27 @@ class TestPPYOLO(object):
             feed={
                 "image": im,
                 "im_shape": np.array(list(im.shape[1:])).reshape(-1),
-                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
+                "scale_factor": im_info['scale_factor'],
             },
             fetch=fetch,
             batch=False)
-        print(fetch_map, fetch_map["save_infer_model/scale_0.tmp_1"].shape)
+        print(fetch_map)
         dict_ = copy.deepcopy(fetch_map)
         dict_["image"] = filename
         postprocess(dict_)
         return fetch_map
 
     def predict_brpc_encrypt(self, batch_size=1):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
-            Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            DetectionResize((608, 608), False, interpolation=2),
+            DetectionTranspose((2, 0, 1))
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output_encrypt", [608, 608])
+        postprocess = RCNNPostprocess("label_list.txt", "output_encrypt")
         filename = "000000570688.jpg"
-        im = preprocess(filename)
+        im, im_info = preprocess(filename)
+        print("im_info:", im_info)
 
         fetch = ["save_infer_model/scale_0.tmp_0"]
         endpoint_list = ['127.0.0.1:9494']
@@ -140,13 +150,13 @@ class TestPPYOLO(object):
         client.load_client_config("encrypt_client/serving_client_conf.prototxt")
         client.use_key("./key")
         client.connect(endpoint_list, encryption=True)
-        time.sleep(60)
+        time.sleep(70)
 
         fetch_map = client.predict(
             feed={
                 "image": im,
                 "im_shape": np.array(list(im.shape[1:])).reshape(-1),
-                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
+                "scale_factor": im_info['scale_factor'],
             },
             fetch=fetch,
             batch=False)
@@ -189,7 +199,7 @@ class TestPPYOLO(object):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9494 --use_trt --gpu_ids 0 | tee log.txt",
-            sleep=60,
+            sleep=70,
         )
 
         # 2.resource check
