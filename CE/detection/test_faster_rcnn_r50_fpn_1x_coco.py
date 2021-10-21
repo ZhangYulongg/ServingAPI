@@ -29,17 +29,21 @@ class TestFasterRCNN(object):
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize(640, 640), Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            DetectionResize((800, 1333), True, interpolation=cv2.INTER_LINEAR),
+            DetectionTranspose((2, 0, 1)),
+            DetectionPadStride(128)
         ])
         file_name = "000000570688.jpg"
-        im = preprocess(file_name)[np.newaxis, :]
+        im, im_info = preprocess(file_name)
+        print("im_info:", im_info)
+        im = im[np.newaxis, :]
         input_dict = {}
         input_dict["im_shape"] = np.array(list(im.shape[2:])).astype("float32")[np.newaxis, :]
         input_dict["image"] = im.astype("float32")
-        input_dict["scale_factor"] = np.array([1.0, 1.0]).astype("float32")[np.newaxis, :]
+        input_dict["scale_factor"] = im_info['scale_factor'][np.newaxis, :]
 
         pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
         pd_config.disable_gpu()
@@ -68,16 +72,18 @@ class TestFasterRCNN(object):
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape, self.truth_val["save_infer_model/scale_1.tmp_1"].shape)
 
     def predict_brpc(self, batch_size=1):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(), Div(255.0),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], False),
-            Resize(640, 640), Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            DetectionResize((800, 1333), True, interpolation=cv2.INTER_LINEAR),
+            DetectionTranspose((2, 0, 1)),
+            DetectionPadStride(128)
         ])
         postprocess = RCNNPostprocess("label_list.txt", "output")
         filename = "000000570688.jpg"
-        im = preprocess(filename)
+        im, im_info = preprocess(filename)
+        print("im_info:", im_info)
 
-        # todo fetch save_infer_model/scale_1.tmp_1 时报错，暂时不取这个输出(已修复)
         fetch = ["save_infer_model/scale_0.tmp_1", "save_infer_model/scale_1.tmp_1"]
         endpoint_list = ['127.0.0.1:9494']
 
@@ -89,7 +95,7 @@ class TestFasterRCNN(object):
             feed={
                 "image": im,
                 "im_shape": np.array(list(im.shape[1:])).reshape(-1),
-                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
+                "scale_factor": im_info['scale_factor'],
             },
             fetch=fetch,
             batch=False)
