@@ -29,16 +29,21 @@ class TestFasterRCNN(object):
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
-            Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionResize((800, 1333), True, interpolation=2),
+            DetectionNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            DetectionTranspose((2, 0, 1)),
+            DetectionPadStride(32)
         ])
         file_name = "000000570688.jpg"
-        im = preprocess(file_name)[np.newaxis, :]
+        im, im_info = preprocess(file_name)
+        im = im[np.newaxis, :]
+        print("im_info:", im_info)
         input_dict = {}
         input_dict["im_shape"] = np.array(list(im.shape[2:])).astype("float32")[np.newaxis, :]
         input_dict["image"] = im.astype("float32")
-        input_dict["scale_factor"] = np.array([1.0, 1.0]).reshape(-1).astype("float32")[np.newaxis, :]
+        input_dict["scale_factor"] = im_info['scale_factor'][np.newaxis, :]
 
         pd_config = paddle_infer.Config("serving_server/model.pdmodel", "serving_server/model.pdiparams")
         pd_config.disable_gpu()
@@ -64,13 +69,17 @@ class TestFasterRCNN(object):
         print(self.truth_val, self.truth_val["save_infer_model/scale_0.tmp_1"].shape)
 
     def predict_brpc(self, batch_size=1):
-        preprocess = Sequential([
-            File2Image(), BGR2RGB(), Resize((608, 608), interpolation=cv2.INTER_LINEAR), Div(255.0),
-            Transpose((2, 0, 1))
+        preprocess = DetectionSequential([
+            DetectionFile2Image(),
+            DetectionResize((800, 1333), True, interpolation=2),
+            DetectionNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225], True),
+            DetectionTranspose((2, 0, 1)),
+            DetectionPadStride(32)
         ])
-        postprocess = RCNNPostprocess("label_list.txt", "output", [608, 608])
+        postprocess = RCNNPostprocess("label_list.txt", "output")
         file_name = "000000570688.jpg"
-        im = preprocess(file_name)
+        im, im_info = preprocess(file_name)
+        print("im_info:", im_info)
 
         fetch = ["save_infer_model/scale_0.tmp_1"]
         endpoint_list = ['127.0.0.1:9292']
@@ -82,7 +91,7 @@ class TestFasterRCNN(object):
         fetch_map = client.predict(
             feed={
                 "image": im,
-                "scale_factor": np.array([1.0, 1.0]).reshape(-1),
+                "scale_factor": im_info['scale_factor'],
                 "im_shape": np.array(list(im.shape[1:]))
             },
             fetch=fetch,
@@ -96,14 +105,14 @@ class TestFasterRCNN(object):
     def test_gpu_multicard(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9292 --gpu_ids 0,1",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9292 --gpu_ids 2,3",
             sleep=18,
         )
 
         # 2.resource check
         assert count_process_num_on_port(9292) == 1
-        assert check_gpu_memory(0) is True
-        assert check_gpu_memory(1) is True
+        assert check_gpu_memory(2) is True
+        assert check_gpu_memory(3) is True
 
         # 3.keywords check
         check_keywords_in_server_log("Sync params from CPU to GPU")
