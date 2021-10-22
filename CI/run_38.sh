@@ -41,4 +41,11 @@ fi
 cat result.txt
 cost=$(expr $job_et - $job_bt)
 echo "$cost s"
+
+${CODE_PATH}/Serving/python/examples/bert
+python3.8 -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292 --gpu_ids 0 &
+sleep 30
+head data-c.txt | python3.8 bert_client.py --model bert_seq128_client/serving_client_conf.prototxt
+kill -9 `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1
+
 exit ${bug}
