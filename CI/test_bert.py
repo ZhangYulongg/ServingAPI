@@ -166,7 +166,7 @@ class TestBert(object):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292 --gpu_ids 0",
-            sleep=60,
+            sleep=5,
         )
 
         # 2.resource check
