@@ -150,14 +150,3 @@ class TestBertPipeline(object):
         # 5.release
         kill_process(9998)
         kill_process(18082)
-
-
-if __name__ == '__main__':
-    sss = TestBertPipeline()
-    sss.predict_pipeline_http(batch_size=1)
-    sss.predict_pipeline_http(batch_size=2)
-
-
-
-
-
