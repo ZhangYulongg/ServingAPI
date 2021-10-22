@@ -104,7 +104,7 @@ function compile_server() {
             -DSERVER=ON \
             -DWITH_GPU=ON ..
     fi
-    make -j10
+    make -j32
     unset_proxy
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
     set_proxy
@@ -151,10 +151,10 @@ function compile_server_withopencv() {
             -DSERVER=ON \
             -DWITH_GPU=ON ..
     fi
-    make -j10
+    make -j32
     if [ `ls -A python/dist/ | wc -w` == 0 ]; then
         echo "--------make server failed, try again"
-        make -j10
+        make -j32
     fi
     unset_proxy
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
@@ -168,10 +168,10 @@ function compile_client() {
         -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
         -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
         -DCLIENT=ON ..
-    make -j10
+    make -j32
     if [ `ls -A python/dist/ | wc -w` == 0 ]; then
         echo "--------make client failed, try again"
-        make -j10
+        make -j32
     fi
     unset_proxy
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
@@ -185,10 +185,10 @@ function compile_app() {
         -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
         -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
         -DAPP=ON ..
-    make -j10
+    make -j32
     if [ `ls -A python/dist/ | wc -w` == 0 ]; then
         echo "--------make app failed, try again"
-        make -j10
+        make -j32
     fi
     unset_proxy
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
