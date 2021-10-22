@@ -79,7 +79,7 @@ function compile_server() {
     elif [ $1 == 102 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
     elif [ $1 == 112 ]; then
-        export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
+        export TENSORRT_LIBRARY_PATH="/home/TensorRT-8.0.3.4/targets/x86_64-linux-gnu/"
     elif [ $1 == "cpu" ]; then
         echo $1
     else
@@ -122,7 +122,7 @@ function compile_server_withopencv() {
     elif [ $1 == 102 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
     elif [ $1 == 112 ]; then
-        export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
+        export TENSORRT_LIBRARY_PATH="/home/TensorRT-8.0.3.4/targets/x86_64-linux-gnu/"
     elif [ $1 == "cpu" ]; then
         echo $1
     else
