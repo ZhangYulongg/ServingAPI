@@ -45,7 +45,7 @@ class TestFCOSDCN(object):
         input_dict["scale_factor"] = im_info['scale_factor'][np.newaxis, :]
 
         pd_config = paddle_infer.Config("serving_server/__model__", "serving_server/__params__")
-        pd_config.disable_gpu()
+        pd_config.enable_use_gpu(1000, 0)
         pd_config.switch_ir_optim(False)
 
         predictor = paddle_infer.create_predictor(pd_config)
