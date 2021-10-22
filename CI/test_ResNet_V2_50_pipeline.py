@@ -12,7 +12,6 @@ from paddle_serving_app.reader import CenterCrop, RGB2BGR, Transpose, Div, Norma
 from paddle_serving_app.reader import Sequential, File2Image, Resize, Transpose, BGR2RGB, SegPostprocess
 import paddle.inference as paddle_infer
 
-sys.path.append("../../")
 from util import *
 
 
