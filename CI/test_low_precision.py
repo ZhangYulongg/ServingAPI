@@ -86,7 +86,7 @@ class TestLowPrecision(object):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9393 --gpu_ids 0 --use_trt --precision int8",
-            sleep=27,
+            sleep=35,
         )
 
         # 2.resource check
