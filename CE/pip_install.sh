@@ -123,10 +123,12 @@ function pip_install_serving() {
   fi
   if [ $2 == 101 ]; then
     whl_list[2]=server_gpu-${version}.post101-py3
-  elif [ $2 == 102 ]; then
-    whl_list[2]=server_gpu-${version}.post102-py3
+  elif [ $2 == 1027 ]; then
+    whl_list[2]=server_gpu-${version}.post1027-py3
+  elif [ $2 == 1028 ]; then
+    whl_list[2]=server_gpu-${version}.post1028-py3
   elif [ $2 == 112 ]; then
-    whl_list[2]=server_gpu-${version}-py3
+    whl_list[2]=server_gpu-${version}.post112-py3
   elif [ $2 == "cpu" ]; then
     whl_list[2]=server-${version}-py3
   fi
