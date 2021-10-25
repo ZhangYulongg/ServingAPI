@@ -21,8 +21,7 @@ goto:eof
 :start
 ::set env
 set GNU_HOME=C:\Program Files (x86)\GnuWin32
-set Path=C:\Python38;%Path%;%GNU_HOME%\bin;
-::D:\zhangyulong04\python3.8
+set Path=D:\zhangyulong04\Python38;%Path%;%GNU_HOME%\bin;
 d:
 cd D:\zhangyulong04\6f50c83f8d3e38f4
 ::copy case file
@@ -34,7 +33,7 @@ mkdir logs
 cd whl_packages
 wget --no-check-certificate https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_app-0.0.0-py3-none-any.whl >nul 2>nul
 wget --no-check-certificate https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_client-0.0.0-cp38-none-any.whl >nul 2>nul
-wget --no-check-certificate https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_server_gpu-0.0.0.post102-py3-none-any.whl >nul 2>nul
+wget --no-check-certificate https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_server_gpu-0.0.0.post1028-py3-none-any.whl >nul 2>nul
 
 python -m pip uninstall paddle_serving_app -y
 python -m pip uninstall paddle_serving_client -y
@@ -43,7 +42,7 @@ python -m pip uninstall paddle_serving_server_gpu -y
 
 python -m pip install paddle_serving_app-0.0.0-py3-none-any.whl
 python -m pip install paddle_serving_client-0.0.0-cp38-none-any.whl
-python -m pip install paddle_serving_server_gpu-0.0.0.post102-py3-none-any.whl
+python -m pip install paddle_serving_server_gpu-0.0.0.post1028-py3-none-any.whl
 ::python -m pip install paddlepaddle-gpu -i https://mirror.baidu.com/pypi/simple
 
 cd D:\zhangyulong04\6f50c83f8d3e38f4\test_ocr
