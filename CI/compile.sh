@@ -41,10 +41,11 @@ function set_py () {
         export PYTHON_LIBRARIES=$PYTHONROOT/lib/libpython3.7m.so
         export PYTHON_EXECUTABLE=$PYTHONROOT/bin/python3.7
     elif [ $1 == 38 ]; then
+        # only for CI
         py_version="python3.8"
-        export PYTHONROOT=/usr/local/
+        export PYTHONROOT=/usr/
         export PYTHON_INCLUDE_DIR=$PYTHONROOT/include/python3.8
-        export PYTHON_LIBRARIES=$PYTHONROOT/lib/libpython3.8.so
+        export PYTHON_LIBRARIES=$PYTHONROOT/lib/python3.8/config-3.8-x86_64-linux-gnu/libpython3.8.so
         export PYTHON_EXECUTABLE=$PYTHONROOT/bin/python3.8
     else
         echo -e "Error py version$1"
