@@ -169,6 +169,14 @@ function java_grpc_client() {
     check_save client "fit_a_line_java_grpc_GPU_BRPC"
 }
 
+function java_compress_client() {
+    dir=${log_dir}java/grpc/
+    check_dir ${dir}
+    cd /Serving/java/examples/target
+    java -cp paddle-serving-sdk-java-examples-0.0.1-jar-with-dependencies.jar PaddleServingClientExample compress fit_a_line.prototxt > ${dir}client_log.txt 2>&1
+    check_save client "fit_a_line_java_compress_GPU_BRPC"
+}
+
 # 安装java client 依赖
 echo "---------------install java client begin---------------"
 cd /Serving
@@ -194,6 +202,7 @@ java_indarray_sync_client
 java_http_proto_client
 java_http_json_client
 java_grpc_client
+java_compress_client
 
 if [ -f ${log_dir}result.txt ]; then
   cat ${log_dir}result.txt
