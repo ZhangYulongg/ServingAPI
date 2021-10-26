@@ -62,11 +62,11 @@ function py_requirements () {
   rm -rf whl_packages
   mkdir whl_packages && cd whl_packages
   if [ $1 == 36 ]; then
-      wget -q https://paddle-wheel.bj.bcebos.com/kunlun/paddlepaddle-2.1.0-cp36-cp36m-linux_x86_64.whl
-      $py_version -m pip install --ignore-installed paddlepaddle-2.1.0-cp36-cp36m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
+      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0-rc0/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.0rc0-cp36-cp36m-linux_x86_64.whl
+      $py_version -m pip install --ignore-installed paddlepaddle-2.2.0rc0-cp36-cp36m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
   elif [ $1 == 37 ]; then
-      wget -q https://paddle-wheel.bj.bcebos.com/kunlun/paddlepaddle-2.1.0-cp37-cp37m-linux_x86_64.whl
-      $py_version -m pip install --ignore-installed paddlepaddle-2.1.0-cp37-cp37m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
+      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0-rc0/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.0rc0-cp37-cp37m-linux_x86_64.whl
+      $py_version -m pip install --ignore-installed paddlepaddle-2.2.0rc0-cp37-cp37m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
   else
       echo -e "${RED_COLOR}Error py version$1${RES}"
       exit
@@ -93,10 +93,12 @@ function pip_install_serving() {
   fi
   if [ $2 == 101 ]; then
     whl_list[2]=server_gpu-${version}.post101-py3
-  elif [ $2 == 102 ]; then
-    whl_list[2]=server_gpu-${version}.post102-py3
-  elif [ $2 == 110 ]; then
-    whl_list[2]=server_gpu-${version}.post11-py3
+  elif [ $2 == 1027 ]; then
+    whl_list[2]=server_gpu-${version}.post1027-py3
+  elif [ $2 == 1028 ]; then
+    whl_list[2]=server_gpu-${version}.post1028-py3
+  elif [ $2 == 112 ]; then
+    whl_list[2]=server_gpu-${version}.post112-py3
   elif [ $2 == "cpu" ]; then
     whl_list[2]=server-${version}-py3
   elif [ $2 == "x86" ]; then
@@ -120,31 +122,6 @@ function pip_install_serving() {
   fi
   $py_version -m pip install --ignore-installed paddle_serving* -i https://mirror.baidu.com/pypi/simple
   set_proxy
-}
-
-function pip_install_test() {
-  cd ${CODE_PATH}
-  rm -rf whl_packages
-  mkdir whl_packages && cd whl_packages
-  wget https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_app-0.6.1-cp36-cp36m-linux_x86_64.whl
-  if [ $1 == 36 ]; then
-      wget https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_client-0.6.1-cp36-cp36m-linux_x86_64.whl
-  elif [ $1 == 37 ]; then
-      wget https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_client-0.6.1-cp37-cp37m-linux_x86_64.whl
-  elif [ $1 == 38 ]; then
-      wget https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_client-0.6.1-cp38-cp38-linux_x86_64.whl
-  fi
-  if [ $2 == "cpu" ]; then
-      wget https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_server-0.6.1-cp36-cp36m-linux_x86_64.whl
-  elif [ $2 == 101 ]; then
-      wget https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_server_gpu-0.6.1.post101-cp36-cp36m-linux_x86_64.whl
-  elif [ $2 == 102 ]; then
-      wget https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_server_gpu-0.6.1.post102-cp36-cp36m-linux_x86_64.whl
-  elif [ $2 == 110 ]; then
-      wget https://paddle-serving.bj.bcebos.com/test-dev/whl/0.6.1/paddle_serving_server_gpu-0.6.1.post11-cp36-cp36m-linux_x86_64.whl
-  fi
-  set_proxy
-  $py_version -m pip install *
 }
 
 cd $serving_dir
