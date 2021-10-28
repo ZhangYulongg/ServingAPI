@@ -12,7 +12,10 @@ trt_path=$5
 function get_tar() {
     rm -rf paddle_inference*
 #    wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/cxx_c/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddle_inference.tgz
-    wget -q https://paddle-qa.bj.bcebos.com/2.2rc/paddle_inference.tgz
+    unset http_proxy && unset https_proxy
+    wget -q ${tar_path}
+    export https_proxy=${proxy}
+    export http_proxy=${proxy}
     tar -xf paddle_inference.tgz
     mv paddle_inference_install_dir paddle_inference
 }
