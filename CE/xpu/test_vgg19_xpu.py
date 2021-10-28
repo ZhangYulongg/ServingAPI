@@ -165,7 +165,7 @@ class TestVGG19XPU(object):
         # result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
         # print("shape:", result_data["save_infer_model/scale_0"].shape)
         # 5.release
-        kill_process(9393)
+        kill_process(9393, 2)
 
     def test_cpu(self):
         # 1.start server
