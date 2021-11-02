@@ -5,6 +5,7 @@ import copy
 import cv2
 import requests
 import json
+import sys
 
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_app.reader import OCRReader
@@ -13,12 +14,13 @@ from paddle_serving_app.reader import Div, Normalize, Transpose, File2Image
 from paddle_serving_app.reader import DBPostProcess, FilterBoxes, GetRotateCropImage, SortedBoxes
 import paddle.inference as paddle_infer
 
+sys.path.append("../")
 from util import *
 
 
 class TestOCR(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="ocr", example_path="ocr", model_dir="ocr_det_model",
+        serving_util = ServingTest(data_path="test_ocr", example_path="test_ocr", model_dir="ocr_det_model",
                                    client_dir="ocr_det_client")
         serving_util.check_model_data_exist()
         self.serving_util = serving_util
@@ -224,175 +226,6 @@ class TestOCR(object):
         # # 删除lod信息
         del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
         self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
-
-        # 5.release
-        kill_process(9292, 2)
-
-    def test_cpu_only_det(self):
-        # 1.start server
-        self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} det_web_server.py cpu",
-            sleep=5,
-        )
-
-        # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is False
-
-        # 3.keywords check
-
-        # 4.predict by http
-        # batch_size=1
-        result = self.predict_http(batch_size=1)
-        print(result, type(result))
-        res = result["dt_boxes"]
-
-        # 5.release
-        kill_process(9292)
-
-    def test_gpu_only_det(self):
-        # 1.start server
-        self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} det_web_server.py gpu",
-            sleep=8,
-        )
-
-        # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is True
-
-        # 3.keywords check
-
-        # 4.predict by http
-        # batch_size=1
-        result = self.predict_http(batch_size=1)
-        res = result["dt_boxes"]
-
-        # 5.release
-        kill_process(9292, 2)
-
-    def test_cpu_only_det_local(self):
-        # 1.start server
-        self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} det_debugger_server.py cpu",
-            sleep=5,
-        )
-
-        # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is False
-
-        # 3.keywords check
-
-        # 4.predict by http
-        # batch_size=1
-        result = self.predict_http(batch_size=1)
-        dt_boxes = result["dt_boxes"]
-
-        # 5.release
-        kill_process(9292)
-
-    def test_gpu_only_det_local(self):
-        # 1.start server
-        self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} det_debugger_server.py gpu",
-            sleep=8,
-        )
-
-        # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is False
-
-        # 3.keywords check
-
-        # 4.predict by http
-        # batch_size=1
-        result = self.predict_http(batch_size=1)
-        res = result["dt_boxes"]
-
-        # 5.release
-        kill_process(9292, 2)
-
-    def test_cpu_only_rec(self):
-        # 1.start server
-        self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} rec_web_server.py cpu",
-            sleep=5,
-        )
-
-        # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is False
-
-        # 3.keywords check
-
-        # 4.predict by http
-        # batch_size=1
-        result = self.predict_http_rec(batch_size=1)
-        res = result["res"]
-
-        # 5.release
-        kill_process(9292)
-
-    def test_gpu_only_rec(self):
-        # 1.start server
-        self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} rec_web_server.py gpu",
-            sleep=8,
-        )
-
-        # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is True
-
-        # 3.keywords check
-
-        # 4.predict by http
-        # batch_size=1
-        result = self.predict_http_rec(batch_size=3)
-        res = result["res"]
-
-        # 5.release
-        kill_process(9292, 2)
-
-    def test_cpu_only_rec_local(self):
-        # 1.start server
-        self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} rec_debugger_server.py cpu",
-            sleep=5,
-        )
-
-        # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is False
-
-        # 3.keywords check
-
-        # 4.predict by http
-        # batch_size=1
-        result = self.predict_http_rec(batch_size=1)
-        res = result["res"]
-
-        # 5.release
-        kill_process(9292)
-
-    def test_gpu_only_rec_local(self):
-        # 1.start server
-        self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} rec_debugger_server.py gpu",
-            sleep=8,
-        )
-
-        # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is False
-
-        # 3.keywords check
-
-        # 4.predict by http
-        # batch_size=1
-        result = self.predict_http_rec(batch_size=1)
-        res = result["res"]
 
         # 5.release
         kill_process(9292, 2)
