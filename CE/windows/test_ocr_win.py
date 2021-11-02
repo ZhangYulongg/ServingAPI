@@ -6,6 +6,7 @@ import cv2
 import requests
 import json
 import sys
+import time
 
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_app.reader import OCRReader
@@ -30,6 +31,7 @@ class TestOCR(object):
         os.chdir(self.example_path)
         print("======================cur path======================")
         print(os.getcwd())
+        os.system("python -m wget https://paddle-qa.bj.bcebos.com/tools/busybox64.exe")
         # 检测框处理funcs
         self.filter_func = FilterBoxes(10, 10)
         self.post_func = DBPostProcess({
@@ -41,9 +43,6 @@ class TestOCR(object):
         })
         self.ocr_reader = OCRReader()
         self.get_truth_val_by_inference(self)
-        # TODO 为校验精度将模型输出存入npy文件，通过修改server端代码实现，考虑更优雅的方法
-        os.system("sed -i '96 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_map)' ocr_debugger_server.py")
-        os.system("sed -i '60 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_map)' det_web_server.py")
 
     def teardown_method(self):
         print_log(["stderr.log", "stdout.log",
@@ -189,26 +188,21 @@ class TestOCR(object):
         # 1.start server
         self.err = open("stderr.log", "w")
         self.out = open("stdout.log", "w")
-        p = subprocess.Popen("python ocr_debugger_server.py cpu", shell=True, stdout=self.out, stderr=self.err)
-        os.system("sleep 5")
+        subprocess.Popen("python ocr_debugger_server.py cpu", shell=True, stdout=self.out, stderr=self.err)
+        time.sleep(5)
         print_log(["stderr.log", "stdout.log"])
 
         # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is False
+        command = "busybox64.exe netstat -nlp | grep :" + str(port) + " | wc -l"
+        count = eval(os.popen(command).read())
+        print(f"port-9292 processes num:", count)
+        assert count == 1  # web Server
 
         # 3.keywords check
 
         # 4.predict by http
         # batch_size=1
         self.predict_http(batch_size=1)
-        # 从npy文件读取
-        rec_result = np.load("fetch_dict_rec.npy", allow_pickle=True).item()
-        # 删除文件
-        os.system("rm -rf fetch_dict_rec.npy")
-        # # 删除lod信息
-        del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
-        # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
         # kill_process(9292)
@@ -217,26 +211,21 @@ class TestOCR(object):
         # 1.start server
         self.err = open("stderr.log", "w")
         self.out = open("stdout.log", "w")
-        p = subprocess.Popen("python ocr_debugger_server.py gpu", shell=True, stdout=self.out, stderr=self.err)
-        os.system("sleep 8")
+        subprocess.Popen("python ocr_debugger_server.py gpu", shell=True, stdout=self.out, stderr=self.err)
+        time.sleep(8)
         print_log(["stderr.log", "stdout.log"])
 
         # 2.resource check
-        assert count_process_num_on_port(9292) == 1  # web Server
-        assert check_gpu_memory(0) is False
+        command = "busybox64.exe netstat -nlp | grep :" + str(port) + " | wc -l"
+        count = eval(os.popen(command).read())
+        print(f"port-9292 processes num:", count)
+        assert count == 1  # web Server
 
         # 3.keywords check
 
         # 4.predict by http
         # batch_size=1
         self.predict_http(batch_size=1)
-        # 从npy文件读取
-        rec_result = np.load("fetch_dict_rec.npy", allow_pickle=True).item()
-        # 删除文件
-        os.system("rm -rf fetch_dict_rec.npy")
-        # # 删除lod信息
-        del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
-        # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
         # kill_process(9292, 2)
