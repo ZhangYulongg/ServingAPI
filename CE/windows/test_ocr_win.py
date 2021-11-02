@@ -56,14 +56,6 @@ class TestOCR(object):
         self.ocr_reader = OCRReader()
         self.get_truth_val_by_inference(self)
 
-    def teardown_class(self):
-        pids = psutil.pids()
-        for pid in pids:
-            p = psutil.Process(pid)
-            if p.name() == 'python.exe':
-                cmd = 'taskkill /F /IM python.exe'
-                os.system(cmd)
-
     def teardown_method(self):
         print_log(["stderr.log", "stdout.log",
                    "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
