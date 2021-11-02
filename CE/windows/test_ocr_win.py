@@ -56,6 +56,10 @@ class TestOCR(object):
         self.ocr_reader = OCRReader()
         self.get_truth_val_by_inference(self)
 
+    def teardown_class(self):
+        self.cpu.terminate()
+        self.gpu.terminate()
+
     def teardown_method(self):
         print_log(["stderr.log", "stdout.log",
                    "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
@@ -196,7 +200,7 @@ class TestOCR(object):
         # 1.start server
         self.err = open("stderr.log", "w")
         self.out = open("stdout.log", "w")
-        subprocess.Popen("python ocr_debugger_server.py cpu", shell=True, stdout=self.out, stderr=self.err)
+        self.cpu = subprocess.Popen("python ocr_debugger_server.py cpu", shell=True, stdout=self.out, stderr=self.err)
         time.sleep(5)
         print_log(["stderr.log", "stdout.log"])
 
@@ -213,7 +217,7 @@ class TestOCR(object):
         # 1.start server
         self.err = open("stderr.log", "w")
         self.out = open("stdout.log", "w")
-        subprocess.Popen("python ocr_debugger_server.py gpu", shell=True, stdout=self.out, stderr=self.err)
+        self.gpu = subprocess.Popen("python ocr_debugger_server.py gpu", shell=True, stdout=self.out, stderr=self.err)
         time.sleep(8)
         print_log(["stderr.log", "stdout.log"])
 
