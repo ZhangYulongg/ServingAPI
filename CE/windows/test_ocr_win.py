@@ -58,7 +58,6 @@ class TestOCR(object):
     def teardown_method(self):
         print_log(["stderr.log", "stdout.log",
                    "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
-        os.system("python -m paddle_serving_server.serve stop")
         time.sleep(2)
         # kill_process(9293)
         os.system("busybox64.exe kill -9 `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
