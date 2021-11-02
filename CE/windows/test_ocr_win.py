@@ -59,10 +59,10 @@ class TestOCR(object):
         print_log(["stderr.log", "stdout.log",
                    "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
         os.system("python -m paddle_serving_server.serve stop")
-        os.system("sleep 2")
+        time.sleep(2)
         # kill_process(9293)
-        # os.system("kill -9 `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
-        # os.system("kill -9 `ps -ef | grep server.py | awk '{print $2}'` > /dev/null 2>&1")
+        os.system("busybox64.exe kill -9 `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
+        os.system("busybox64.exe kill -9 `ps -ef | grep server.py | awk '{print $2}'` > /dev/null 2>&1")
 
     def get_truth_val_by_inference(self):
         seq = Sequential([
@@ -203,12 +203,6 @@ class TestOCR(object):
         time.sleep(5)
         print_log(["stderr.log", "stdout.log"])
 
-        # 2.resource check
-        command = "busybox64.exe netstat -nlp | grep :" + str(port) + " | wc -l"
-        count = eval(os.popen(command).read())
-        print(f"port-9292 processes num:", count)
-        assert count == 1  # web Server
-
         # 3.keywords check
 
         # 4.predict by http
@@ -225,12 +219,6 @@ class TestOCR(object):
         subprocess.Popen("python ocr_debugger_server.py gpu", shell=True, stdout=self.out, stderr=self.err)
         time.sleep(8)
         print_log(["stderr.log", "stdout.log"])
-
-        # 2.resource check
-        command = "busybox64.exe netstat -nlp | grep :" + str(port) + " | wc -l"
-        count = eval(os.popen(command).read())
-        print(f"port-9292 processes num:", count)
-        assert count == 1  # web Server
 
         # 3.keywords check
 
