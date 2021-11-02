@@ -19,6 +19,17 @@ sys.path.append("../")
 from util import *
 
 
+def print_log(file_list, iden=""):
+    for file in file_list:
+        print(f"======================{file} {iden}=====================")
+        if os.path.exists(file):
+            with open(file, "r") as f:
+                print(f.read())
+        else:
+            print(f"{file} not exist")
+        print("======================================================")
+
+
 class TestOCR(object):
     def setup_class(self):
         code_path = os.environ.get("CODE_PATH")
