@@ -60,8 +60,8 @@ class TestOCR(object):
                    "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
         time.sleep(2)
         # kill_process(9293)
-        os.system("busybox64.exe kill -9 `ps -ef | grep serving | awk '{print $2}'` > /dev/null 2>&1")
-        os.system("busybox64.exe kill -9 `ps -ef | grep server.py | awk '{print $2}'` > /dev/null 2>&1")
+        os.system("busybox64.exe kill -9 `ps -ef | busybox64.exe grep serving | busybox64.exe awk '{print $2}'` > /dev/null 2>&1")
+        os.system("busybox64.exe kill -9 `ps -ef | busybox64.exe grep server.py | busybox64.exe awk '{print $2}'` > /dev/null 2>&1")
 
     def get_truth_val_by_inference(self):
         seq = Sequential([
