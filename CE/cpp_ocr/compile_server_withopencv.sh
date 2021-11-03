@@ -173,7 +173,7 @@ function compile_client() {
         -DCLIENT=ON ..
     make -j10
     unset_proxy
-    ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
+    ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple -y
     set_proxy
     cd ..
 }

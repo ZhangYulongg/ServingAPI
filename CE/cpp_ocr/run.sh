@@ -22,6 +22,12 @@ rm -rf result.txt
 cases=`find ./ -name "test*.py" | sort`
 #cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
 echo $cases
+# 单独在cuda10.2-cudnn7环境下验证 c++ client
+if [ $2 == 1027 ]; then
+    ignore=""
+else
+    ignore="test_cpp_client.py"
+fi
 ignore=""
 bug=0
 
