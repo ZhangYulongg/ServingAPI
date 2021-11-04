@@ -166,6 +166,7 @@ function compile_server_withopencv() {
 }
 
 function compile_client() {
+    cd ${serving_dir}
     mkdir client-build && cd client-build
     cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR \
         -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
