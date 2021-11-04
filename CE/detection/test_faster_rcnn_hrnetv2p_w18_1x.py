@@ -106,7 +106,7 @@ class TestFasterRCNN(object):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9292 --gpu_ids 0,1",
-            sleep=18,
+            sleep=22,
         )
 
         # 2.resource check
