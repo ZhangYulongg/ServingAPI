@@ -35,13 +35,13 @@ function set_py() {
 
 function get_whl() {
     if [ $cuda == "10.1" ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0.post101-cp${py}-cp${flag}-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0.post101-cp${py}-cp${flag}-linux_x86_64.whl
     elif [ $cuda == "10.2" ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0-cp${py}-cp${flag}-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0-cp${py}-cp${flag}-linux_x86_64.whl
     elif [ $cuda == "11.1" ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0.post111-cp${py}-cp${flag}-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0.post111-cp${py}-cp${flag}-linux_x86_64.whl
     elif [ $cuda == "11.2" ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0rc0.post112-cp${py}-cp${flag}-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/python/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddlepaddle_gpu-2.2.0.post112-cp${py}-cp${flag}-linux_x86_64.whl
     fi
 }
 
@@ -60,4 +60,4 @@ python -m pip install paddlepaddle* -i https://mirror.baidu.com/pypi/simple
 
 ln -s /usr/lib64/libnvidia-ml.so.* /usr/lib64/libnvidia-ml.so.1;
 
-python -m pytest -m server --disable-warnings -sv ./test_class_model/test_tnt_small* | tee log_${cuda}_${cudnn}_${gcc}_${trt}_${py}.txt
+bash -x run_ce.sh | tee log_${cuda}_${cudnn}_${gcc}_${trt}_${py}.txt
