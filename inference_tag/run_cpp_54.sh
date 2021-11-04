@@ -17,12 +17,16 @@ function get_tar() {
 }
 
 function run() {
-    cd ${code_path}/Paddle-Inference-Demo/c++
+    cd ${code_path}/Paddle-Inference-Demo/c++/paddle-trt
     mv /usr/bin/c++ /usr/bin/c++.bak
     mv /usr/bin/gcc /usr/bin/gcc.bak
     ln -s /usr/local/gcc-${gcc}/bin/c++ /usr/bin/
     ln -s /usr/local/gcc-${gcc}/bin/gcc /usr/bin/
-    bash -x run_demo.sh | tee log_${cuda}_${cudnn}_${gcc}_${trt}.txt
+    wget https://paddle-inference-dist.bj.bcebos.com/Paddle-Inference-Demo/resnet50.tgz
+    tar -xf resnet50.tgz
+    sed -i "33 i TENSORRT_ROOT=${trt_path}" compile.sh
+    bash -x compile.sh
+    ./build/trt_gen_calib_table_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams
 }
 
 
