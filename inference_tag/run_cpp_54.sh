@@ -26,7 +26,7 @@ function run() {
     tar -xf resnet50.tgz
     sed -i "33 i TENSORRT_ROOT=${trt_path}" compile.sh
     bash -x compile.sh
-    ./build/trt_gen_calib_table_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams
+    ./build/trt_fp32_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams
 }
 
 
