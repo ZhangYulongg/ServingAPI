@@ -17,12 +17,12 @@ function get_tar() {
 }
 
 function run() {
-    cd ${code_path}/Paddle-Inference-Demo/c++/resnet50
+    cd ${code_path}/Paddle-Inference-Demo/c++
     mv /usr/bin/c++ /usr/bin/c++.bak
     mv /usr/bin/gcc /usr/bin/gcc.bak
     ln -s /usr/local/gcc-${gcc}/bin/c++ /usr/bin/
     ln -s /usr/local/gcc-${gcc}/bin/gcc /usr/bin/
-    bash -x run.sh | tee log_${cuda}_${cudnn}_${gcc}_${trt}.txt
+    bash -x run_demo.sh | tee log_${cuda}_${cudnn}_${gcc}_${trt}.txt
 }
 
 
