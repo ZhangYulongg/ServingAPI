@@ -22,7 +22,7 @@ function run() {
     mv /usr/bin/gcc /usr/bin/gcc.bak
     ln -s /usr/local/gcc-${gcc}/bin/c++ /usr/bin/
     ln -s /usr/local/gcc-${gcc}/bin/gcc /usr/bin/
-    wget https://paddle-inference-dist.bj.bcebos.com/Paddle-Inference-Demo/resnet50.tgz
+    wget -q https://paddle-inference-dist.bj.bcebos.com/Paddle-Inference-Demo/resnet50.tgz
     tar -xf resnet50.tgz
     sed -i "33 i TENSORRT_ROOT=${trt_path}" compile.sh
     bash -x compile.sh
