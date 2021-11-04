@@ -4,6 +4,7 @@ import numpy as np
 import copy
 import cv2
 import re
+import sys
 
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_client.io import inference_model_to_serving

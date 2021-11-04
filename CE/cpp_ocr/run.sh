@@ -28,7 +28,6 @@ if [ $2 == 1027 ]; then
 else
     ignore="test_cpp_client.py"
 fi
-ignore=""
 bug=0
 
 for test_version in python3.6 python3.7 python3.8
