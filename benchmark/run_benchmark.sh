@@ -439,6 +439,8 @@ pipeline_PaddleClas ResNet_V2_50
 pipeline_ocr
 cpp_sync_resnet_v2_50
 cpp_sync_ocr
+cpp_async_resnet_v2_50
+cpp_async_ocr
 
 # 生成excel
 cd ${CODE_PATH}/benchmark/
