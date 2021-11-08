@@ -76,7 +76,7 @@ function compile_server() {
     export CUDA_CUDART_LIBRARY="/usr/local/cuda/lib64/"
     if [ $1 == 101 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT6-cuda10.1-cudnn7/targets/x86_64-linux-gnu/"
-    elif [ $1 == 102 ]; then
+    elif [ $1 == 1027 ] || [ $1 == 1028 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
     elif [ $1 == 112 ]; then
         export TENSORRT_LIBRARY_PATH="/home/TensorRT-8.0.3.4/targets/x86_64-linux-gnu/"
@@ -119,7 +119,7 @@ function compile_server_withopencv() {
     export CUDA_CUDART_LIBRARY="/usr/local/cuda/lib64/"
     if [ $1 == 101 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT6-cuda10.1-cudnn7/targets/x86_64-linux-gnu/"
-    elif [ $1 == 102 ]; then
+    elif [ $1 == 1027 ] || [ $1 == 1028 ]; then
         export TENSORRT_LIBRARY_PATH="/usr/local/TensorRT-7.1.3.4/targets/x86_64-linux-gnu/"
     elif [ $1 == 112 ]; then
         export TENSORRT_LIBRARY_PATH="/home/TensorRT-8.0.3.4/targets/x86_64-linux-gnu/"
