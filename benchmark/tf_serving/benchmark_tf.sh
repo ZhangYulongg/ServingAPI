@@ -7,7 +7,7 @@ cur_dir=$(cd `dirname $0`; pwd)
 model_name=ResNet
 echo ${cur_dir}
 nohup tensorflow_model_server --port=8500 --enable_batching=true --model_name="serving_default" --model_base_path="${cur_dir}/model/resnet_v1" --batching_parameters_file="batch_config" > tf_serving.log 2>&1 &
-sleep 20
+sleep 30
 cat tf_serving.log
 #save cpu and gpu utilization log
 if [ -d utilization ];then
