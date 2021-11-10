@@ -40,7 +40,7 @@ class ServingTest(object):
     def start_server_by_shell(self, cmd: str, sleep: int = 5, err="stderr.log", out="stdout.log", wait=False):
         self.err = open(err, "w")
         self.out = open(out, "w")
-        p = subprocess.Popen(cmd, shell=True, stdout=self.out, stderr=self.err)
+        p = subprocess.Popen(cmd, shell=True, stdout=self.out, stderr=self.err, start_new_session=True)
         os.system(f"sleep {sleep}")
         if wait:
             p.wait()
@@ -94,6 +94,16 @@ def kill_process(port, sleep_time=0):
     os.system(command)
     # 解决端口占用
     os.system(f"sleep {sleep_time}")
+
+
+def stop_server(port=None, sleep_time=0):
+    py_version = os.environ.get("py_version")
+    cmd = f"{py_version} -m paddle_serving_server.serve stop"
+    if port:
+        cmd = cmd + f" --port {port}"
+    result = os.system(cmd)
+    os.system(f"sleep {sleep_time}")
+    return result
 
 
 def check_gpu_memory(gpu_id):
