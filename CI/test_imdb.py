@@ -197,7 +197,7 @@ class TestIMDB(object):
     def test_gpu_async(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model imdb_cnn_model --thread 10 --op_num 4 --port 9292 --gpu_ids 0",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model imdb_cnn_model --thread 10 --runtime_thread_num 4 --port 9292 --gpu_ids 0",
             sleep=6,
         )
 
