@@ -42,7 +42,7 @@ class TestIMDBABTest(object):
         client.add_variant("lstm", ["127.0.0.1:9000"], 90)
         client.connect()
 
-        with open('processed.data') as f:
+        with open('processed.data', encoding="utf-8") as f:
             cnt = {"bow": {'acc': 0, 'total': 0}, "lstm": {'acc': 0, 'total': 0}}
             count = 0
             for line in f:
