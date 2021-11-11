@@ -63,7 +63,7 @@ class TestIMDBABTest(object):
                     break
 
             for tag, data in cnt.items():
-                print('[{}](total: {}) acc: {}'.format(tag, data['total'], float(data['acc']) / float(data['total'])))
+                print(f"[{tag}](total: {data['total']}) acc: {float(data['acc'])}")
 
         return cnt
 
@@ -71,13 +71,13 @@ class TestIMDBABTest(object):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model imdb_bow_model --port 8001",
-            sleep=5,
+            sleep=10,
             err="bowerr.log",
             out="bowout.log",
         )
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model imdb_lstm_model --port 9000",
-            sleep=5,
+            sleep=10,
         )
 
         # 2.resource check
