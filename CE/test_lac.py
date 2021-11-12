@@ -196,7 +196,7 @@ class TestLAC(object):
     def test_gpu_async(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model lac_model --port 9292 --op_num 2 --gpu_ids 0",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model lac_model --port 9292 --runtime_thread_num 2 --gpu_ids 0",
             sleep=8,
         )
 
