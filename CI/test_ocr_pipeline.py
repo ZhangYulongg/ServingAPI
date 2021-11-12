@@ -20,7 +20,7 @@ from util import *
 
 class TestOCRPipeline(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="ocr", example_path="pipeline/ocr", model_dir="ocr_det_model",
+        serving_util = ServingTest(data_path="ocr", example_path="Pipeline/PaddleOCR/ocr", model_dir="ocr_det_model",
                                    client_dir="ocr_det_client")
         serving_util.check_model_data_exist()
         self.serving_util = serving_util

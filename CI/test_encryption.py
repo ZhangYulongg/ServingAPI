@@ -24,7 +24,7 @@ def serving_encryption():
 
 class TestEncryption(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="encryption", example_path="encryption", model_dir="encrypt_server",
+        serving_util = ServingTest(data_path="encryption", example_path="Cpp/encryption", model_dir="encrypt_server",
                                    client_dir="encrypt_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

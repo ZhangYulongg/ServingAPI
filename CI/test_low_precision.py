@@ -14,7 +14,7 @@ from util import *
 
 class TestLowPrecision(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="low_precision", example_path="low_precision/resnet50", model_dir="serving_server",
+        serving_util = ServingTest(data_path="low_precision", example_path="Cpp/low_precision/resnet50", model_dir="serving_server",
                                    client_dir="serving_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

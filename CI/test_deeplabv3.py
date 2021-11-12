@@ -14,7 +14,7 @@ from util import *
 
 class TestDeeplabv3(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="deeplabv3", example_path="deeplabv3", model_dir="deeplabv3_server",
+        serving_util = ServingTest(data_path="deeplabv3", example_path="Cpp/PaddleSeg/deeplabv3", model_dir="deeplabv3_server",
                                    client_dir="deeplabv3_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

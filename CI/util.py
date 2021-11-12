@@ -16,7 +16,7 @@ class ServingTest(object):
         """
         code_path = os.environ.get("CODE_PATH")
         self.data_path = f"{os.environ.get('DATA_PATH')}/{data_path}/"
-        self.example_path = f"{code_path}/Serving/python/examples/{example_path}/"
+        self.example_path = f"{code_path}/Serving/examples/{example_path}/"
         self.py_version = os.environ.get("py_version")
         self.model_dir = model_dir
         self.client_config = f"{client_dir}/serving_client_conf.prototxt"
