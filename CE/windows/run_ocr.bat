@@ -52,7 +52,7 @@ del /f /q /s D:\zhangyulong04\daily_output\daily\*
 ::start server
 start cmd /C "python ocr_debugger_server.py cpu > ..\logs\cpu_server.log 2>&1"
 ::sleep
-@ping 127.0.0.1 -n 8 >nul
+@ping 127.0.0.1 -n 15 >nul
 ::inference
 python ocr_web_client.py > ..\logs\cpu_client.log 2>&1
 call:check_result cpu
@@ -68,7 +68,7 @@ taskkill /f /t /im python.exe
 ::start server
 start cmd /C "python ocr_debugger_server.py gpu > ..\logs\gpu_server.log 2>&1"
 ::sleep
-@ping 127.0.0.1 -n 8 >nul
+@ping 127.0.0.1 -n 15 >nul
 ::inference
 python ocr_web_client.py > ..\logs\gpu_client.log 2>&1
 call:check_result gpu
@@ -83,7 +83,7 @@ taskkill /f /t /im python.exe
 
 xcopy ..\logs\*.* D:\zhangyulong04\daily_output\daily\ /s /e
 cd D:\zhangyulong04\daily_output
-del /f /q /s .\%date:~5,2%%date:~8,2%_%time:~0,2%
+rmdir %date:~5,2%%date:~8,2%_%time:~0,2% /q /s
 mkdir %date:~5,2%%date:~8,2%_%time:~0,2%
 xcopy .\daily\*.* D:\zhangyulong04\daily_output\%date:~5,2%%date:~8,2%_%time:~0,2%\ /s /e
 
