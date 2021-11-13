@@ -87,7 +87,7 @@ function compile_server() {
         echo -e "Error cuda version$1"
         exit 1
     fi
-    if [ $1 == "cpu" ]; then
+    if [ $1 == "pd_cpu" ]; then
         mkdir server-build-cpu && cd server-build-cpu
         cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR/ \
             -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
