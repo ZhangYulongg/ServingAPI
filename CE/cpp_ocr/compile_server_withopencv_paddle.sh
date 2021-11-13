@@ -36,9 +36,9 @@ function set_py () {
         export PYTHON_EXECUTABLE=$PYTHONROOT/bin/python3.6
     elif [ $1 == 37 ]; then
         py_version="python3.7"
-        export PYTHON_INCLUDE_DIR=/usr/include/python3.7m/
-        export PYTHON_LIBRARIES=/usr/lib/x86_64-linux-gnu/libpython3.7m.so
-        export PYTHON_EXECUTABLE=/usr/bin/python3.7
+#        export PYTHON_INCLUDE_DIR=/usr/include/python3.7m/
+#        export PYTHON_LIBRARIES=/usr/lib/x86_64-linux-gnu/libpython3.7m.so
+#        export PYTHON_EXECUTABLE=/usr/bin/python3.7
     elif [ $1 == 38 ]; then
         py_version="python3.8"
         export PYTHONROOT=/usr/local/
