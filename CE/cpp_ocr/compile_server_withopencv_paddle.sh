@@ -133,7 +133,7 @@ function compile_server_withopencv() {
         exit 1
     fi
     rm -rf server-build*
-    if [ $1 == "cpu" ]; then
+    if [ $1 == "pd_cpu" ]; then
         mkdir server-build-cpu-opencv && cd server-build-cpu-opencv
         cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR \
             -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
