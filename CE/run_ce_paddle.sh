@@ -4,6 +4,8 @@ cd ${shell_path}
 # 运行serving补丁脚本
 if [ $2 == "pd_cpu" ]; then
     bash -x paddle_docker/run_paddle_cpu.sh
+    rm -rf util.py
+    mv util_paddle.py util.py
 elif [ $2 == "pd_1027" ]; then
     bash -x paddle_docker/run_paddle_1027.sh
 elif [ $2 == "pd_112" ]; then
