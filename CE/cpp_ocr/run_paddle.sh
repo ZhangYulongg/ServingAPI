@@ -7,6 +7,8 @@ if [ $2 == "pd_cpu" ]; then
     export PYTHON_INCLUDE_DIR=/usr/include/python3.7m/
     export PYTHON_LIBRARIES=/usr/lib/x86_64-linux-gnu/libpython3.7m.so
     export PYTHON_EXECUTABLE=/usr/bin/python3.7
+    rm -rf ../util.py
+    mv ../util_paddle.py ../util.py
 elif [ $2 == "pd_1027" ]; then
     bash -x ../paddle_docker/run_paddle_1027.sh
     export PYTHON_INCLUDE_DIR=/usr/local/python3.7.0/include/python3.7m/
