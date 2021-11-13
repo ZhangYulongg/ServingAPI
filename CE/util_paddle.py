@@ -107,6 +107,7 @@ def stop_server(port=None, sleep_time=0):
 
 
 def check_gpu_memory(gpu_id):
+    return False
     pass
     # pynvml.nvmlInit()
     # handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
