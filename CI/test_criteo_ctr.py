@@ -45,7 +45,7 @@ class CriteoReader(object):
 
 class TestCriteoCtr(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="criteo_ctr", example_path="Cpp/PaddleRec/criteo_ctr", model_dir="ctr_serving_model",
+        serving_util = ServingTest(data_path="criteo_ctr", example_path="C++/PaddleRec/criteo_ctr", model_dir="ctr_serving_model",
                                    client_dir="ctr_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
