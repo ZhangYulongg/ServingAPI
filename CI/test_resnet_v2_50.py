@@ -39,7 +39,7 @@ def single_func(idx, resource):
 
 class TestResnetV2(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="resnet_v2_50", example_path="Cpp/PaddleClas/resnet_v2_50", model_dir="resnet_v2_50_imagenet_model",
+        serving_util = ServingTest(data_path="resnet_v2_50", example_path="C++/PaddleClas/resnet_v2_50", model_dir="resnet_v2_50_imagenet_model",
                                    client_dir="resnet_v2_50_imagenet_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
