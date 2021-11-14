@@ -11,7 +11,7 @@ from util import *
 
 class TestBert(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="bert", example_path="Cpp/PaddleNLP/bert", model_dir="bert_seq128_model",
+        serving_util = ServingTest(data_path="bert", example_path="C++/PaddleNLP/bert", model_dir="bert_seq128_model",
                                    client_dir="bert_seq128_client")
         self.serving_util = serving_util
         serving_util.check_model_data_exist()
