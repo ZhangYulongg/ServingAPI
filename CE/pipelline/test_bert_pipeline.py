@@ -19,7 +19,7 @@ from util import *
 
 class TestBertPipeline(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="bert", example_path="pipeline/bert", model_dir="bert_seq128_model",
+        serving_util = ServingTest(data_path="bert", example_path="Pipeline/PaddleNLP/bert", model_dir="bert_seq128_model",
                                    client_dir="bert_seq128_client")
         serving_util.check_model_data_exist()
         os.system("wget https://paddle-serving.bj.bcebos.com/bert_example/vocab.txt")

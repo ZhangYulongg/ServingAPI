@@ -18,7 +18,7 @@ from util import *
 
 class TestHRNetW18C(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="pipeline/HRNet_W18_C", example_path="pipeline/PaddleClas/HRNet_W18_C", model_dir="HRNet_W18_C/ppcls_model",
+        serving_util = ServingTest(data_path="pipeline/HRNet_W18_C", example_path="Pipeline/PaddleClas/HRNet_W18_C", model_dir="HRNet_W18_C/ppcls_model",
                                    client_dir="HRNet_W18_C/ppcls_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

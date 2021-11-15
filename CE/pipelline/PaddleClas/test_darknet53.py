@@ -18,7 +18,7 @@ from util import *
 
 class TestDarkNet53(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="pipeline/DarkNet53", example_path="pipeline/PaddleClas/DarkNet53", model_dir="DarkNet53/ppcls_model",
+        serving_util = ServingTest(data_path="pipeline/DarkNet53", example_path="Pipeline/PaddleClas/DarkNet53", model_dir="DarkNet53/ppcls_model",
                                    client_dir="DarkNet53/ppcls_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

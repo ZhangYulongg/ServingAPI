@@ -18,7 +18,7 @@ from util import *
 
 class TestResNet_V2_50(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="pipeline/ResNet_V2_50", example_path="pipeline/PaddleClas/ResNet_V2_50", model_dir="resnet_v2_50_imagenet_model",
+        serving_util = ServingTest(data_path="pipeline/ResNet_V2_50", example_path="Pipeline/PaddleClas/ResNet_V2_50", model_dir="resnet_v2_50_imagenet_model",
                                    client_dir="resnet_v2_50_imagenet_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

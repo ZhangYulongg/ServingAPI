@@ -18,7 +18,7 @@ from util import *
 
 class TestImagenetPipeline(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="fit_a_line", example_path="pipeline/simple_web_service", model_dir="uci_housing_model",
+        serving_util = ServingTest(data_path="fit_a_line", example_path="Pipeline/simple_web_service", model_dir="uci_housing_model",
                                    client_dir="uci_housing_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

@@ -18,7 +18,7 @@ from util import *
 
 class TestResNet50_vd(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="pipeline/ResNet50_vd", example_path="pipeline/PaddleClas/ResNet50_vd", model_dir="ResNet50_vd/ppcls_model",
+        serving_util = ServingTest(data_path="pipeline/ResNet50_vd", example_path="Pipeline/PaddleClas/ResNet50_vd", model_dir="ResNet50_vd/ppcls_model",
                                    client_dir="ResNet50_vd/ppcls_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

@@ -18,7 +18,7 @@ from util import *
 
 class TestMobileNetV3(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="pipeline/MobileNetV3_large_x1_0", example_path="pipeline/PaddleClas/MobileNetV3_large_x1_0", model_dir="MobileNetV3_large_x1_0/ppcls_model",
+        serving_util = ServingTest(data_path="pipeline/MobileNetV3_large_x1_0", example_path="Pipeline/PaddleClas/MobileNetV3_large_x1_0", model_dir="MobileNetV3_large_x1_0/ppcls_model",
                                    client_dir="MobileNetV3_large_x1_0/ppcls_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

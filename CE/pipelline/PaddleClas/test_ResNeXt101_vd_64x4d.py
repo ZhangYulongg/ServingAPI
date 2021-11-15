@@ -18,7 +18,7 @@ from util import *
 
 class TestResNeXt101_vd_64x4d(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="pipeline/ResNeXt101_vd_64x4d", example_path="pipeline/PaddleClas/ResNeXt101_vd_64x4d", model_dir="ResNeXt101_vd_64x4d/ppcls_model",
+        serving_util = ServingTest(data_path="pipeline/ResNeXt101_vd_64x4d", example_path="Pipeline/PaddleClas/ResNeXt101_vd_64x4d", model_dir="ResNeXt101_vd_64x4d/ppcls_model",
                                    client_dir="ResNeXt101_vd_64x4d/ppcls_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

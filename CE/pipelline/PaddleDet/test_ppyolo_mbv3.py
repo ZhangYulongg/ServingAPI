@@ -19,7 +19,7 @@ from util import *
 
 class TestPPYOLO_mbv3(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="detection/ppyolo_mbv3", example_path="pipeline/PaddleDetection/ppyolo_mbv3", model_dir="serving_server",
+        serving_util = ServingTest(data_path="detection/ppyolo_mbv3", example_path="Pipeline/PaddleDetection/ppyolo_mbv3", model_dir="serving_server",
                                    client_dir="serving_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

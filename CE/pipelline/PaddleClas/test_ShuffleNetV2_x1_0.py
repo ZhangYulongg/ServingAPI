@@ -18,7 +18,7 @@ from util import *
 
 class TestShuffleNetV2_x1_0(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="pipeline/ShuffleNetV2_x1_0", example_path="pipeline/PaddleClas/ShuffleNetV2_x1_0", model_dir="ShuffleNetV2_x1_0/ppcls_model",
+        serving_util = ServingTest(data_path="pipeline/ShuffleNetV2_x1_0", example_path="Pipeline/PaddleClas/ShuffleNetV2_x1_0", model_dir="ShuffleNetV2_x1_0/ppcls_model",
                                    client_dir="ShuffleNetV2_x1_0/ppcls_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
