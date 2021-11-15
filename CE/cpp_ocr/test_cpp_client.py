@@ -19,7 +19,7 @@ from util import *
 class TestCPPClient(object):
     """only for CI CE拿不到client的bin"""
     def setup_class(self):
-        serving_util = ServingTest(data_path="fit_a_line", example_path="fit_a_line", model_dir="uci_housing_model",
+        serving_util = ServingTest(data_path="fit_a_line", example_path="C++/fit_a_line", model_dir="uci_housing_model",
                                    client_dir="uci_housing_client")
         serving_util.check_model_data_exist()
         os.system("\cp -r ${CODE_PATH}/Serving/client-build/core/general-client/simple_client ./")
