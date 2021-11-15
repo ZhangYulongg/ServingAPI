@@ -16,7 +16,7 @@ from util import *
 
 class TestSSDVGG16(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="detection/ssd_vgg16_300_240e_voc", example_path="detection/ssd_vgg16_300_240e_voc", model_dir="serving_server",
+        serving_util = ServingTest(data_path="detection/ssd_vgg16_300_240e_voc", example_path="C++/PaddleDetection/ssd_vgg16_300_240e_voc", model_dir="serving_server",
                                    client_dir="serving_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

@@ -27,7 +27,7 @@ def serving_encryption():
 
 class TestPPYOLO(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="detection/ppyolo_r50vd_dcn_1x_coco", example_path="detection/ppyolo_r50vd_dcn_1x_coco", model_dir="serving_server",
+        serving_util = ServingTest(data_path="detection/ppyolo_r50vd_dcn_1x_coco", example_path="C++/PaddleDetection/ppyolo_r50vd_dcn_1x_coco", model_dir="serving_server",
                                    client_dir="serving_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

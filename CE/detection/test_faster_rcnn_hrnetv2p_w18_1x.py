@@ -16,7 +16,7 @@ from util import *
 
 class TestFasterRCNN(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="detection/faster_rcnn_hrnetv2p_w18_1x", example_path="detection/faster_rcnn_hrnetv2p_w18_1x", model_dir="serving_server",
+        serving_util = ServingTest(data_path="detection/faster_rcnn_hrnetv2p_w18_1x", example_path="C++/PaddleDetection/faster_rcnn_hrnetv2p_w18_1x", model_dir="serving_server",
                                    client_dir="serving_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
