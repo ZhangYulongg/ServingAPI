@@ -19,7 +19,7 @@ from util import *
 
 class TestResnetV2XPU(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="resnet_v2_50", example_path="xpu/resnet_v2_50_xpu", model_dir="resnet_v2_50_imagenet_model",
+        serving_util = ServingTest(data_path="resnet_v2_50", example_path="C++/xpu/resnet_v2_50_xpu", model_dir="resnet_v2_50_imagenet_model",
                                    client_dir="resnet_v2_50_imagenet_client")
         serving_util.check_model_data_exist()
         self.serving_util = serving_util

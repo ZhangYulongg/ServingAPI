@@ -16,7 +16,7 @@ from util import *
 
 class TestFitALineXPU(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="fit_a_line", example_path="xpu/fit_a_line_xpu", model_dir="uci_housing_model",
+        serving_util = ServingTest(data_path="fit_a_line", example_path="C++/xpu/fit_a_line_xpu", model_dir="uci_housing_model",
                                    client_dir="uci_housing_client")
         serving_util.check_model_data_exist()
         self.serving_util = serving_util

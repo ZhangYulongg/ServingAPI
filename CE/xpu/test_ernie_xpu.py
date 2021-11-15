@@ -13,7 +13,7 @@ from util import *
 
 class TestErnieXPU(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="ernie", example_path="xpu/ernie", model_dir="serving_server",
+        serving_util = ServingTest(data_path="ernie", example_path="C++/xpu/ernie", model_dir="serving_server",
                                    client_dir="serving_client")
         self.serving_util = serving_util
         serving_util.check_model_data_exist()

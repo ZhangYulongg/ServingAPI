@@ -19,7 +19,7 @@ from util import *
 
 class TestVGG19XPU(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="vgg19", example_path="xpu/vgg19", model_dir="serving_server",
+        serving_util = ServingTest(data_path="vgg19", example_path="C++/xpu/vgg19", model_dir="serving_server",
                                    client_dir="serving_client")
         serving_util.check_model_data_exist()
         self.serving_util = serving_util

@@ -13,7 +13,7 @@ from util import *
 
 class TestBertXPU(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="bert", example_path="xpu/bert", model_dir="serving_server",
+        serving_util = ServingTest(data_path="bert", example_path="C++/xpu/bert", model_dir="serving_server",
                                    client_dir="serving_client")
         self.serving_util = serving_util
         serving_util.check_model_data_exist()
