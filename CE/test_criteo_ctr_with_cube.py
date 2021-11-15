@@ -74,7 +74,7 @@ class CriteoDataset(dg.MultiSlotDataGenerator):
 
 class TestCriteoCtrWithCube(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="criteo_ctr_with_cube", example_path="criteo_ctr_with_cube", model_dir="ctr_serving_model_kv",
+        serving_util = ServingTest(data_path="criteo_ctr_with_cube", example_path="C++/PaddleRec/criteo_ctr_with_cube", model_dir="ctr_serving_model_kv",
                                    client_dir="ctr_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

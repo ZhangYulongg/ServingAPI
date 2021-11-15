@@ -13,7 +13,7 @@ from util import *
 
 class TestLAC(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="lac", example_path="lac", model_dir="lac_model",
+        serving_util = ServingTest(data_path="lac", example_path="C++/PaddleNLP/lac", model_dir="lac_model",
                                    client_dir="lac_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

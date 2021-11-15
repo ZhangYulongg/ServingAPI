@@ -14,7 +14,7 @@ from util import *
 
 class TestUnet(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="unet_for_image_seg", example_path="unet_for_image_seg", model_dir="unet_model",
+        serving_util = ServingTest(data_path="unet_for_image_seg", example_path="C++/PaddleSeg/unet_for_image_seg", model_dir="unet_model",
                                    client_dir="unet_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

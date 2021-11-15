@@ -14,7 +14,7 @@ from util import *
 
 class TestMobilenet(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="mobilenet", example_path="mobilenet", model_dir="mobilenet_v2_imagenet_model",
+        serving_util = ServingTest(data_path="mobilenet", example_path="C++/PaddleClas/mobilenet", model_dir="mobilenet_v2_imagenet_model",
                                    client_dir="mobilenet_v2_imagenet_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

@@ -15,7 +15,7 @@ from util import *
 
 class TestIMDBABTest(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="imdb", example_path="imdb", model_dir="imdb_cnn_model",
+        serving_util = ServingTest(data_path="imdb", example_path="C++/imdb", model_dir="imdb_cnn_model",
                                    client_dir="imdb_cnn_client_conf")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)

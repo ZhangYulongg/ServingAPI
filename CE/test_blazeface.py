@@ -13,7 +13,7 @@ from util import *
 
 class TestBlazeface(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="blazeface", example_path="blazeface", model_dir="serving_server",
+        serving_util = ServingTest(data_path="blazeface", example_path="C++/PaddleDetection/blazeface", model_dir="serving_server",
                                    client_dir="serving_client")
         serving_util.check_model_data_exist()
         self.get_truth_val_by_inference(self)
