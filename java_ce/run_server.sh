@@ -5,7 +5,7 @@ serving_dir=${CODE_PATH}/Serving/
 py_version=python3.6
 # 日志目录
 log_dir=${CODE_PATH}/logs/
-demo_dir=${CODE_PATH}/Serving/python/examples/
+demo_dir=${CODE_PATH}/Serving/examples/
 # 数据目录
 data=/mnt/serving/dataset/data/
 # 输出颜色
@@ -309,7 +309,7 @@ function error_log () {
 }
 
 function pre_loading() {
-  cd ${demo_dir}/bert
+  cd ${demo_dir}/C++/PaddleNLP/bert
   # 链接模型数据
   data_dir=${data}bert/
   link_data ${data_dir}
@@ -346,7 +346,7 @@ function pre_loading() {
 function pipeline_imdb_model_ensemble_cpu_pipeline () {
 	# 准备
   dir=${log_dir}java/python_pipeline_server/imdb_model_ensemble/
-  enter_dir pipeline/imdb_model_ensemble/
+  enter_dir Pipeline/imdb_model_ensemble/
   check_dir ${dir}
   # 链接模型数据
   data_dir=${data}imdb/
@@ -380,7 +380,7 @@ function pipeline_imdb_model_ensemble_cpu_pipeline () {
 function pipeline_simple_web_service_cpu_pipeline () {
 	# 准备
   dir=${log_dir}java/brpc_server/simple_web_service/
-  enter_dir pipeline/simple_web_service/
+  enter_dir Pipeline/simple_web_service/
   check_dir ${dir}
   # 链接模型数据
   data_dir=${data}fit_a_line/
@@ -394,7 +394,7 @@ function pipeline_simple_web_service_cpu_pipeline () {
 
 function brpc_server_fit_a_line_cpu() {
     dir=${log_dir}java/python_pipeline_server/simple_web_service/
-    enter_dir fit_a_line/
+    enter_dir C++/fit_a_line/
     check_dir ${dir}
     data_dir=${data}fit_a_line/
     link_data ${data_dir}
