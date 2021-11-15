@@ -4,14 +4,27 @@ cd ${shell_path}
 # 运行serving补丁脚本
 if [ $2 == "pd_cpu" ]; then
     bash -x ../paddle_docker/run_paddle_cpu.sh
+    export PYTHON_INCLUDE_DIR=/usr/include/python3.7m/
+    export PYTHON_LIBRARIES=/usr/lib/x86_64-linux-gnu/libpython3.7m.so
+    export PYTHON_EXECUTABLE=/usr/bin/python3.7
+    mv ../util.py ../util_tmp.py
+    mv ../util_paddle.py ../util.py
 elif [ $2 == "pd_1027" ]; then
     bash -x ../paddle_docker/run_paddle_1027.sh
+    export PYTHON_INCLUDE_DIR=/usr/local/python3.7.0/include/python3.7m/
+    export PYTHON_LIBRARIES=/usr/local/python3.7.0/lib/libpython3.7m.so
+    export PYTHON_EXECUTABLE=/usr/local/python3.7.0/bin/python3.7
+    git reset --hard
 elif [ $2 == "pd_112" ]; then
     bash -x ../paddle_docker/run_paddle_112.sh
+    export PYTHON_INCLUDE_DIR=/usr/include/python3.7m/
+    export PYTHON_LIBRARIES=/usr/lib/x86_64-linux-gnu/libpython3.7m.so
+    export PYTHON_EXECUTABLE=/usr/bin/python3.7
+    git reset --hard
 fi
 
 cd ${shell_path}
-bash compile_server_withopencv_paddle.sh $1 $2
+bash -x compile_server_withopencv_paddle.sh $1 $2
 
 unset http_proxy && unset https_proxy
 

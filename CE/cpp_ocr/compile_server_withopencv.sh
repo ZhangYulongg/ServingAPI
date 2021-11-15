@@ -177,6 +177,10 @@ function compile_client() {
         -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
         -DCLIENT=ON ..
     make -j10
+    if [ `ls -A ./python/dist/ | wc -w` == 0 ]; then
+        echo "--------make failed, try again"
+        make -j10
+    fi
     unset_proxy
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple -y
     set_proxy
