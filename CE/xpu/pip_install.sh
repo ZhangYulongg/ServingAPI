@@ -62,10 +62,10 @@ function py_requirements () {
   rm -rf whl_packages
   mkdir whl_packages && cd whl_packages
   if [ $1 == 36 ]; then
-      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0-rc0/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.0rc0-cp36-cp36m-linux_x86_64.whl
+      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.0-cp36-cp36m-linux_x86_64.whl
       $py_version -m pip install --ignore-installed paddlepaddle-2.2.0rc0-cp36-cp36m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
   elif [ $1 == 37 ]; then
-      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0-rc0/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.0rc0-cp37-cp37m-linux_x86_64.whl
+      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.0-cp37-cp37m-linux_x86_64.whl
       $py_version -m pip install --ignore-installed paddlepaddle-2.2.0rc0-cp37-cp37m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
   else
       echo -e "${RED_COLOR}Error py version$1${RES}"
