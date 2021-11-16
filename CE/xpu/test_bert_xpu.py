@@ -2,6 +2,7 @@ import os
 import subprocess
 import numpy as np
 import sys
+import time
 
 from paddle_serving_client import Client, HttpClient
 import paddle.inference as paddle_infer
@@ -104,6 +105,7 @@ class TestBertXPU(object):
         print(result_data["save_infer_model/scale_0.tmp_1"].shape)
         result_data = self.predict_brpc(batch_size=2)
         print(result_data["save_infer_model/scale_0.tmp_1"].shape)
+        time.sleep(2)
 
         # by HTTP-proto
         # TODO 必须开启压缩，否则超过默认buffer space报错
@@ -139,6 +141,7 @@ class TestBertXPU(object):
         print(result_data["save_infer_model/scale_0.tmp_1"].shape)
         result_data = self.predict_brpc(batch_size=2)
         print(result_data["save_infer_model/scale_0.tmp_1"].shape)
+
 
         # by HTTP-proto
         # TODO 必须开启压缩，否则超过默认buffer space报错
