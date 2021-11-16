@@ -180,6 +180,8 @@ function java_compress_client() {
 # 安装java client 依赖
 echo "---------------install java client begin---------------"
 cd /Serving
+git branch
+git log | head -10
 set_proxy
 git checkout ${test_branch}
 git pull
