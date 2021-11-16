@@ -111,11 +111,14 @@ class TestBertXPU(object):
         # TODO 必须开启压缩，否则超过默认buffer space报错
         result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
         print(result_data["save_infer_model/scale_0.tmp_1"].shape)
+        time.sleep(2)
         result_data = self.predict_http(mode="proto", compress=True, batch_size=2)
         print(result_data["save_infer_model/scale_0.tmp_1"].shape)
+        time.sleep(2)
         # by HTTP-json
         result_data = self.predict_http(mode="json", compress=True, batch_size=1)
         print(result_data["save_infer_model/scale_0.tmp_1"].shape)
+        time.sleep(2)
         # by HTTP-grpc
         result_data = self.predict_http(mode="grpc", compress=True, batch_size=1)
         print(result_data["save_infer_model/scale_0.tmp_1"].shape)
