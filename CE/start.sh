@@ -1,6 +1,6 @@
 shell_path=${CODE_PATH}/ServingAPI/CE
 cd ${shell_path}
-bash -x pip_install.sh 36 1027
+bash -x pip_install.sh 38 1027
 
 # 暂时适配cuda11.2镜像
 #if [ $2 == 112 ]; then
