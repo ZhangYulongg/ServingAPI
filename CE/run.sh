@@ -22,9 +22,9 @@ do
         echo "跳过"
     else
         if [[ ${ce_name} =~ "cpu" ]]; then
-            $py_version -m pytest --disable-warnings -sv ${file} -k "cpu"
+            $py_version -m pytest --disable-warnings -sv ${file} -k "cpu" --alluredir=report
         else
-            $py_version -m pytest --disable-warnings -sv ${file}
+            $py_version -m pytest --disable-warnings -sv ${file}  --alluredir=report
         fi
         if [[ $? -ne 0 && $? -ne 5 ]]; then
             echo ${file} >> result.txt

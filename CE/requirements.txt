@@ -1,2 +1,5 @@
 pytest
 pynvml
+pytest-html
+pytest-assume
+allure-pytest
