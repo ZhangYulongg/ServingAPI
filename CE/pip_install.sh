@@ -162,6 +162,24 @@ function pip_install_serving() {
   set_proxy
 }
 
+function pip_install_serving_test() {
+    unset_proxy
+    $py_version -m pip install paddle-serving-app==0.7.0 -i https://mirror.baidu.com/pypi/simple
+    $py_version -m pip install paddle-serving-client==0.7.0 -i https://mirror.baidu.com/pypi/simple
+    if [ $2 == 101 ]; then
+        $py_version -m pip install paddle-serving-server-gpu==0.7.0.post101 -i https://mirror.baidu.com/pypi/simple
+    elif [ $2 == 1027 ]; then
+        $py_version -m pip install paddle-serving-server-gpu==0.7.0.post102 -i https://mirror.baidu.com/pypi/simple
+    elif [ $2 == 1028 ]; then
+        $py_version -m pip install paddle-serving-server-gpu==0.7.0.post1028 -i https://mirror.baidu.com/pypi/simple
+    elif [ $2 == 112 ]; then
+        $py_version -m pip install paddle-serving-server-gpu==0.7.0.post112 -i https://mirror.baidu.com/pypi/simple
+    elif [ $2 == "cpu" ]; then
+        $py_version -m pip install paddle-serving-server==0.7.0 -i https://mirror.baidu.com/pypi/simple
+    fi
+    set_proxy
+}
+
 cd $serving_dir
 set_proxy
 echo "-----------cur path: `pwd`"
@@ -173,7 +191,11 @@ py_requirements $1 $2
 echo "--------pip list: "
 ${pip_version} list
 
-pip_install_serving $1 $2
+if [ ${test_branch} == "v0.7.0" ]; then
+    pip_install_serving_test $1 $2
+else
+    pip_install_serving $1 $2
+fi 
 
 echo "--------pip list after pip: "
 ${pip_version} list
