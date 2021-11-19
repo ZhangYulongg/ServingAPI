@@ -2,7 +2,7 @@
 
 # 日志目录
 log_dir=${CODE_PATH}/logs/
-demo_dir=${CODE_PATH}/Serving/python/examples/
+demo_dir=${CODE_PATH}/Serving/examples/
 shell_dir=${CODE_PATH}/benchmark/
 dir=`pwd`
 export SERVING_BIN=${CODE_PATH}/Serving/server-build-gpu-opencv/core/general-server/serving
@@ -178,7 +178,7 @@ function generate_logs() {
 }
 
 function pipeline_darknet53() {
-    cd ${demo_dir}/pipeline/PaddleClas/DarkNet53
+    cd ${demo_dir}/Pipeline/PaddleClas/DarkNet53
     dir=${log_dir}/DarkNet53/
     check_dir $dir
     # 链接模型数据
@@ -212,7 +212,7 @@ function pipeline_darknet53() {
 }
 
 function pipeline_PaddleClas() {
-    cd ${demo_dir}/pipeline/PaddleClas/$1
+    cd ${demo_dir}/Pipeline/PaddleClas/$1
     dir=${log_dir}/$1/
     check_dir $dir
     # 链接模型数据
@@ -251,7 +251,7 @@ function pipeline_PaddleClas() {
 }
 
 function pipeline_ocr() {
-    cd ${demo_dir}/pipeline/ocr
+    cd ${demo_dir}/Pipeline/PaddleOCR/ocr
     dir=${log_dir}/ocr/
     check_dir $dir
     # 链接模型数据
@@ -286,7 +286,7 @@ function pipeline_ocr() {
 }
 
 function cpp_sync_resnet_v2_50() {
-    cd ${demo_dir}/resnet_v2_50/
+    cd ${demo_dir}/C++/PaddleClas/resnet_v2_50/
     dir=${log_dir}/cpp/resnet_v2_50/
     check_dir $dir
     # 链接模型数据
@@ -313,7 +313,7 @@ function cpp_sync_resnet_v2_50() {
 }
 
 function cpp_sync_ocr() {
-    cd ${demo_dir}/ocr/
+    cd ${demo_dir}/C++/PaddleOCR/ocr/
     dir=${log_dir}/cpp/ocr/
     check_dir $dir
     # 链接模型数据
@@ -348,9 +348,9 @@ function cpp_sync_ocr() {
 
 function cpp_async_resnet_v2_50() {
     cd ${demo_dir}
-    rm -rf resnet_v2_50
+    rm -rf C++/PaddleClas/resnet_v2_50/
     git reset --hard
-    cd ${demo_dir}/resnet_v2_50/
+    cd ${demo_dir}/C++/PaddleClas/resnet_v2_50/
     dir=${log_dir}/cpp_async/resnet_v2_50/
     check_dir $dir
     # 链接模型数据
@@ -378,9 +378,9 @@ function cpp_async_resnet_v2_50() {
 
 function cpp_async_ocr() {
     cd ${demo_dir}
-    rm -rf ocr
+    rm -rf C++/PaddleOCR/ocr/
     git reset --hard
-    cd ${demo_dir}/ocr/
+    cd ${demo_dir}/C++/PaddleOCR/ocr/
     dir=${log_dir}/cpp_async/ocr/
     check_dir $dir
     # 链接模型数据

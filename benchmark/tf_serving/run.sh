@@ -53,8 +53,8 @@ function tf_serving_resnet() {
     cp -r benchmark_logs ${log_dir}/benchmark_logs/tf_serving/profile_log_res
 }
 
-/usr/bin/python3 -m pip install paddle-serving-client==0.6.2 -i https://mirror.baidu.com/pypi/simple
-/usr/bin/python3 -m pip install paddle-serving-app==0.6.2 -i https://mirror.baidu.com/pypi/simple
+/usr/bin/python3 -m pip install paddle-serving-client==0.7.0 -i https://mirror.baidu.com/pypi/simple
+/usr/bin/python3 -m pip install paddle-serving-app==0.7.0 -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install psutil -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install openpyxl -i https://mirror.baidu.com/pypi/simple
 /usr/bin/python3 -m pip install pandas -i https://mirror.baidu.com/pypi/simple
