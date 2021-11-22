@@ -29,8 +29,8 @@ def single_func(idx, resource):
             feed={"image": resource["feed_data"]},
             fetch=["save_infer_model/scale_0.tmp_0"],
             batch=True)
-        assert result is not None, "fetch_map is None，infer failed..."
         l_end = time.time()
+        assert result is not None, "fetch_map is None，infer failed..."
         latency_list.append(l_end * 1000 - l_start * 1000)
         total_number = total_number + 1
     end = time.time()
