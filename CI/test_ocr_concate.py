@@ -172,7 +172,7 @@ class TestOCR(object):
 
         # 2.init client
         client = Client()
-        client.load_client_config(["ocr_det_client", "ocr_rec_client"])
+        client.load_client_config(["ocr_det_concat_client", "ocr_rec_client"])
         client.connect(["127.0.0.1:9293"])
 
         # 3.predict for fetch_map
