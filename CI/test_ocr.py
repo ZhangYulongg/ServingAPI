@@ -35,6 +35,7 @@ class TestOCR(object):
         self.get_truth_val_by_inference(self)
         os.system("sed -i '96 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_map)' ocr_debugger_server.py")
         os.system("sed -i '60 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_map)' det_web_server.py")
+        os.system("sed -i '86 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_map)' ocr_web_server.py")
 
     def teardown_method(self):
         print_log(["stderr.log", "stdout.log",
@@ -172,6 +173,44 @@ class TestOCR(object):
         r = requests.post(url=url, headers=headers, data=json.dumps(feed_dict))
         print(r.json())
         return r.json()["result"]
+
+    def test_cpu_web_service(self):
+        # python -m pytest -sv 1.py::TestOCR::test_cpu_web_service
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model --port 9293",
+            sleep=5,
+            err="deterr.log",
+            out="detout.log",
+        )
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} ocr_web_server.py cpu",
+            sleep=5,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9293) == 1  # det Server
+        assert count_process_num_on_port(9292) == 1  # web Server
+        assert count_process_num_on_port(12000) == 1  # rec Server
+        assert check_gpu_memory(0) is False
+
+        # 3.keywords check
+
+        # 4.predict by http
+        # batch_size=1
+        self.predict_http(batch_size=1)
+        # 从npy文件读取
+        rec_result = np.load("fetch_dict_rec.npy", allow_pickle=True).item()
+        # 删除文件
+        os.system("rm -rf fetch_dict_rec.npy")
+        # # 删除lod信息
+        del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
+        self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
+
+        # 5.release
+        kill_process(9292)
+        kill_process(9293)
+        kill_process(12000)
 
     def test_cpu_local(self):
         # 1.start server

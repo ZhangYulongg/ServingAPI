@@ -104,3 +104,27 @@ class TestLowPrecision(object):
 
         # 5.release
         kill_process(9393, 2)
+
+    def test_gpu_trt_fp16(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9393 --gpu_ids 0 --use_trt --precision fp16",
+            sleep=40,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9393) == 1
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is False
+
+        # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU", filename="stderr.log")
+        check_keywords_in_server_log("Prepare TRT engine")
+        check_keywords_in_server_log("Run Paddle-TRT FP16 mode")
+
+        # 4.predict
+        result_data = self.predict_brpc(batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+
+        # 5.release
+        kill_process(9393, 2)
