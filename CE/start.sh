@@ -1,7 +1,5 @@
-shell_path=`pwd`
-report_path="${shell_path}/report"
-mkdir -p ${report_path}
-
+shell_path=${CODE_PATH}/continuous_evaluation/src/task
+cd ${shell_path}
 bash -x pip_install.sh 38 1027
 
 # 暂时适配cuda11.2镜像
