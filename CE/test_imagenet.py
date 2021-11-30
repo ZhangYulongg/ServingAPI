@@ -150,7 +150,8 @@ class TestImagenet(object):
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
 
         # 5.release
-        kill_process(9696)
+        stop_server()
+        assert count_process_num_on_port(9696) == 0
 
     def test_gpu(self):
         # 1.start server
@@ -183,4 +184,5 @@ class TestImagenet(object):
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
 
         # 5.release
-        kill_process(9696, 2)
+        stop_server()
+        assert count_process_num_on_port(9696) == 0

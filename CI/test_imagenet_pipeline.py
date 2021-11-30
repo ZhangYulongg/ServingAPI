@@ -131,6 +131,7 @@ class TestImagenetPipeline(object):
         self.serving_util.check_result(result_data=result, truth_data=self.truth_prob, batch_size=1)
 
         # 5.release
-        kill_process(9999, 2)
-        kill_process(18082)
+        stop_server(sleep_time=5)
+        assert count_process_num_on_port(9999) == 0  # gRPC Server
+        assert count_process_num_on_port(18082) == 0
 

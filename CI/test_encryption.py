@@ -1,4 +1,5 @@
 import os
+import time
 import subprocess
 import numpy as np
 import copy
@@ -163,7 +164,9 @@ class TestEncryption(object):
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
 
         # 5.release
-        kill_process(9494, 2)
+        stop_server(sleep_time=8)
+        assert count_process_num_on_port(9494) == 0
+        assert count_process_num_on_port(12000) == 0
 
     def test_encrypt_cpu(self):
         # 1.start server

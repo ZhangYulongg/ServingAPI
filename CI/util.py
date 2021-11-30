@@ -1,5 +1,6 @@
 import os
 import pynvml
+import time
 import argparse
 import base64
 import subprocess
@@ -96,13 +97,13 @@ def kill_process(port, sleep_time=0):
     os.system(f"sleep {sleep_time}")
 
 
-def stop_server(port=None, sleep_time=0):
+def stop_server(port=None, sleep_time=2):
     py_version = os.environ.get("py_version")
     cmd = f"{py_version} -m paddle_serving_server.serve stop"
     if port:
         cmd = cmd + f" --port {port}"
     result = os.system(cmd)
-    os.system(f"sleep {sleep_time}")
+    time.sleep(sleep_time)
     return result
 
 
