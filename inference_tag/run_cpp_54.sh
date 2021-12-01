@@ -28,6 +28,7 @@ function run() {
     sed -i "33 i TENSORRT_ROOT=${trt_path}" compile.sh
     bash -x compile.sh
     ./build/trt_fp32_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams
+    exit_code=$?
 }
 
 
@@ -42,3 +43,4 @@ run
 echo "=======result========"
 cat log_${cuda}_${cudnn}_${gcc}_${trt}.txt
 echo "====================="
+exit ${exit_code}

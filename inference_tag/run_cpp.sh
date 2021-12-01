@@ -35,7 +35,9 @@ get_tar
 cmake
 
 bash -x bin/run-new-api-case-mini.sh | tee log_${cuda}_${cudnn}_${gcc}_${trt}.txt
+exit_code=$?
 
 echo "=======result========"
 grep FAILED log_${cuda}_${cudnn}_${gcc}_${trt}.txt
 echo "====================="
+exit ${exit_code}
