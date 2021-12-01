@@ -26,7 +26,11 @@ class TestFasterRCNN(object):
         print_log(["stderr.log", "stdout.log",
                    "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
         kill_process(9292)
+        print("before release---------")
+        os.system("netstat -nlp")
         self.serving_util.release()
+        print("after release---------")
+        os.system("netstat -nlp")
 
     def get_truth_val_by_inference(self):
         preprocess = DetectionSequential([
@@ -122,6 +126,8 @@ class TestFasterRCNN(object):
         # 删除lod信息
         del result_data["save_infer_model/scale_0.tmp_1.lod"]
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        print("before kill process---------")
+        os.system("netstat -nlp")
 
         # 5.release
         kill_process(9292, 2)
