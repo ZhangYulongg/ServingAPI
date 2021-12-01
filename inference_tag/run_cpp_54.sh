@@ -3,6 +3,7 @@
 # tag_path (2.2.0-rc0)
 
 tag_path=${tag_path}
+tar_path=${tar_path}
 cuda=$1
 cudnn=$2
 gcc=$3
@@ -12,7 +13,7 @@ trt_path=$5
 function get_tar() {
     cd ${code_path}/Paddle-Inference-Demo/c++/lib
     rm -rf paddle_inference*
-    wget -q https://paddle-inference-lib.bj.bcebos.com/${tag_path}/cxx_c/Linux/GPU/x86-64_gcc${gcc}_avx_mkl_cuda${cuda}_cudnn${cudnn}_trt${trt}/paddle_inference.tgz
+    wget -q ${tar_path}
     tar -xf paddle_inference.tgz
 }
 
