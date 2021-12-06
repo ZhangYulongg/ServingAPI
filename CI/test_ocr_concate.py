@@ -254,12 +254,12 @@ class TestOCR(object):
         # 3.keywords check
         check_keywords_in_server_log("Sync params from CPU to GPU")
         check_keywords_in_server_log("BSF thread init done")
-        check_keywords_in_server_log("runtime_thread_num: 2", "workdir_9293/general_detection_0/model_toolkit.prototxt")
-        check_keywords_in_server_log("runtime_thread_num: 4", "workdir_9293/general_infer_0/model_toolkit.prototxt")
-        detection_op = parse_prototxt("workdir_9293/general_detection_0/model_toolkit.prototxt")
-        infer_op = parse_prototxt("workdir_9293/general_infer_0/model_toolkit.prototxt")
-        assert detection_op["gpu_ids"] == ["0", "1"]
-        assert infer_op["gpu_ids"] == ["1"]
+        # check_keywords_in_server_log("runtime_thread_num: 2", "workdir_9293/general_detection_0/model_toolkit.prototxt")
+        # check_keywords_in_server_log("runtime_thread_num: 4", "workdir_9293/general_infer_0/model_toolkit.prototxt")
+        # detection_op = parse_prototxt("workdir_9293/general_detection_0/model_toolkit.prototxt")
+        # infer_op = parse_prototxt("workdir_9293/general_infer_0/model_toolkit.prototxt")
+        # assert detection_op["gpu_ids"] == ["0", "1"]
+        # assert infer_op["gpu_ids"] == ["1"]
 
         # 4.predict by http
         # batch_size=1
