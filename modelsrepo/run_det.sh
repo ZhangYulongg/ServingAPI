@@ -15,7 +15,7 @@ cd ${CODE_PATH}
 export https_proxy=${proxy}
 export http_proxy=${proxy}
 
-git clone https://github.com/PaddlePaddle/PaddleDetection.git -b ${model_branch} --depth=1
+git clone https://github.com/PaddlePaddle/PaddleDetection.git -b develop --depth=1
 unset http_proxy && unset https_proxy
 
 cd PaddleDetection
