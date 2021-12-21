@@ -37,6 +37,7 @@ sed -i '12 i \ \ alias_name: "prediction"' ResNet50_vd_serving/serving_server_co
 ${py_version} classification_web_service.py &
 sleep 20
 ${py_version} pipeline_http_client.py > http_result.txt
+cat http_result.txt
 grep -r "0.9341" http_result.txt
 if [ $? -ne 0 ]; then
     echo "PaddleClas clas_Pipeline_http failed" >> ${CODE_PATH}/result_failed.txt
@@ -45,6 +46,7 @@ else
     echo "PaddleClas clas_Pipeline_http success" >> ${CODE_PATH}/result_success.txt
 fi
 ${py_version} pipeline_rpc_client.py > rpc_result.txt
+cat rpc_result.txt
 grep -r "0.9341" rpc_result.txt
 if [ $? -ne 0 ]; then
     echo "PaddleClas clas_Pipeline_rpc failed" >> ${CODE_PATH}/result_failed.txt
@@ -86,8 +88,8 @@ cd ${CODE_PATH}/PaddleClas/deploy/paddleserving/recognition
 ${py_version} recognition_web_service.py &
 sleep 20
 ${py_version} pipeline_http_client.py > http_result.txt 2>&1
-grep -r "rec_scores" http_result.txt
 cat http_result.txt
+grep -r "rec_scores" http_result.txt
 if [ $? -ne 0 ]; then
     echo "PaddleClas recognition_Pipeline_http failed" >> ${CODE_PATH}/result_failed.txt
     EXIT_CODE=8
@@ -95,8 +97,8 @@ else
     echo "PaddleClas recognition_Pipeline_http success" >> ${CODE_PATH}/result_success.txt
 fi
 ${py_version} pipeline_rpc_client.py > rpc_result.txt 2>&1
-grep -r "rec_scores" rpc_result.txt
 cat rpc_result.txt
+grep -r "rec_scores" rpc_result.txt
 if [ $? -ne 0 ]; then
     echo "PaddleClas recognition_Pipeline_rpc failed" >> ${CODE_PATH}/result_failed.txt
     EXIT_CODE=8

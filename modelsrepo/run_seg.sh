@@ -33,11 +33,9 @@ ${py_version} -m paddle_serving_client.convert \
 # 分割示例
 ${py_version} -m paddle_serving_server.serve --model serving_server --thread 10 --port 9292 --ir_optim &
 sleep 15
-${py_version} test_serving.py --serving_client_path serving_client
-    --serving_ip_port 127.0.0.1:9292
-    --image_path cityscapes_demo.png > result.txt 2>&1
-grep -r "The segmentation image is saved in" result.txt
+${py_version} test_serving.py --serving_client_path serving_client --serving_ip_port 127.0.0.1:9292 --image_path cityscapes_demo.png > result.txt 2>&1
 cat result.txt
+grep -r "The segmentation image is saved in" result.txt
 if [ $? -ne 0 ]; then
     echo "PaddleSeg seg_C++_rpc_CPU failed" >> ${CODE_PATH}/result_failed.txt
     EXIT_CODE=8

@@ -46,8 +46,8 @@ ${py_version} -m paddle_serving_client.convert --dirname ./ch_PP-OCRv2_rec_infer
 ${py_version} web_service.py &
 sleep 20
 ${py_version} pipeline_http_client.py > result.txt 2>&1
-grep -r "GB18401-2010" result.txt
 cat result.txt
+grep -r "GB18401-2010" result.txt
 if [ $? -ne 0 ]; then
     echo "PaddleOCR ocr_Pipeline_http_CPU failed" >> ${CODE_PATH}/result_failed.txt
     EXIT_CODE=8

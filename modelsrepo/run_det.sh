@@ -45,8 +45,8 @@ kill_process
 ${py_version} -m paddle_serving_server.serve --model serving_server --port 9393 &
 sleep 10
 ${py_version} ../../deploy/serving/test_client.py ../../demo/000000014439.jpg > cpu_result.txt 2>&1
-grep -r "multiclass_nms3_0.tmp_0" cpu_result.txt
 cat cpu_result.txt
+grep -r "multiclass_nms3_0.tmp_0" cpu_result.txt
 if [ $? -ne 0 ]; then
     echo "PaddleDetection det_C++_rpc_CPU failed" >> ${CODE_PATH}/result_failed.txt
     EXIT_CODE=8
