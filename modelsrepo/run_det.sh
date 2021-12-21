@@ -31,8 +31,8 @@ cd output_inference/yolov3_darknet53_270e_coco/
 ${py_version} -m paddle_serving_server.serve --model serving_server --port 9393 --gpu_ids 0 &
 sleep 20
 ${py_version} ../../deploy/serving/test_client.py ../../demo/000000014439.jpg > gpu_result.txt 2>&1
-grep -r "multiclass_nms3_0.tmp_0" gpu_result.txt
 cat gpu_result.txt
+grep -r "multiclass_nms3_0.tmp_0" gpu_result.txt
 if [ $? -ne 0 ]; then
     echo "PaddleDetection det_C++_rpc_GPU failed" >> ${CODE_PATH}/result_failed.txt
     EXIT_CODE=8
