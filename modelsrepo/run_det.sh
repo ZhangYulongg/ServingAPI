@@ -1,6 +1,8 @@
 #!/bin/bash
 
 py_version=python3.8
+unset LANG
+unset PYTHONIOENCODING
 
 # kill进程
 function kill_process(){
