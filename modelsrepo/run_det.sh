@@ -1,8 +1,6 @@
 #!/bin/bash
 
 py_version=python3.8
-unset LANG
-unset PYTHONIOENCODING
 
 # kill进程
 function kill_process(){
@@ -32,7 +30,7 @@ cd output_inference/yolov3_darknet53_270e_coco/
 # GPU case
 ${py_version} -m paddle_serving_server.serve --model serving_server --port 9393 --gpu_ids 0 &
 sleep 20
-${py_version} ../../deploy/serving/test_client.py ../../demo/000000014439.jpg > gpu_result.txt 2>&1
+${py_version} ../../deploy/serving/test_client.py ../../deploy/serving/label_list.txt ../../demo/000000014439.jpg > gpu_result.txt 2>&1
 cat gpu_result.txt
 grep -r "multiclass_nms3_0.tmp_0" gpu_result.txt
 if [ $? -ne 0 ]; then
@@ -46,7 +44,7 @@ kill_process
 # CPU case
 ${py_version} -m paddle_serving_server.serve --model serving_server --port 9393 &
 sleep 10
-${py_version} ../../deploy/serving/test_client.py ../../demo/000000014439.jpg > cpu_result.txt 2>&1
+${py_version} ../../deploy/serving/test_client.py ../../deploy/serving/label_list.txt ../../demo/000000014439.jpg > cpu_result.txt 2>&1
 cat cpu_result.txt
 grep -r "multiclass_nms3_0.tmp_0" cpu_result.txt
 if [ $? -ne 0 ]; then

@@ -26,7 +26,7 @@ do
 done
 wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.2_cudnn8.1.1_trt7.2.3.4/paddlepaddle_gpu-2.2.0-cp38-cp38-linux_x86_64.whl
 
-${py_version} -m pip install --upgrade pip==21.1.3
+${py_version} -m pip install --upgrade pip==21.1.3 -i https://mirror.baidu.com/pypi/simple
 ${py_version} -m pip install paddle_serving_* -i https://mirror.baidu.com/pypi/simple
 ${py_version} -m pip install paddlepaddle_* -i https://mirror.baidu.com/pypi/simple
 ${py_version} -m pip install pytest -i https://mirror.baidu.com/pypi/simple
@@ -34,5 +34,5 @@ echo "server:`tail -1 /usr/local/lib/${py_version}/site-packages/paddle_serving_
 echo "client:`tail -1 /usr/local/lib/${py_version}/site-packages/paddle_serving_client/version.py`"
 echo "app:`tail -1 /usr/local/lib/${py_version}/site-packages/paddle_serving_app/version.py`"
 ${py_version} ${CODE_PATH}/ServingAPI/CE/download_bin.py > load_bin 2>&1
-${py_version} -m pip install --upgrade pip
+${py_version} -m pip install --upgrade pip -i https://mirror.baidu.com/pypi/simple
 tail -10 load_bin

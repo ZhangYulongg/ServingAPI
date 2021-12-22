@@ -19,7 +19,7 @@ git clone https://github.com/PaddlePaddle/PaddleOCR.git -b dygraph --depth=1
 unset http_proxy && unset https_proxy
 
 cd PaddleOCR
-${py_version} -m pip install -r PaddleOCR/requirements.txt -i https://mirror.baidu.com/pypi/simple
+${py_version} -m pip install -r requirements.txt -i https://mirror.baidu.com/pypi/simple
 
 cd deploy/pdserving
 # 下载并解压 OCR 文本检测模型
