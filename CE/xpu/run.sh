@@ -18,6 +18,8 @@ $py_version ../download_bin.py > load_bin 2>&1
 tail -10 load_bin
 
 export FLAGS_call_stack_level=2
+unset SERVING_BIN
+env
 rm -rf result.txt
 cases=`find ./ -name "test*.py" | sort`
 #cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
