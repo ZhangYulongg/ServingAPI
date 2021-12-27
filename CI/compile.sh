@@ -112,7 +112,7 @@ function compile_server() {
         echo "--------compile server without OPENCV failed, try again"
         make -j32
     fi
-    if [ `ls -A python/dist/ | wc -w` == 0 ]; then
+    if [ ! -f "./core/general-server/serving" ]; then
         echo "--------compile server without OPENCV failed again, exit"
         exit 1
     fi
