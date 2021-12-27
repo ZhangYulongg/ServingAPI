@@ -108,8 +108,14 @@ function compile_server() {
             -DWITH_GPU=ON ..
     fi
     make -j32
-    unset_proxy
-    ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
+    if [ `ls -A python/dist/ | wc -w` == 0 ]; then
+        echo "--------compile server without OPENCV failed, try again"
+        make -j32
+    fi
+    if [ `ls -A python/dist/ | wc -w` == 0 ]; then
+        echo "--------compile server without OPENCV failed again, exit"
+        exit 1
+    fi
     set_proxy
     cd ..
 }
@@ -158,7 +164,7 @@ function compile_server_withopencv() {
     fi
     make -j32
     if [ `ls -A python/dist/ | wc -w` == 0 ]; then
-        echo "--------make server failed, try again"
+        echo "--------make server with OPENCV failed, try again"
         make -j32
     fi
     unset_proxy
@@ -266,6 +272,7 @@ git submodule update --init --recursive
 set_py $1
 install_go
 if [ $3 == "opencv" ]; then
+    compile_server $2
     compile_server_withopencv $2
 else
     compile_server $2
