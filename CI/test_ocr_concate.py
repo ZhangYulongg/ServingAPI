@@ -190,7 +190,7 @@ class TestOCR(object):
     def test_cpu_cpp(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --port 9293",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralRecOp --port 9293",
             sleep=10,
         )
 
@@ -215,7 +215,7 @@ class TestOCR(object):
     def test_gpu_cpp(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --gpu_ids 0 --port 9293",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralRecOp --gpu_ids 0 --port 9293",
             sleep=17,
         )
 
@@ -242,7 +242,7 @@ class TestOCR(object):
     def test_gpu_cpp_async(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --runtime_thread_num 2 4 --batch_infer_size 16 --gpu_ids 0,1 1 --port 9293",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralRecOp --runtime_thread_num 2 4 --batch_infer_size 16 --gpu_ids 0,1 1 --port 9293",
             sleep=17,
         )
 
@@ -254,12 +254,12 @@ class TestOCR(object):
         # 3.keywords check
         check_keywords_in_server_log("Sync params from CPU to GPU")
         check_keywords_in_server_log("BSF thread init done")
-        # check_keywords_in_server_log("runtime_thread_num: 2", "workdir_9293/general_detection_0/model_toolkit.prototxt")
-        # check_keywords_in_server_log("runtime_thread_num: 4", "workdir_9293/general_infer_0/model_toolkit.prototxt")
-        # detection_op = parse_prototxt("workdir_9293/general_detection_0/model_toolkit.prototxt")
-        # infer_op = parse_prototxt("workdir_9293/general_infer_0/model_toolkit.prototxt")
-        # assert detection_op["gpu_ids"] == ["0", "1"]
-        # assert infer_op["gpu_ids"] == ["1"]
+        check_keywords_in_server_log("runtime_thread_num: 2", "workdir_9293/GeneralDetectionOp_0/model_toolkit.prototxt")
+        check_keywords_in_server_log("runtime_thread_num: 4", "workdir_9293/GeneralRecOp_0/model_toolkit.prototxt")
+        detection_op = parse_prototxt("workdir_9293/GeneralDetectionOp_0/model_toolkit.prototxt")
+        infer_op = parse_prototxt("workdir_9293/GeneralRecOp_0/model_toolkit.prototxt")
+        assert detection_op["gpu_ids"] == ["0", "1"]
+        assert infer_op["gpu_ids"] == ["1"]
 
         # 4.predict by http
         # batch_size=1
