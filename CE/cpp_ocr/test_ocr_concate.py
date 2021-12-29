@@ -180,7 +180,8 @@ class TestOCR(object):
         fetch_map = client.predict(feed=feed_dict, fetch=["ctc_greedy_decoder_0.tmp_0", "softmax_0.tmp_0"], batch=True)
         print(fetch_map)
         # 后处理转文字
-        rec_result = self.ocr_reader.postprocess(fetch_map, with_score=True)
+        del fetch_map["softmax_0.tmp_0"]
+        rec_result = self.ocr_reader.postprocess(fetch_map, with_score=False)
         res_lst = []
         for res in rec_result:
             res_lst.append(res[0])
@@ -204,10 +205,10 @@ class TestOCR(object):
         # 4.predict by http
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
-        print(result["ctc_greedy_decoder_0.tmp_0"].shape, result["softmax_0.tmp_0"].shape)
+        print(result["ctc_greedy_decoder_0.tmp_0"].shape)
         # 删除lod信息
         assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
-        del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"], result["ctc_greedy_decoder_0.tmp_0"]
+        # del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"], result["ctc_greedy_decoder_0.tmp_0"]
         # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
@@ -231,10 +232,10 @@ class TestOCR(object):
         # 4.predict by http
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
-        print(result["ctc_greedy_decoder_0.tmp_0"].shape, result["softmax_0.tmp_0"].shape)
+        print(result["ctc_greedy_decoder_0.tmp_0"].shape)
         # 删除lod信息
         assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
-        del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
+        # del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
         # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
@@ -265,10 +266,10 @@ class TestOCR(object):
         # 4.predict by http
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
-        print(result["ctc_greedy_decoder_0.tmp_0"].shape, result["softmax_0.tmp_0"].shape)
+        print(result["ctc_greedy_decoder_0.tmp_0"].shape)
         # 删除lod信息
         assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
-        del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
+        # del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
         # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
