@@ -3,3 +3,4 @@ pynvml
 pytest-html
 pytest-assume
 allure-pytest
+faiss-cpu==1.7.1.post2
