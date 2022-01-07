@@ -5,6 +5,7 @@ import copy
 import cv2
 import faiss
 import pickle
+import sys
 
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_app.reader import Sequential, URL2Image, Resize, File2Image
