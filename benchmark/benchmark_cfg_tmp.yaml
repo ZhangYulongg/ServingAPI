@@ -9,9 +9,9 @@ cpu: "Intel(R) Xeon(R) Gold 5117 CPU @ 2.00GHz X12"
 gpu: "T4"
 xpu: "None"
 api: ""
-owner: "cuicheng01"
+owner: ""
 
-model_name: "imagenet"
+model_name: "<model_name>"
 model_type: "static"
 model_source: "PaddleClas"
 model_url: ""
@@ -20,7 +20,7 @@ batch_size: 1
 num_of_samples: 1000
 input_shape: "3,224,224"
 
-runtime_device: "cpu"
+runtime_device: "<runtime_device>"
 ir_optim: true
 enable_memory_optim: true
 enable_tensorrt: false

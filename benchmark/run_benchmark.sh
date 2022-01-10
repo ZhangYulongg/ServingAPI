@@ -98,14 +98,14 @@ function check_save () {
   	if [ $1 == "server" ]
   	then
       sleep $2
-      tail ${dir}server_log.txt
+      tail server_log.txt
     fi
     # client端
     if [ $1 == "client" ]
     then
-      tail ${dir}client_log.txt
+      tail client_log.txt
       # 检查日志异常词
-      grep -E "${error_words}" ${dir}client_log.txt > /dev/null
+      grep -E "${error_words}" client_log.txt > /dev/null
       if [ $? == 0 ]; then
         # 包含关键词，预测报错
         echo -e "${RED_COLOR}$1 error command${RES}\n" | tee -a ${log_dir}server_total.txt ${log_dir}client_total.txt
@@ -118,7 +118,7 @@ function check_save () {
     fi
   else
     echo -e "${RED_COLOR}$1 error command${RES}\n" | tee -a ${log_dir}server_total.txt ${log_dir}client_total.txt
-    tail ${dir}client_log.txt | tee -a ${log_dir}client_total.txt
+    tail client_log.txt | tee -a ${log_dir}client_total.txt
     # 记录模型、部署方式、环境信息
     error_log $2
   fi
@@ -287,140 +287,100 @@ function pipeline_ocr() {
 
 function cpp_sync_resnet_v2_50() {
     cd ${demo_dir}/C++/PaddleClas/resnet_v2_50/
-    dir=${log_dir}/cpp/resnet_v2_50/
-    check_dir $dir
-    # 链接模型数据
     data_dir=${data}resnet_v2_50/
     link_data ${data_dir}
     # 拷贝shell
-    \cp -r ${shell_dir}/cpp_serving/resnet_v2_50/* ./
+    \cp -r ${shell_dir}/* ./
+    sed -e "s/<model_name>/ResNet_V2_50/g" -e "s/<runtime_device>/gpu/g" benchmark_cfg_tmp.yaml > benchmark_cfg.yaml
     # 启动服务
-    echo -e "${GREEN_COLOR}cpp_ResNet_V2_50_GPU_pipeline server started${RES}"
-    ${py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9393 --thread 16 --gpu_ids 1 > ${dir}server_log.txt 2>&1 &
+    echo -e "${GREEN_COLOR}cpp_ResNet_V2_50_GPU_C++ server started${RES}"
+    ${py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9393 --thread 50 --gpu_ids 1 > server_log.txt 2>&1 &
     check_save server 15
-    bash benchmark.sh
+    bash -x benchmark.sh resnet_v2_50 resnet_v2_50/benchmark_cpp.py 1
     tail -n 31 profile_log_resnet_v2_50
     # 日志处理
-    cp -rf ${shell_dir}/benchmark_utils.py ./
-    cp -rf ${shell_dir}/parse_profile.py ./
-    cp -rf ${shell_dir}/benchmark_cfg.yaml ./
-    sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
-    sed -i "s/imagenet/ResNet_V2_50/g" benchmark_cfg.yaml
-    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_resnet_v2_50 > ${dir}/client_log.txt 2>&1
-    tail -n 31 ${dir}/client_log.txt
-    cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp/resnet_v2_50
+    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_resnet_v2_50 > client_log.txt 2>&1
+    tail -n 31 client_log.txt
+    cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp_sync/resnet_v2_50
     kill_process
 }
 
 function cpp_sync_ocr() {
     cd ${demo_dir}/C++/PaddleOCR/ocr/
-    dir=${log_dir}/cpp/ocr/
-    check_dir $dir
     # 链接模型数据
     data_dir=${data}ocr/
     link_data ${data_dir}
-    # 修改feed_var
-    cp -r ocr_det_client/ ./ocr_det_client_cp
-    rm -rf ocr_det_client
-    mv ocr_det_client_cp ocr_det_client
-    sed -i "s/feed_type: 1/feed_type: 20/g" ocr_det_client/serving_client_conf.prototxt
-    sed -i "s/shape: 3/shape: 1/g" ocr_det_client/serving_client_conf.prototxt
-    sed -i '7,8d' ocr_det_client/serving_client_conf.prototxt
     # 拷贝shell
-    \cp -r ${shell_dir}/cpp_serving/ocr/* ./
+    \cp -r ${shell_dir}/* ./
+    sed -e "s/<model_name>/OCR/g" -e "s/<runtime_device>/gpu/g" benchmark_cfg_tmp.yaml > benchmark_cfg.yaml
     # 启动服务
-    echo -e "${GREEN_COLOR}cpp_OCR_GPU_pipeline server started${RES}"
-    ${py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --port 9293 --gpu_ids 1 > ${dir}server_log.txt 2>&1 &
+    echo -e "${GREEN_COLOR}cpp_OCR_GPU_C++ server started${RES}"
+    ${py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --port 9293 --gpu_ids 1 > server_log.txt 2>&1 &
     check_save server 15
-    bash benchmark.sh
+    bash benchmark.sh ocr ocr/benchmark_cpp.py 1
     tail -n 31 profile_log_ocr
     # 日志处理
-    cp -rf ${shell_dir}/benchmark_utils.py ./
-    cp -rf ${shell_dir}/parse_profile.py ./
-    cp -rf ${shell_dir}/benchmark_cfg.yaml ./
-    sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
-    sed -i "s/imagenet/OCR/g" benchmark_cfg.yaml
-    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_ocr > ${dir}/client_log.txt 2>&1
-    tail -n 31 ${dir}/client_log.txt
-    cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp/profile_log_ocr
+    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_ocr > client_log.txt 2>&1
+    tail -n 31 client_log.txt
+    cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp_sync/ocr
     kill_process
 }
 
 function cpp_async_resnet_v2_50() {
-    cd ${demo_dir}
-    rm -rf C++/PaddleClas/resnet_v2_50/
-    git reset --hard
     cd ${demo_dir}/C++/PaddleClas/resnet_v2_50/
-    dir=${log_dir}/cpp_async/resnet_v2_50/
-    check_dir $dir
-    # 链接模型数据
     data_dir=${data}resnet_v2_50/
     link_data ${data_dir}
     # 拷贝shell
-    \cp -r ${shell_dir}/cpp_serving/resnet_v2_50/* ./
+    \cp -r ${shell_dir}/* ./
+    sed -e "s/<model_name>/ResNet_V2_50/g" -e "s/<runtime_device>/gpu/g" benchmark_cfg_tmp.yaml > benchmark_cfg.yaml
     # 启动服务
-    echo -e "${GREEN_COLOR}cpp_ResNet_V2_50_GPU_async server started${RES}"
-    ${py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9393 --op_num 2 --thread 16 --gpu_ids 1 > ${dir}server_log.txt 2>&1 &
+    echo -e "${GREEN_COLOR}cpp_ResNet_V2_50_GPU_C++ server started${RES}"
+    ${py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9393 --thread 16 --runtime_thread_num 2 --gpu_ids 1 > server_log.txt 2>&1 &
     check_save server 15
-    bash benchmark.sh
+    bash -x benchmark.sh resnet_v2_50 resnet_v2_50/benchmark_cpp.py 1
     tail -n 31 profile_log_resnet_v2_50
     # 日志处理
-    cp -rf ${shell_dir}/benchmark_utils.py ./
-    cp -rf ${shell_dir}/parse_profile.py ./
-    cp -rf ${shell_dir}/benchmark_cfg.yaml ./
-    sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
-    sed -i "s/imagenet/ResNet_V2_50/g" benchmark_cfg.yaml
-    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_resnet_v2_50 > ${dir}/client_log.txt 2>&1
-    tail -n 31 ${dir}/client_log.txt
+    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_resnet_v2_50 > client_log.txt 2>&1
+    tail -n 31 client_log.txt
     cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp_async/resnet_v2_50
     kill_process
 }
 
 function cpp_async_ocr() {
-    cd ${demo_dir}
-    rm -rf C++/PaddleOCR/ocr/
-    git reset --hard
     cd ${demo_dir}/C++/PaddleOCR/ocr/
-    dir=${log_dir}/cpp_async/ocr/
-    check_dir $dir
     # 链接模型数据
     data_dir=${data}ocr/
     link_data ${data_dir}
-    # 修改feed_var
-    cp -r ocr_det_client/ ./ocr_det_client_cp
-    rm -rf ocr_det_client
-    mv ocr_det_client_cp ocr_det_client
-    sed -i "s/feed_type: 1/feed_type: 20/g" ocr_det_client/serving_client_conf.prototxt
-    sed -i "s/shape: 3/shape: 1/g" ocr_det_client/serving_client_conf.prototxt
-    sed -i '7,8d' ocr_det_client/serving_client_conf.prototxt
     # 拷贝shell
-    \cp -r ${shell_dir}/cpp_serving/ocr/* ./
+    \cp -r ${shell_dir}/* ./
+    sed -e "s/<model_name>/OCR/g" -e "s/<runtime_device>/gpu/g" benchmark_cfg_tmp.yaml > benchmark_cfg.yaml
     # 启动服务
-    echo -e "${GREEN_COLOR}cpp_OCR_GPU_pipeline server started${RES}"
-    ${py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --port 9293 --gpu_ids 1 > ${dir}server_log.txt 2>&1 &
+    echo -e "${GREEN_COLOR}cpp_OCR_GPU_C++ server started${RES}"
+    ${py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --port 9293 --thread 16 --runtime_thread_num 2 2 --gpu_ids 1 > server_log.txt 2>&1 &
     check_save server 15
-    bash benchmark.sh
+    bash benchmark.sh ocr ocr/benchmark_cpp.py 1
     tail -n 31 profile_log_ocr
     # 日志处理
-    cp -rf ${shell_dir}/benchmark_utils.py ./
-    cp -rf ${shell_dir}/parse_profile.py ./
-    cp -rf ${shell_dir}/benchmark_cfg.yaml ./
-    sed -i 's/runtime_device: "cpu"/runtime_device: "gpu"/g' benchmark_cfg.yaml
-    sed -i "s/imagenet/OCR/g" benchmark_cfg.yaml
-    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_ocr > ${dir}/client_log.txt 2>&1
-    tail -n 31 ${dir}/client_log.txt
-    cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp_async/profile_log_ocr
+    $py_version parse_profile.py --benchmark_cfg benchmark_cfg.yaml --benchmark_log profile_log_ocr > client_log.txt 2>&1
+    tail -n 31 client_log.txt
+    cp -r benchmark_logs ${log_dir}/benchmark_logs/cpp_async/ocr
     kill_process
 }
 
 # 创建日志目录
 check_dir ${log_dir}/benchmark_excel
-check_dir ${log_dir}/benchmark_logs/cpp
+check_dir ${log_dir}/benchmark_logs/cpp_sync
 check_dir ${log_dir}/benchmark_logs/cpp_async
 check_dir ${log_dir}/benchmark_logs/pipeline
 # 设置py版本
 set_py $1
 env | grep -E "PYTHONROOT|PYTHON_INCLUDE_DIR|PYTHON_LIBRARIES|PYTHON_EXECUTABLE"
+# edit feed_var
+rm -rf ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client
+cp -r ${DATA_PATH}/ocr/ocr_det_client ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client
+sed -i "s/feed_type: 1/feed_type: 20/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client/serving_client_conf.prototxt
+sed -i "s/shape: 3/shape: 1/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client/serving_client_conf.prototxt
+sed -i '7,8d' ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client/serving_client_conf.prototxt
 
 # 性能测试
 unset_proxy
@@ -445,13 +405,13 @@ cpp_async_ocr
 # 生成excel
 cd ${CODE_PATH}/benchmark/
 $py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/pipeline --server_mode Pipeline --output_name benchmark_excel_pipeline.xlsx --output_html_name benchmark_data_pipeline.html
-$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/cpp --server_mode Pipeline --output_name benchmark_excel_cpp.xlsx --output_html_name benchmark_data_cpp.html
+$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/cpp_sync --server_mode Pipeline --output_name benchmark_excel_cpp.xlsx --output_html_name benchmark_data_cpp.html
 $py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/cpp_async --server_mode Pipeline --output_name benchmark_excel_cpp.xlsx --output_html_name benchmark_data_cpp.html
 cp *.xlsx ${log_dir}/benchmark_excel
 cp *.html ${log_dir}/benchmark_excel
 # 写入数据库
 $py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/pipeline --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode Pipeline
-$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/cpp --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode CPP
+$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/cpp_sync --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode CPP
 $py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/cpp_async --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu --server_mode CPP-Async
 
 generate_logs $1 $2
