@@ -88,7 +88,7 @@ class BenchmarkLogBackend(object):
         self.database_dict = dict.fromkeys(database_key, None)
 
         log_key = [
-            "paddle_version", "paddle_commit", "paddle_branch",
+            "paddle_version", "paddle_commit", "paddle_branch", "server_mode",
             "runtime_device", "ir_optim", "enable_memory_optim",
             "enable_tensorrt", "enable_mkldnn", "cpu_math_library_num_threads",
             "model_name", "precision", "batch_size", "input_shape", "data_num",
@@ -165,7 +165,7 @@ class BenchmarkLogBackend(object):
         new_database_dict["model_branch"] = old_log_dict.get("model_branch", "")
 
         # model info
-        model_name = f'{old_log_dict.get("model_name")}-{self.args.server_mode}_{old_log_dict.get("client_mode")}_tn{int(old_log_dict.get("thread_num")):02}'
+        model_name = f'{old_log_dict.get("model_name")}-{old_log_dict.get("server_mode")}_{old_log_dict.get("client_mode")}_tn{int(old_log_dict.get("thread_num")):02}'
         new_database_dict["model_name"] = model_name
         new_database_dict["model_type"] = old_log_dict.get("model_type", "")
         new_database_dict["batch_size"] = old_log_dict.get("batch_size", "")

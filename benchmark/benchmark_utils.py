@@ -77,9 +77,12 @@ class PaddleInferBenchmark(object):
                 "Set argument wrong, please check input argument and its type")
 
         self.client_mode = perf_info.get('client_mode', 'nan')
+        self.server_mode = perf_info.get('server_mode', 'nan')
         self.preprocess_time_s = perf_info.get('preprocess_time_s', 0)
         self.postprocess_time_s = perf_info.get('postprocess_time_s', 0)
         self.total_time_s = perf_info.get('total_time_s', 0)
+        self.each_time_s = perf_info.get('each_time_s', 0)
+        self.median = perf_info.get('median(ms)', 0)
 
         self.inference_time_ms_80 = round(perf_info.get("inference_time_ms_80", 0), 4)
         self.inference_time_ms_90 = round(perf_info.get("inference_time_ms_90", 0), 4)
@@ -235,7 +238,7 @@ class PaddleInferBenchmark(object):
         self.logger.info(
             f"{identifier} total time spent(s): {self.total_time_s}")
         self.logger.info(
-            f"{identifier} thread_num: {self.thread_num}, client_mode: {self.client_mode}")
+            f"{identifier} thread_num: {self.thread_num}, client_mode: {self.client_mode}, server_mode: {self.server_mode}")
         self.logger.info(
             f"{identifier} preprocess_time(ms): {self.preprocess_time_s}, inference_time(ms): {self.inference_time_ms}, postprocess_time(ms): {self.postprocess_time_s}"
         )
@@ -245,6 +248,11 @@ class PaddleInferBenchmark(object):
             )
         if self.qps:
             self.logger.info(f"{identifier} QPS: {self.qps}")
+        self.logger.info("----------------------- Serving info -----------------------")
+        self.logger.info(
+            f"{identifier} client_num: {self.thread_num}, median(ms): {self.median}")
+        self.logger.info(
+            f"{identifier} total_time_s: {self.total_time_s}, each_time_s: {self.each_time_s}")
 
     def print_help(self):
         """

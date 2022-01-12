@@ -33,6 +33,11 @@ def parse_args():
         type=str,
         default="benchmark_data.html",
         help="output html file name")
+    parser.add_argument(
+        "--server_mode",
+        type=str,
+        default="Pipeline",
+        help="mode of server")
     return parser.parse_args()
 
 
@@ -47,12 +52,13 @@ class BenchmarkLogAnalyzer(object):
 
         # init dataframe and dict style
         self.origin_df = pd.DataFrame(columns=[
-            "model_name", "server_mode", "client_mode", "client_num", "batch_size", "cpu_util", "gpu_mem",
-            "gpu_util", "QPS", "data_num", "inference_time(ms)", "median(ms)",
-            "0%_cost(ms)", "90%_cost(ms)", "99%_cost(ms)", "total_time_s", "each_time_s"
-            "paddle_version", "paddle_commit",
+            "model_name", "paddle_version", "paddle_commit", "paddle_branch",
             "runtime_device", "ir_optim", "enable_memory_optim",
-            "enable_tensorrt", "enable_mkldnn", "precision",
+            "enable_tensorrt", "enable_mkldnn", "cpu_math_library_num_threads",
+            "precision", "server_mode", "client_mode",  "thread_num", "batch_size", "input_shape", "data_num", "cpu_rss(MB)",
+            "cpu_vms", "cpu_shared_mb", "cpu_dirty_mb", "cpu_util",
+            "gpu_rss(MB)", "gpu_util", "gpu_mem", "gpu_mem_util", "preprocess_time(ms)",
+            "80%_cost(ms)", "90%_cost(ms)", "99%_cost(ms)", "inference_time(ms)", "postprocess_time(ms)", "QPS"
         ])
         self.benchmark_key = self.origin_df.to_dict()
 
@@ -84,7 +90,8 @@ class BenchmarkLogAnalyzer(object):
                         ).split(',')[0]
 
         # 微调
-        output_dict["client_num"] = int(output_dict["client_num"])
+        output_dict["thread_num"] = int(output_dict["thread_num"])
+        output_dict["server_mode"] = self.args.server_mode
 
         empty_values = []
         for k, _ in output_dict.items():
@@ -107,7 +114,7 @@ class BenchmarkLogAnalyzer(object):
             self.origin_df = self.origin_df.append(dict_log, ignore_index=True)
 
         raw_df = self.origin_df.sort_values(by='model_name')
-        raw_df.sort_values(by=["model_name", "client_mode", "client_num"], inplace=True)
+        raw_df.sort_values(by=["model_name", "client_mode", "thread_num"], inplace=True)
         raw_df.to_excel(self.args.output_name, index=False)     # render excel
         raw_df.to_html(self.args.output_html_name) # render html
         print(raw_df)

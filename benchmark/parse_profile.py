@@ -38,11 +38,14 @@ def handle_benchmark(benchmark_config, benchmark_raw, indentifier):
     }
     perf_info = {
         'client_mode' : benchmark_raw["client_mode"],
+        'server_mode' : benchmark_raw["server_mode"],
         'thread_num' : benchmark_raw["thread_num"],
         'preprocess_time_s': "",
-        'inference_time_ms': float(benchmark_raw["median"][0:-2]),  # *** ms
+        'inference_time_ms': float(benchmark_raw["mean"][0:-2]),  # *** ms
+        'median(ms)': float(benchmark_raw["median"][0:-2]),
         'postprocess_time_s': "",
         'total_time_s': float(benchmark_raw["Total cost"][0:-1]),
+        'each_time_s': float(benchmark_raw["Each thread cost"][0:-2]),
         'inference_time_ms_80': float(benchmark_raw["80_percent"][0:-2]),  # *** ms
         'inference_time_ms_90': float(benchmark_raw["90_percent"][0:-2]),  # *** ms
         'inference_time_ms_99': float(benchmark_raw["99_percent"][0:-2]),  # *** ms
@@ -108,8 +111,10 @@ if __name__ == "__main__":
             line_count = lines[line_no:].index("\n")
             sub_log = lines[line_no: line_no + line_count]
             sub_dict = yaml.safe_load("".join(sub_log))
-            mode = iden.split(" ")[7][5:]
-            sub_dict["client_mode"] = mode
+            client_mode = iden.split(" ")[8]
+            server_mode = iden.split(" ")[10]
+            sub_dict["client_mode"] = client_mode
+            sub_dict["server_mode"] = server_mode
             handle_benchmark(benchmark_config, sub_dict, iden)
             line_no += line_count
         else:
