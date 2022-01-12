@@ -64,8 +64,7 @@ def run_rpc(idx, resource):
 def run_http(idx, resource):
     total_number = 0
     latency_list = []
-    # url = "http://127.0.0.1:9999/ocr/prediction"
-    url = "http://127.0.0.1:9998/ocr/prediction"
+    url = "http://127.0.0.1:9999/ocr/prediction"
 
     start = time.time()
     while True:
@@ -83,8 +82,7 @@ def run_http(idx, resource):
 
 if __name__ == '__main__':
     multi_thread_runner = MultiThreadRunner()
-    # endpoint_list = ["127.0.0.1:18090"]
-    endpoint_list = ["127.0.0.1:9999"]
+    endpoint_list = ["127.0.0.1:18090"]
     turns = 100
     start = time.time()
     if args.request == "rpc":

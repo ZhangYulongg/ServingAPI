@@ -49,7 +49,7 @@ class BenchmarkLogAnalyzer(object):
         self.origin_df = pd.DataFrame(columns=[
             "model_name", "server_mode", "client_mode", "client_num", "batch_size", "cpu_util", "gpu_mem",
             "gpu_util", "QPS", "data_num", "inference_time(ms)", "median(ms)",
-            "0%_cost(ms)", "90%_cost(ms)", "99%_cost(ms)", "total_time_s", "each_time_s"
+            "80%_cost(ms)", "90%_cost(ms)", "99%_cost(ms)", "total_time_s", "each_time_s"
             "paddle_version", "paddle_commit",
             "runtime_device", "ir_optim", "enable_memory_optim",
             "enable_tensorrt", "enable_mkldnn", "precision",

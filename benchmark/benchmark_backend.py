@@ -58,8 +58,6 @@ def parse_args():
         "--cudnn_version", type=str, default="0.0", help="cudnn version")
     parser.add_argument(
         "--trt_version", type=str, default="0.0.0", help="TensorRT version")
-    parser.add_argument(
-        "--server_mode", type=str, default="Pipeline", required=True, help="mode of server")
     return parser.parse_args()
 
 
