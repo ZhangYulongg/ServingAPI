@@ -244,6 +244,42 @@ function py_requirements () {
     echo -e "${YELOW_COLOR}---------complete---------\n${RES}"
 }
 
+function pip_install_app_client() {
+    unset_proxy
+    if [ ${test_branch} == "develop" ]; then
+        version=0.0.0
+    else
+        version=${test_branch: 1}
+    fi
+    # whl包数组
+    whl_list=()
+    whl_list[0]=app-${version}-py3
+    if [ $1 == 36 ]; then
+        whl_list[1]=client-${version}-cp36
+    elif [ $1 == 37 ]; then
+        whl_list[1]=client-${version}-cp37
+    elif [ $1 == 38 ]; then
+        whl_list[1]=client-${version}-cp38
+    fi
+    echo "----------whl_list: "
+    echo ${whl_list[*]}
+    cd ${CODE_PATH}
+    rm -rf whl_packages
+    mkdir whl_packages && cd whl_packages
+    echo "----------cur path: `pwd`"
+    for whl_item in ${whl_list[@]}
+    do
+    wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_${whl_item}-none-any.whl
+    if [ $? -eq 0 ]; then
+        echo "--------------download ${whl_item} succ"
+    else
+        echo "--------------download ${whl_item} failed"
+    fi
+    done
+    $py_version -m pip install * -i https://mirror.baidu.com/pypi/simple
+    set_proxy
+}
+
 set_proxy
 git submodule update --init --recursive
 set_py $1
@@ -253,6 +289,7 @@ if [ $3 == "opencv" ]; then
 else
     compile_server $2
 fi
-compile_client
-compile_app
+pip_install_app_client
+#compile_client
+#compile_app
 py_requirements $1 $2
