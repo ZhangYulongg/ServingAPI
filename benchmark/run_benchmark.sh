@@ -348,10 +348,10 @@ set_py $1
 env | grep -E "PYTHONROOT|PYTHON_INCLUDE_DIR|PYTHON_LIBRARIES|PYTHON_EXECUTABLE"
 # edit feed_var
 rm -rf ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client
-cp -r ${DATA_PATH}/ocr/ocr_det_client ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client
-sed -i "s/feed_type: 1/feed_type: 20/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client/serving_client_conf.prototxt
-sed -i "s/shape: 3/shape: 1/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client/serving_client_conf.prototxt
-sed -i '7,8d' ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client/serving_client_conf.prototxt
+cp -r ${DATA_PATH}/ocr/ocr_det_client ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client
+sed -i "s/feed_type: 1/feed_type: 20/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client/serving_client_conf.prototxt
+sed -i "s/shape: 3/shape: 1/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client/serving_client_conf.prototxt
+sed -i '7,8d' ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client/serving_client_conf.prototxt
 
 # 性能测试
 unset_proxy
