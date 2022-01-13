@@ -70,7 +70,7 @@ def run_http(idx, resource):
     while True:
         l_start = time.time()
         r = requests.post(url=url, data=json.dumps(data))
-        print(r.json())
+        #print(r.json())
         l_end = time.time()
         latency_list.append(l_end * 1000 - l_start * 1000)
         total_number += 1

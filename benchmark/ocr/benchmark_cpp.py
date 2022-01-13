@@ -31,7 +31,7 @@ def single_func(idx, resource):
     latency_list = []
 
     client = Client()
-    client.load_client_config(args.model.split(","))
+    client.load_client_config(["ocr_det_client", "ocr_rec_client"])
     client.connect(resource["endpoint"])
     start = time.time()
 
