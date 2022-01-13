@@ -7,7 +7,7 @@ shell_dir=${CODE_PATH}/benchmark/
 dir=`pwd`
 export SERVING_BIN=${CODE_PATH}/Serving/server-build-gpu-opencv/core/general-server/serving
 # 数据目录
-data=/mnt/serving/dataset/data/
+data=${DATA_PATH}
 # 输出颜色
 RED_COLOR='\E[1;31m'  #红
 GREEN_COLOR='\E[1;32m' #绿
@@ -368,6 +368,6 @@ $py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/ --output
 cp *.xlsx ${log_dir}/benchmark_excel
 cp *.html ${log_dir}/benchmark_excel
 # 写入数据库
-$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/pipeline_rpc --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu
+$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/ --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu
 
 generate_logs $1 $2
