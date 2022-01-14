@@ -174,7 +174,7 @@ function generate_logs() {
   cp logs/benchmark_excel/*.xlsx ../logs_output/daily_logs/${ce_name}/benchmark_excel/
   cp logs/benchmark_excel/*.html ../logs_output/daily_logs/${ce_name}/benchmark_excel/
   # 详细日志
-  mv logs ../logs_output/${today}_${commit_id}/${ce_name}/logs_$1_$2
+  cp logs ../logs_output/${today}_${commit_id}/${ce_name}/logs_$1_$2
 }
 
 function pipeline_resnet_v2_50() {
@@ -363,11 +363,13 @@ cpp_async_resnet_v2_50
 cpp_async_ocr
 
 # 生成excel
+python3.7 -m pip install pandas -i https://mirror.baidu.com/pypi/simple
+python3.7 -m pip install openpyxl -i https://mirror.baidu.com/pypi/simple
 cd ${CODE_PATH}/benchmark/
-$py_version benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/ --output_name benchmark_excel_pipeline.xlsx --output_html_name benchmark_data_pipeline.html
+python3.7 benchmark_analysis.py --log_path ${log_dir}/benchmark_logs/ --output_name benchmark_excel_pipeline.xlsx --output_html_name benchmark_data_pipeline.html
 cp *.xlsx ${log_dir}/benchmark_excel
 cp *.html ${log_dir}/benchmark_excel
 # 写入数据库
-$py_version benchmark_backend.py --log_path=${log_dir}/benchmark_logs/ --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu
+python3.7 benchmark_backend.py --log_path=${log_dir}/benchmark_logs/ --post_url=${post_url} --frame_name=paddle --api=python --framework_version=ffa88c31c2da5090c6f70e8e9b523356d7cd5e7f --cuda_version=10.2 --cudnn_version=7.6.5 --trt_version=6.0.1.5 --device_name=gpu
 
 generate_logs $1 $2
