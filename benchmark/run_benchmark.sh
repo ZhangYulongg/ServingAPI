@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -e
 # 日志目录
 log_dir=${CODE_PATH}/logs/
 demo_dir=${CODE_PATH}/Serving/examples/
