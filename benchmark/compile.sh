@@ -289,7 +289,7 @@ if [ $3 == "opencv" ]; then
 else
     compile_server $2
 fi
-pip_install_app_client
+pip_install_app_client 36
 #compile_client
 #compile_app
 py_requirements $1 $2
