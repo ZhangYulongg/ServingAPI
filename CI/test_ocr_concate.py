@@ -155,7 +155,7 @@ class TestOCR(object):
         dict_ = copy.deepcopy(output_data_dict)
         dict_["ctc_greedy_decoder_0.tmp_0.lod"] = np.array([0, 22], dtype="int32")
         dict_["softmax_0.tmp_0.lod"] = np.array([0, 22], dtype="int32")
-        rec_result = self.ocr_reader.postprocess(dict_, with_score=True)
+        rec_result = self.ocr_reader.postprocess_old(dict_, with_score=True)
         res_lst = []
         for res in rec_result:
             res_lst.append(res[0])
@@ -180,7 +180,7 @@ class TestOCR(object):
         print(fetch_map)
         # 后处理转文字
         del fetch_map["softmax_0.tmp_0"]
-        rec_result = self.ocr_reader.postprocess(fetch_map, with_score=False)
+        rec_result = self.ocr_reader.postprocess_old(fetch_map, with_score=False)
         res_lst = []
         for res in rec_result:
             res_lst.append(res[0])
