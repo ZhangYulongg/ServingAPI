@@ -35,8 +35,8 @@ class TestOCRPipeline(object):
         })
         self.ocr_reader = OCRReader()
         self.get_truth_val_by_inference(self)
-        os.system("sed -i '59 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_dict)' web_service.py")
-        os.system("sed -i '154 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_data)' web_service.py")
+        os.system("sed -i '95 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_dict)' web_service.py")
+        os.system("sed -i '215 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_data)' web_service.py")
         # 读取yml文件
         with open("config.yml", "r", encoding="utf-8") as file:
             dict_ = yaml.safe_load(file)
@@ -68,9 +68,9 @@ class TestOCRPipeline(object):
 
         det_img = det_img[np.newaxis, :]
         input_dict = {}
-        input_dict["image"] = det_img.astype("float32")
+        input_dict["x"] = det_img.astype("float32")
 
-        pd_config = paddle_infer.Config("ocr_det_model")
+        pd_config = paddle_infer.Config("ocr_det_model/inference.pdmodel", "ocr_det_model/inference.pdiparams")
         pd_config.disable_gpu()
         pd_config.switch_ir_optim(False)
 
@@ -90,16 +90,16 @@ class TestOCRPipeline(object):
             output_data = output_handle.copy_to_cpu()
             output_data_dict[output_data_name] = output_data
         # 对齐serving output
-        output_data_dict["concat_1.tmp_0"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
-        del output_data_dict["save_infer_model/scale_0.tmp_0"]
+        # output_data_dict["concat_1.tmp_0"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
+        # del output_data_dict["save_infer_model/scale_0.tmp_0"]
         self.truth_val_det = output_data_dict
-        print(self.truth_val_det, self.truth_val_det["concat_1.tmp_0"].shape)
+        print(self.truth_val_det, self.truth_val_det["save_infer_model/scale_0.tmp_1"].shape)
 
         # Rec result
         sorted_boxes = SortedBoxes()
         get_rotate_crop_image = GetRotateCropImage()
         ratio_list = [float(new_h) / ori_h, float(new_w) / ori_w]
-        dt_boxes_list = self.post_func(output_data_dict["concat_1.tmp_0"], [ratio_list])
+        dt_boxes_list = self.post_func(output_data_dict["save_infer_model/scale_0.tmp_1"], [ratio_list])
         dt_boxes = self.filter_func(dt_boxes_list[0], [ori_h, ori_w])
         dt_boxes = sorted_boxes(dt_boxes)
 
@@ -115,9 +115,9 @@ class TestOCRPipeline(object):
         for img in img_list:
             norm_img = self.ocr_reader.resize_norm_img(img, max_wh_ratio)
             feed_list.append(norm_img[np.newaxis, :])
-        input_dict = {"image": np.concatenate(feed_list, axis=0)}
+        input_dict = {"x": np.concatenate(feed_list, axis=0)}
 
-        pd_config = paddle_infer.Config("ocr_rec_model")
+        pd_config = paddle_infer.Config("ocr_rec_model/inference.pdmodel", "ocr_rec_model/inference.pdiparams")
         pd_config.disable_gpu()
         pd_config.switch_ir_optim(False)
 
@@ -137,11 +137,11 @@ class TestOCRPipeline(object):
             output_data = output_handle.copy_to_cpu()
             output_data_dict[output_data_name] = output_data
         # 对齐serving output
-        output_data_dict["ctc_greedy_decoder_0.tmp_0"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
-        output_data_dict["softmax_0.tmp_0"] = output_data_dict["save_infer_model/scale_1.tmp_0"]
-        del output_data_dict["save_infer_model/scale_0.tmp_0"], output_data_dict["save_infer_model/scale_1.tmp_0"]
+        # output_data_dict["ctc_greedy_decoder_0.tmp_0"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
+        # output_data_dict["softmax_0.tmp_0"] = output_data_dict["save_infer_model/scale_1.tmp_0"]
+        # del output_data_dict["save_infer_model/scale_0.tmp_0"], output_data_dict["save_infer_model/scale_1.tmp_0"]
         self.truth_val_rec = output_data_dict
-        print(self.truth_val_rec, self.truth_val_rec["ctc_greedy_decoder_0.tmp_0"].shape, self.truth_val_rec["softmax_0.tmp_0"].shape)
+        print(self.truth_val_rec, self.truth_val_rec["save_infer_model/scale_0.tmp_1"].shape)
 
     def predict_pipeline_rpc(self, batch_size=1):
         # 1.prepare feed_data
@@ -167,7 +167,7 @@ class TestOCRPipeline(object):
         rec_result = np.load("fetch_dict_rec.npy", allow_pickle=True).item()
         os.system("rm -rf fetch_dict_det.npy fetch_dict_rec.npy")
         # 删除lod信息
-        del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
+        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
         return det_result, rec_result
 
     def predict_pipeline_http(self, batch_size=1):
@@ -191,14 +191,14 @@ class TestOCRPipeline(object):
         # 删除文件
         os.system("rm -rf fetch_dict_det.npy fetch_dict_rec.npy")
         # 删除lod信息
-        del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
+        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
         return det_result, rec_result
 
     def test_cpu_ir(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} web_service.py",
-            sleep=7,
+            sleep=10,
         )
 
         # 2.resource check
@@ -212,6 +212,9 @@ class TestOCRPipeline(object):
         # 4.predict by rpc
         # batch_size=1
         det_result, rec_result = self.predict_pipeline_rpc(batch_size=1)
+        print(type(det_result), type(rec_result))
+        print(det_result["save_infer_model/scale_0.tmp_1"].shape)
+        print(rec_result["save_infer_model/scale_0.tmp_1"].shape)
         self.serving_util.check_result(result_data=det_result, truth_data=self.truth_val_det, batch_size=1)
         self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
         # predict by http
@@ -219,6 +222,50 @@ class TestOCRPipeline(object):
         self.serving_util.check_result(result_data=det_result, truth_data=self.truth_val_det, batch_size=1)
         self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
         # det_result, rec_result = self.predict_pipeline_http(batch_size=2)
+
+        # 5.release
+        kill_process(9999)
+        kill_process(18090)
+
+    def test_gpu_trt_fp32(self):
+        # edit config.yml
+        # 生成config.yml
+        config = copy.deepcopy(self.default_config)
+        config["op"]["det"]["local_service_conf"]["device_type"] = 2
+        config["op"]["det"]["local_service_conf"]["devices"] = "0"
+        config["op"]["det"]["local_service_conf"]["min_subgraph_size"] = 13
+        config["op"]["rec"]["local_service_conf"]["device_type"] = 2
+        config["op"]["rec"]["local_service_conf"]["devices"] = "1"
+        config["op"]["rec"]["local_service_conf"]["min_subgraph_size"] = 3
+        with open("config.yml", "w") as f:
+            yaml.dump(config, f)
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} web_service.py",
+            sleep=120,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9999) == 1  # gRPC Server
+        assert count_process_num_on_port(18090) == 1  # gRPC gateway 代理、转发
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is True
+
+        # 3.keywords check
+        check_keywords_in_server_log("Prepare TRT engine", filename="stderr.log")
+
+        # 4.predict by rpc
+        # batch_size=1
+        det_result, rec_result = self.predict_pipeline_rpc(batch_size=1)
+        print(type(det_result), type(rec_result))
+        print(det_result["save_infer_model/scale_0.tmp_1"].shape)
+        print(rec_result["save_infer_model/scale_0.tmp_1"].shape)
+        self.serving_util.check_result(result_data=det_result, truth_data=self.truth_val_det, batch_size=1)
+        # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
+        # predict by http
+        det_result, rec_result = self.predict_pipeline_http(batch_size=1)  # batch_size=1
+        self.serving_util.check_result(result_data=det_result, truth_data=self.truth_val_det, batch_size=1)
+        # self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
         kill_process(9999)
