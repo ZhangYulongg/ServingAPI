@@ -196,6 +196,21 @@ class TestOCRPipeline(object):
         return det_result, rec_result
 
     def test_cpu_ir(self):
+        # edit config.yml
+        # 生成config.yml
+        config = copy.deepcopy(self.default_config)
+        config["op"]["det"]["local_service_conf"]["device_type"] = 0
+        config["op"]["det"]["local_service_conf"]["devices"] = ""
+        try:
+            del config["op"]["det"]["local_service_conf"]["min_subgraph_size"]
+            del config["op"]["rec"]["local_service_conf"]["min_subgraph_size"]
+        except KeyError as e:
+            print("config is default")
+        config["op"]["det"]["local_service_conf"]["min_subgraph_size"] = 13
+        config["op"]["rec"]["local_service_conf"]["device_type"] = 0
+        config["op"]["rec"]["local_service_conf"]["devices"] = ""
+        with open("config.yml", "w") as f:
+            yaml.dump(config, f)
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} web_service.py",
