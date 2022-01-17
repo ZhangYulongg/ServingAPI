@@ -174,7 +174,7 @@ function generate_logs() {
   cp logs/benchmark_excel/*.xlsx ../logs_output/daily_logs/${ce_name}/benchmark_excel/
   cp logs/benchmark_excel/*.html ../logs_output/daily_logs/${ce_name}/benchmark_excel/
   # 详细日志
-  cp logs ../logs_output/${today}_${commit_id}/${ce_name}/logs_$1_$2
+  cp -r logs ../logs_output/${today}_${commit_id}/${ce_name}/logs_$1_$2
 }
 
 function pipeline_resnet_v2_50() {
