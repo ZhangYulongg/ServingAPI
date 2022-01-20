@@ -63,7 +63,7 @@ python -m pip install paddlepaddle* -i https://mirror.baidu.com/pypi/simple
 ln -s /usr/lib64/libnvidia-ml.so.* /usr/lib64/libnvidia-ml.so.1;
 
 cd test_class_model
-python -m pytest -m server --disable-warnings -v ${file}
+python -m pytest -m server --disable-warnings -sv ${file}
 exit $?
 
 #bash -x test_class_model/run_ce.sh | tee log_${cuda}_${cudnn}_${gcc}_${trt}_${py}.txt
