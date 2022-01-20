@@ -63,6 +63,7 @@ python -m pip install paddlepaddle* -i https://mirror.baidu.com/pypi/simple
 ln -s /usr/lib64/libnvidia-ml.so.* /usr/lib64/libnvidia-ml.so.1;
 
 cd test_class_model
+ldconfig
 python -m pytest -m server --disable-warnings -sv test_resnet50_trt_fp32.py
 exit $?
 
