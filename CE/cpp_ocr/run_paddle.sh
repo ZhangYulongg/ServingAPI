@@ -55,6 +55,7 @@ fi
 bug=0
 
 # paddle镜像只有37
+ldconfig
 for test_version in python3.7
 do
     ${test_version} -m pip install -r ${CODE_PATH}/CE/requirements.txt -i https://mirror.baidu.com/pypi/simple
