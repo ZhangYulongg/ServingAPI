@@ -6,14 +6,17 @@ if [ $2 == "pd_cpu" ]; then
     bash -x paddle_docker/run_paddle_cpu.sh
     rm -rf util.py
     mv util_paddle.py util.py
+    cuda="cpu"
 elif [ $2 == "pd_1027" ]; then
     bash -x paddle_docker/run_paddle_1027.sh
+    cuda=1027
 elif [ $2 == "pd_112" ]; then
     bash -x paddle_docker/run_paddle_112.sh
+    cuda=112
 fi
 
 cd ${shell_path}
-bash -x pip_install_paddle.sh $1 $2
+bash -x pip_install_paddle.sh $1 ${cuda}
 
 # paddle镜像上直接重打到/usr/local #适配cuda11.2镜像
 #if [ $2 == 112 ]; then
