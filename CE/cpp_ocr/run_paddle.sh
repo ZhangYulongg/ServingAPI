@@ -1,4 +1,4 @@
-shell_path=${CODE_PATH}/CE/cpp_ocr
+shell_path=${CODE_PATH}/ServingAPI/CE/cpp_ocr
 cd ${shell_path}
 
 # 运行serving补丁脚本
