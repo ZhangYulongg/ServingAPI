@@ -261,6 +261,60 @@ class TestResnetV2(object):
         # 5.release
         kill_process(9696, 2)
 
+    def test_gpu_request_cache(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9696 --gpu_ids 0 --request_cache_size 1000000",
+            sleep=8,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9696) == 1
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is False
+
+        # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU", filename="stderr.log")
+
+        # 4.predict by brpc
+        # batch_size 1
+        result_data = self.predict_brpc(batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        # batch_size 2
+        result_data = self.predict_brpc(batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+        # predict by http
+        # batch_size 1
+        result_data = self.predict_http(mode="proto", compress=False, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        # batch_size 2
+        result_data = self.predict_http(mode="proto", compress=False, batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+        # compress
+        result_data = self.predict_http(mode="proto", compress=True, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+
+        result_data = self.predict_http(mode="json", compress=False, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        result_data = self.predict_http(mode="json", compress=False, batch_size=2)
+        print(result_data, result_data["score"].shape)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+        result_data = self.predict_http(mode="json", compress=True, batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+
+        result_data = self.predict_http(mode="grpc", compress=False, batch_size=1)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
+        result_data = self.predict_http(mode="grpc", compress=False, batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+        result_data = self.predict_http(mode="grpc", compress=True, batch_size=2)
+        self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+
+        # request cache keywords check
+        check_keywords_in_server_log("Get from cache", filename="stderr.log")
+
+        # 5.release
+        kill_process(9696, 2)
+
 
 if __name__ == '__main__':
     sss = TestResnetV2()
