@@ -8,6 +8,8 @@ import json
 import sys
 
 from paddle_serving_client import Client, HttpClient
+from paddle_serving_client.utils import MultiThreadRunner
+from paddle_serving_client.utils import benchmark_args, show_latency
 from paddle_serving_app.reader import OCRReader
 from paddle_serving_app.reader import Sequential, ResizeByFactor
 from paddle_serving_app.reader import Div, Normalize, Transpose, File2Image
@@ -16,6 +18,33 @@ import paddle.inference as paddle_infer
 
 sys.path.append("../")
 from util import *
+
+
+def single_func(idx, resource):
+    total_number = 0
+    latency_list = []
+
+    client = Client()
+    client.load_client_config(["ocr_det_client", "ocr_rec_client"])
+    client.connect(resource["endpoint"])
+    start = time.time()
+
+    while True:
+        l_start = time.time()
+        result = client.predict(
+            feed={"image": resource["feed_data"]},
+            fetch=["ctc_greedy_decoder_0.tmp_0", "softmax_0.tmp_0"],
+            batch=True)
+        l_end = time.time()
+        # o_start = time.time()
+        latency_list.append(l_end * 1000 - l_start * 1000)
+        total_number = total_number + 1
+        # o_end = time.time()
+        if time.time() - start > 20:
+            break
+
+    end = time.time()
+    return [[end - start], latency_list, [total_number]]
 
 
 def parse_prototxt(file):
@@ -188,6 +217,74 @@ class TestOCR(object):
         res = {"res": res_lst}
         print(res)
         return fetch_map
+
+    def test_gpu_cpp_async_concurrent(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralRecOp --thread 16 --runtime_thread_num 2 2 --batch_infer_size 16 --gpu_ids 1 --port 9293",
+            sleep=17,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9293) == 1  # web Server
+        assert check_gpu_memory(0) is False
+        assert check_gpu_memory(1) is True
+
+        # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU")
+        check_keywords_in_server_log("BSF thread init done")
+        check_keywords_in_server_log("runtime_thread_num: 2",
+                                     "workdir_9293/GeneralDetectionOp_0/model_toolkit.prototxt")
+        check_keywords_in_server_log("runtime_thread_num: 2", "workdir_9293/GeneralRecOp_0/model_toolkit.prototxt")
+        detection_op = parse_prototxt("workdir_9293/GeneralDetectionOp_0/model_toolkit.prototxt")
+        infer_op = parse_prototxt("workdir_9293/GeneralRecOp_0/model_toolkit.prototxt")
+        assert detection_op["gpu_ids"] == ["1"]
+        assert infer_op["gpu_ids"] == ["1"]
+
+        # 内存泄露检测
+        os.system("export server_pid=`ps -ef | grep serving | grep -v grep | awk '{print $2}' | awk 'END {print}'`")
+        os.system("export rss_start=`cat /proc/${server_pid}/status | grep RSS | awk '{print $2}'`")
+
+        # 4.predict by brpc 多client并发
+        multi_thread_runner = MultiThreadRunner()
+        endpoint_list = ["127.0.0.1:9293"]
+        turns = 100
+        thread_num = 50  # client并发数
+        batch_size = 1
+        # prepare feed_data
+        image_file = "imgs/1.jpg"
+        with open(image_file, 'rb') as file:
+            image_data = file.read()
+        image = cv2_to_base64(image_data)
+
+        start = time.time()
+        result = multi_thread_runner.run(
+            single_func, thread_num, {"endpoint": endpoint_list, "turns": turns, "feed_data": image}
+        )
+        end = time.time()
+        total_cost = end - start
+        total_number = 0
+        avg_cost = 0
+        for i in range(thread_num):
+            avg_cost += result[0][i]
+            total_number += result[2][i]
+        avg_cost = avg_cost / thread_num
+
+        print("total cost-include init: {}s".format(total_cost))
+        print("each thread cost: {}s. ".format(avg_cost))
+        print("qps: {}samples/s".format(batch_size * total_number / avg_cost))
+        print("total count: {} ".format(total_number))
+        show_latency(result[1])
+
+        # 内存泄露检测
+        os.system("export rss_after=`cat /proc/${server_pid}/status | grep RSS | awk '{print $2}'`")
+        rss_start = int(os.environ.get("rss_start"))
+        rss_after = int(os.environ.get("rss_after"))
+        print("RSS diff is:", rss_after - rss_start, "KB")
+        assert rss_after - rss_start <= 3145728, f"Memory Leak!, RSS diff is {rss_after - rss_start} KB"
+
+        # 5.release
+        kill_process(9293, 2)
 
     def test_cpu_cpp(self):
         # 1.start server
