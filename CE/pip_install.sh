@@ -62,7 +62,6 @@ function py_requirements () {
   unset_proxy
   $py_version -m pip install -r python/requirements.txt -i https://mirror.baidu.com/pypi/simple
   $py_version -m pip install paddlehub -i https://mirror.baidu.com/pypi/simple
-  $py_version -m pip uninstall paddlepaddle* -y
   if [ $2 == 101 ]; then
     if [ $1 == 36 ]; then
         wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.1_cudnn7.6.5_trt6.0.1.5/paddlepaddle_gpu-2.2.2.post101-cp36-cp36m-linux_x86_64.whl
