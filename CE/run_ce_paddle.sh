@@ -16,7 +16,7 @@ elif [ $2 == "pd_112" ]; then
 fi
 
 cd ${shell_path}
-bash -x pip_install_paddle.sh $1 ${cuda}
+bash -x pip_install.sh $1 ${cuda}
 
 # paddle镜像上直接重打到/usr/local #适配cuda11.2镜像
 #if [ $2 == 112 ]; then
