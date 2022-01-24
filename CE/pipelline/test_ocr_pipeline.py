@@ -258,7 +258,7 @@ class TestOCRPipeline(object):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} web_service.py",
-            sleep=120,
+            sleep=135,
         )
 
         # 2.resource check
