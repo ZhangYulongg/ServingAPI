@@ -319,6 +319,9 @@ class TestEncryption(object):
 
         metrics_after = request_prometheus(port=19393)
         print(metrics_after)
+        assert metrics_after["exposer_request_latencies_count"] == "1"
+        assert metrics_after['pd_query_request_success{model="general",version="0"}'] == "4"
+        assert metrics_after['pd_inference_count{model="general",version="0"}'] == "4"
 
         # 5.release
         kill_process(9494, 2)
