@@ -243,6 +243,8 @@ class TestOCR(object):
 
         # 内存泄露检测
         os.system("export server_pid=`ps -ef | grep serving | grep -v grep | awk '{print $2}' | awk 'END {print}'`")
+        os.system("ps -ef")
+        os.system("env")
         os.system("export rss_start=`cat /proc/${server_pid}/status | grep RSS | awk '{print $2}'`")
 
         # 4.predict by brpc 多client并发
