@@ -23,6 +23,20 @@ def serving_encryption():
         encryption=True)
 
 
+def request_prometheus(port=19393):
+    process = subprocess.Popen(
+        f"curl http://127.0.0.1:{port}/metrics", stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        shell=True)
+    out, err = process.communicate()
+    print(out.decode())
+    line_list = out.decode().strip().split("\n")
+    metrics = {}
+    for line in line_list:
+        if not line.startswith("#") and len(line.split(" ")) == 2:
+            metrics[line.split(" ")[0]] = line.split(" ")[-1]
+    return metrics
+
+
 class TestEncryption(object):
     def setup_class(self):
         serving_util = ServingTest(data_path="encryption", example_path="C++/encryption", model_dir="encrypt_server",
@@ -67,7 +81,7 @@ class TestEncryption(object):
         self.truth_val = output_data_dict
         print(self.truth_val, self.truth_val["fc_0.tmp_1"].shape)
 
-    def predict_brpc(self, batch_size=1, encryption=False):
+    def predict_brpc(self, batch_size=1, encryption=False, client_config=None):
         data = np.array(
             [0.0137, -0.1136, 0.2553, -0.0692, 0.0582, -0.0727, -0.1583, -0.0584, 0.6283, 0.4919, 0.1856, 0.0795,
              -0.0332]).astype("float32")
@@ -76,7 +90,10 @@ class TestEncryption(object):
         endpoint_list = ['127.0.0.1:9494']
 
         client = Client()
-        client.load_client_config(self.serving_util.client_config)
+        if client_config:
+            client.load_client_config(client_config)
+        else:
+            client.load_client_config(self.serving_util.client_config)
         if encryption:
             client.use_key("./key")
         client.connect(endpoint_list, encryption=encryption)
@@ -90,7 +107,7 @@ class TestEncryption(object):
         print(fetch_map)
         return fetch_map
 
-    def predict_http(self, mode="proto", compress=False, batch_size=1, encryption=False):
+    def predict_http(self, mode="proto", compress=False, batch_size=1, encryption=False, client_config=None):
         data = np.array(
             [0.0137, -0.1136, 0.2553, -0.0692, 0.0582, -0.0727, -0.1583, -0.0584, 0.6283, 0.4919, 0.1856, 0.0795,
              -0.0332]).astype("float32")
@@ -99,7 +116,10 @@ class TestEncryption(object):
         endpoint_list = ['127.0.0.1:9494']
 
         client = HttpClient()
-        client.load_client_config(self.serving_util.client_config)
+        if client_config:
+            client.load_client_config(client_config)
+        else:
+            client.load_client_config(self.serving_util.client_config)
         if encryption:
             # http client加密预测
             client.use_key("./key")
@@ -262,6 +282,43 @@ class TestEncryption(object):
         # batch_size 2
         result_data = self.predict_http(batch_size=2)
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
+
+        # 5.release
+        kill_process(9494, 2)
+
+    def test_gpu_prometheus(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model uci_housing_model --thread 10 "
+                f"--port 9494 --gpu_ids 0 --enable_prometheus --prometheus_port 19393",
+            sleep=10,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9494) == 1
+        assert count_process_num_on_port(19393) == 1
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is False
+
+        # 3.keywords and prometheus check
+        check_keywords_in_server_log("Sync params from CPU to GPU")
+        metrics_first = request_prometheus(port=19393)
+        print(metrics_first)
+        client_config = "uci_housing_client/serving_client_conf.prototxt"
+
+        # 4.predict by brpc
+        # batch_size 1
+        result_data = self.predict_brpc(batch_size=1, client_config=client_config)
+        # batch_size 2
+        result_data = self.predict_brpc(batch_size=2, client_config=client_config)
+        # predict by http
+        # batch_size 1
+        result_data = self.predict_http(batch_size=1, client_config=client_config)
+        # batch_size 2
+        result_data = self.predict_http(batch_size=2, client_config=client_config)
+
+        metrics_after = request_prometheus(port=19393)
+        print(metrics_after)
 
         # 5.release
         kill_process(9494, 2)
