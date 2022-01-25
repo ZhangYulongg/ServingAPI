@@ -278,10 +278,10 @@ class TestOCR(object):
 
         # 内存泄露检测
         os.system("export rss_after=`cat /proc/${server_pid}/status | grep RSS | awk '{print $2}'`")
-        rss_start = int(os.environ.get("rss_start"))
-        rss_after = int(os.environ.get("rss_after"))
-        print("RSS diff is:", rss_after - rss_start, "KB")
-        assert rss_after - rss_start <= 3145728, f"Memory Leak!, RSS diff is {rss_after - rss_start} KB"
+        # rss_start = int(os.environ.get("rss_start"))
+        # rss_after = int(os.environ.get("rss_after"))
+        # print("RSS diff is:", rss_after - rss_start, "KB")
+        # assert rss_after - rss_start <= 3145728, f"Memory Leak!, RSS diff is {rss_after - rss_start} KB"
 
         # 5.release
         kill_process(9293, 2)
