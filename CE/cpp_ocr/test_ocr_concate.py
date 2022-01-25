@@ -47,6 +47,14 @@ def single_func(idx, resource):
     return [[end - start], latency_list, [total_number]]
 
 
+def run_cmd(cmd):
+    process = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        shell=True)
+    out, err = process.communicate()
+    return out, process.returncode
+
+
 def parse_prototxt(file):
     with open(file, "r") as f:
         lines = [i.strip().split(":") for i in f.readlines()]
@@ -242,10 +250,12 @@ class TestOCR(object):
         assert infer_op["gpu_ids"] == ["1"]
 
         # 内存泄露检测
-        os.system("export server_pid=`ps -ef | grep serving | grep -v grep | awk '{print $2}' | awk 'END {print}'`")
-        os.system("ps -ef")
-        os.system("env")
-        os.system("export rss_start=`cat /proc/${server_pid}/status | grep RSS | awk '{print $2}'`")
+        out, _ = run_cmd("ps -ef | grep serving | grep -v grep | awk '{print $2}' | awk 'END {print}'")
+        server_pid = out.decode().strip().split("\n")[-1]
+        print("server_pid:", server_pid)
+        out, _ = run_cmd("cat /proc/" + server_pid + "/status | grep RSS | awk '{print $2}'")
+        rss_start = int(out.decode().strip().split("\n")[-1])
+        print("rss_start:", rss_start)
 
         # 4.predict by brpc 多client并发
         multi_thread_runner = MultiThreadRunner()
@@ -279,9 +289,9 @@ class TestOCR(object):
         show_latency(result[1])
 
         # 内存泄露检测
-        os.system("export rss_after=`cat /proc/${server_pid}/status | grep RSS | awk '{print $2}'`")
-        rss_start = int(os.environ.get("rss_start"))
-        rss_after = int(os.environ.get("rss_after"))
+        out, _ = run_cmd("cat /proc/" + server_pid + "/status | grep RSS | awk '{print $2}'")
+        rss_after = int(out.decode().strip().split("\n")[-1])
+        print("rss_after:", rss_after)
         print("RSS diff is:", rss_after - rss_start, "KB")
         assert rss_after - rss_start <= 3145728, f"Memory Leak!, RSS diff is {rss_after - rss_start} KB"
 
