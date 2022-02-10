@@ -23,20 +23,6 @@ def serving_encryption():
         encryption=True)
 
 
-def request_prometheus(port=19393):
-    process = subprocess.Popen(
-        f"curl http://127.0.0.1:{port}/metrics", stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-        shell=True)
-    out, err = process.communicate()
-    print(out.decode())
-    line_list = out.decode().strip().split("\n")
-    metrics = {}
-    for line in line_list:
-        if not line.startswith("#") and len(line.split(" ")) == 2:
-            metrics[line.split(" ")[0]] = line.split(" ")[-1]
-    return metrics
-
-
 class TestEncryption(object):
     def setup_class(self):
         serving_util = ServingTest(data_path="encryption", example_path="C++/encryption", model_dir="encrypt_server",

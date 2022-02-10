@@ -243,6 +243,63 @@ class TestOCRPipeline(object):
         kill_process(9999)
         kill_process(18090)
 
+    def test_cpu_ir_prometheus(self):
+        # edit config.yml
+        # 生成config.yml
+        config = copy.deepcopy(self.default_config)
+        config["op"]["det"]["local_service_conf"]["device_type"] = 0
+        config["op"]["det"]["local_service_conf"]["devices"] = ""
+        try:
+            del config["op"]["det"]["local_service_conf"]["min_subgraph_size"]
+            del config["op"]["rec"]["local_service_conf"]["min_subgraph_size"]
+        except KeyError as e:
+            print("config is default")
+        config["op"]["det"]["local_service_conf"]["min_subgraph_size"] = 13
+        config["op"]["rec"]["local_service_conf"]["device_type"] = 0
+        config["op"]["rec"]["local_service_conf"]["devices"] = ""
+        config["dag"]["enable_prometheus"] = True
+        config["dag"]["prometheus_port"] = 19393
+        with open("config.yml", "w") as f:
+            yaml.dump(config, f)
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} web_service.py",
+            sleep=10,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9999) == 1  # gRPC Server
+        assert count_process_num_on_port(18090) == 1  # gRPC gateway 代理、转发
+        assert check_gpu_memory(0) is False
+        metrics_first = request_prometheus(port=19393)
+        print(metrics_first)
+
+        # 3.keywords check
+        check_keywords_in_server_log("Running IR pass", filename="stderr.log")
+
+        # 4.predict by rpc
+        # batch_size=1
+        det_result, rec_result = self.predict_pipeline_rpc(batch_size=1)
+        print(type(det_result), type(rec_result))
+        print(det_result["save_infer_model/scale_0.tmp_1"].shape)
+        print(rec_result["save_infer_model/scale_0.tmp_1"].shape)
+        self.serving_util.check_result(result_data=det_result, truth_data=self.truth_val_det, batch_size=1)
+        self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
+        # predict by http
+        det_result, rec_result = self.predict_pipeline_http(batch_size=1)  # batch_size=1
+        self.serving_util.check_result(result_data=det_result, truth_data=self.truth_val_det, batch_size=1)
+        self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
+        # det_result, rec_result = self.predict_pipeline_http(batch_size=2)
+
+        os.system("sleep 10")
+        metrics_after = request_prometheus(port=19393)
+        print(metrics_after)
+        assert metrics_after['pd_query_request_success_total'] == "2.0"
+
+        # 5.release
+        kill_process(9999)
+        kill_process(18090)
+
     def test_gpu_trt_fp32(self):
         # edit config.yml
         # 生成config.yml

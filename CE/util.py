@@ -185,6 +185,20 @@ def parse_prototxt(file):
     return engines
 
 
+def request_prometheus(port=19393):
+    process = subprocess.Popen(
+        f"curl http://127.0.0.1:{port}/metrics", stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        shell=True)
+    out, err = process.communicate()
+    print(out.decode())
+    line_list = out.decode().strip().split("\n")
+    metrics = {}
+    for line in line_list:
+        if not line.startswith("#") and len(line.split(" ")) == 2:
+            metrics[line.split(" ")[0]] = line.split(" ")[-1]
+    return metrics
+
+
 def default_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args([])
