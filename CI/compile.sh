@@ -47,12 +47,18 @@ function set_py () {
         export PYTHON_INCLUDE_DIR=$PYTHONROOT/include/python3.8
         export PYTHON_LIBRARIES=$PYTHONROOT/lib/libpython3.8.so
         export PYTHON_EXECUTABLE=$PYTHONROOT/bin/python3.8
+    elif [ $1 == 39 ]; then
+        py_version="python3.9"
+        export PYTHONROOT=/usr/local/
+        export PYTHON_INCLUDE_DIR=$PYTHONROOT/include/python3.9
+        export PYTHON_LIBRARIES=$PYTHONROOT/lib/libpython3.9.so
+        export PYTHON_EXECUTABLE=$PYTHONROOT/bin/python3.9
     else
         echo -e "Error py version$1"
         exit 1
     fi
     unset_proxy
-    ${py_version} -m pip install --upgrade pip==21.1.3 -i https://mirror.baidu.com/pypi/simple
+    ${py_version} -m pip install --upgrade pip -i https://mirror.baidu.com/pypi/simple
     ${py_version} -m pip install -r python/requirements.txt -i https://mirror.baidu.com/pypi/simple
     set_proxy
 }
