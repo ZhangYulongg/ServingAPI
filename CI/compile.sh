@@ -173,6 +173,10 @@ function compile_server_withopencv() {
         echo "--------make server with OPENCV failed, try again"
         make -j32
     fi
+    if [ ! -f "./core/general-server/serving" ]; then
+        echo "--------compile server with OPENCV failed again, exit"
+        exit 1
+    fi
     unset_proxy
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
     set_proxy
