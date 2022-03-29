@@ -50,6 +50,12 @@ function pip_install_serving () {
 
 # 安装python依赖包
 function py_requirements () {
+  # install python3.9
+  wget -q --no-check-certificate https://paddle-serving.bj.bcebos.com/python/Python-3.9.0.tgz && \
+  tar -xzf Python-3.9.0.tgz && cd Python-3.9.0 && \
+  CFLAGS="-Wformat" ./configure --prefix=/usr/local/ --enable-shared > /dev/null && \
+  make -j8 > /dev/null && make altinstall > /dev/null && ldconfig && cd .. && rm -rf Python-3.9.0*
+  cd $serving_dir
   echo -e "${YELOW_COLOR}---------install python requirements---------${RES}"
   echo "---------Python Version: $py_version"
   set_proxy
@@ -290,6 +296,7 @@ function prepare_java_client() {
 unset http_proxy
 unset https_proxy
 # 设置py版本
+cd $serving_dir
 py_requirements $1 $2
 pip_install_serving
 check_dir ${log_dir}
