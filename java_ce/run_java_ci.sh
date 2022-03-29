@@ -253,6 +253,7 @@ function pipeline_simple_web_service_cpu_pipeline () {
   cd $serving_dir/java/examples/target
   java -cp paddle-serving-sdk-java-examples-0.0.1-jar-with-dependencies.jar PipelineClientExample indarray_predict > ${dir}client_log.txt 2>&1
   check_save client "pipeline_simple_web_service_indarray_sync_java_client_CPU_PIPELINE"
+  kill_process
 }
 
 function brpc_server_fit_a_line_cpu() {
@@ -279,6 +280,7 @@ function brpc_server_fit_a_line_cpu() {
 
     java -cp paddle-serving-sdk-java-examples-0.0.1-jar-with-dependencies.jar PaddleServingClientExample compress fit_a_line.prototxt > ${dir}client_log.txt 2>&1
     check_save client "fit_a_line_java_compress_GPU_BRPC"
+    kill_process
 }
 
 function prepare_java_client() {
@@ -302,6 +304,7 @@ pip_install_serving
 check_dir ${log_dir}
 prepare_java_client
 rm -rf ${log_dir}/result.txt
+unset_proxy
 pipeline_imdb_model_ensemble_cpu_pipeline
 pipeline_simple_web_service_cpu_pipeline
 brpc_server_fit_a_line_cpu
