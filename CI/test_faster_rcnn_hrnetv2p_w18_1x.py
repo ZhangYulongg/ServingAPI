@@ -24,7 +24,7 @@ class TestFasterRCNN(object):
     def teardown_method(self):
         print_log(["stderr.log", "stdout.log",
                    "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
-        kill_process(9292)
+        kill_process(9394)
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
@@ -81,7 +81,7 @@ class TestFasterRCNN(object):
         print("im_info:", im_info)
 
         fetch = ["save_infer_model/scale_0.tmp_1"]
-        endpoint_list = ['127.0.0.1:9292']
+        endpoint_list = ['127.0.0.1:9394']
 
         client = Client()
         client.load_client_config(self.serving_util.client_config)
@@ -104,12 +104,12 @@ class TestFasterRCNN(object):
     def test_gpu_multicard(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9292 --gpu_ids 0,1",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9394 --gpu_ids 0,1",
             sleep=22,
         )
 
         # 2.resource check
-        assert count_process_num_on_port(9292) == 1
+        assert count_process_num_on_port(9394) == 1
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is True
 
@@ -126,4 +126,4 @@ class TestFasterRCNN(object):
         os.system("ps -ef")
 
         # 5.release
-        kill_process(9292, 2)
+        kill_process(9394, 2)

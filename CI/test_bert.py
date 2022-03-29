@@ -21,7 +21,7 @@ class TestBert(object):
     def teardown_method(self):
         print_log(["stderr.log", "stdout.log",
                    "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
-        kill_process(9292)
+        kill_process(9394)
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
@@ -67,7 +67,7 @@ class TestBert(object):
     def predict_brpc(self, batch_size=1):
         reader = ChineseBertReader({"max_seq_len": 128})
         fetch = ["pooled_output", "sequence_output"]
-        endpoint_list = ['127.0.0.1:9292']
+        endpoint_list = ['127.0.0.1:9394']
         client = Client()
         client.load_client_config(self.serving_util.client_config)
         client.connect(endpoint_list)
@@ -102,7 +102,7 @@ class TestBert(object):
         if compress:
             client.set_response_compress(True)
             client.set_request_compress(True)
-        client.connect(["127.0.0.1:9292"])
+        client.connect(["127.0.0.1:9394"])
 
         feed_dict = reader.process("送晚了，饿得吃得很香")
         if batch_size == 1:
@@ -130,10 +130,10 @@ class TestBert(object):
     def test_cpu(self, delta=1e-3):
 
         # 1.start server
-        self.serving_util.start_server_by_shell(f"{self.serving_util.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292")
+        self.serving_util.start_server_by_shell(f"{self.serving_util.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9394")
 
         # 2.resource check
-        assert count_process_num_on_port(9292) == 1
+        assert count_process_num_on_port(9394) == 1
         assert check_gpu_memory(0) is False
 
         # 3.keywords check
@@ -160,17 +160,17 @@ class TestBert(object):
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
-        kill_process(9292)
+        kill_process(9394)
 
     def test_gpu(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9292 --gpu_ids 0",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model bert_seq128_model/ --port 9394 --gpu_ids 0",
             sleep=5,
         )
 
         # 2.resource check
-        assert count_process_num_on_port(9292) == 1
+        assert count_process_num_on_port(9394) == 1
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is False
 
@@ -199,4 +199,4 @@ class TestBert(object):
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
-        kill_process(9292, 2)
+        kill_process(9394, 2)

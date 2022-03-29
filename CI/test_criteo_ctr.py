@@ -54,7 +54,7 @@ class TestCriteoCtr(object):
     def teardown_method(self):
         print_log(["stderr.log", "stdout.log",
                    "log/serving.ERROR", "PipelineServingLogs/pipeline.log"], iden="after predict")
-        kill_process(9292)
+        kill_process(9394)
         self.serving_util.release()
 
     def get_truth_val_by_inference(self):
@@ -105,7 +105,7 @@ class TestCriteoCtr(object):
         f.close()
 
         fetch = ["prob"]
-        endpoint_list = ['127.0.0.1:9292']
+        endpoint_list = ['127.0.0.1:9394']
 
         client = Client()
         client.load_client_config(self.serving_util.client_config)
@@ -118,12 +118,12 @@ class TestCriteoCtr(object):
     def test_cpu(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ctr_serving_model/ --port 9292",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ctr_serving_model/ --port 9394",
             sleep=5,
         )
 
         # 2.resource check
-        assert count_process_num_on_port(9292) == 1
+        assert count_process_num_on_port(9394) == 1
         assert check_gpu_memory(0) is False
         assert check_gpu_memory(1) is False
 
@@ -134,17 +134,17 @@ class TestCriteoCtr(object):
         self.serving_util.check_result(result_data=result, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
-        kill_process(9292)
+        kill_process(9394)
 
     def test_gpu(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ctr_serving_model/ --port 9292 --gpu_ids 0",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ctr_serving_model/ --port 9394 --gpu_ids 0",
             sleep=5,
         )
 
         # 2.resource check
-        assert count_process_num_on_port(9292) == 1
+        assert count_process_num_on_port(9394) == 1
         assert check_gpu_memory(0) is True
         assert check_gpu_memory(1) is False
 
@@ -156,4 +156,4 @@ class TestCriteoCtr(object):
         self.serving_util.check_result(result_data=result, truth_data=self.truth_val, batch_size=1)
 
         # 5.release
-        kill_process(9292, 1)
+        kill_process(9394, 1)

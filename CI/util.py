@@ -14,6 +14,7 @@ class ServingTest(object):
         CODE_PATH: repo上一级目录
         DATA_PATH: 数据集根目录
         py_version: python版本 python3.6~3.8
+        ce_name: ce任务名，包含环境信息
         """
         code_path = os.environ.get("CODE_PATH")
         self.data_path = f"{os.environ.get('DATA_PATH')}/{data_path}/"

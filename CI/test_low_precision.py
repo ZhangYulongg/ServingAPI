@@ -3,6 +3,7 @@ import subprocess
 import numpy as np
 import copy
 import cv2
+import pytest
 
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_app.reader import Sequential, URL2Image, Resize, File2Image
@@ -10,6 +11,9 @@ from paddle_serving_app.reader import CenterCrop, RGB2BGR, Transpose, Div, Norma
 import paddle.inference as paddle_infer
 
 from util import *
+
+
+ce_name = os.environ.get("ce_name") if os.environ.get("ce_name") else ""
 
 
 class TestLowPrecision(object):
@@ -105,6 +109,7 @@ class TestLowPrecision(object):
         # 5.release
         kill_process(9393, 2)
 
+    @pytest.mark.skipif("p4" in ce_name, reason="P4 do not support FP16 speed up")
     def test_gpu_trt_fp16(self):
         # 1.start server
         self.serving_util.start_server_by_shell(

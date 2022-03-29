@@ -5,6 +5,7 @@ import copy
 import cv2
 import sys
 import time
+import pytest
 
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_client.io import inference_model_to_serving
@@ -14,6 +15,9 @@ import paddle.inference as paddle_infer
 
 sys.path.append("../")
 from util import *
+
+
+ce_name = os.environ.get("ce_name") if os.environ.get("ce_name") else ""
 
 
 def serving_encryption():
@@ -196,10 +200,14 @@ class TestPPYOLO(object):
         kill_process(9494, 2)
 
     def test_gpu_trt_fp32(self):
+        if ce_name and "p4" in ce_name:
+            sleep_time = 130
+        else:
+            sleep_time = 70
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model serving_server --port 9494 --use_trt --gpu_ids 0 | tee log.txt",
-            sleep=70,
+            sleep=sleep_time,
         )
 
         # 2.resource check
