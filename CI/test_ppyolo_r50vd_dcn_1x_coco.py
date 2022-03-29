@@ -154,7 +154,12 @@ class TestPPYOLO(object):
         client.load_client_config("encrypt_client/serving_client_conf.prototxt")
         client.use_key("./key")
         client.connect(endpoint_list, encryption=True)
-        time.sleep(70)
+        # add sleep time
+        if ce_name and "p4" in ce_name:
+            sleep_time = 130
+        else:
+            sleep_time = 70
+        time.sleep(sleep_time)
 
         fetch_map = client.predict(
             feed={
