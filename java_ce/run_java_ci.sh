@@ -43,7 +43,7 @@ function unset_proxy() {
 function pip_install_serving () {
   cd ${serving_dir}
   unset_proxy
-  $py_version -m pip install app_build/python/dist/paddle_serving* -i https://mirror.baidu.com/pypi/simple
+  $py_version -m pip install app-build/python/dist/paddle_serving* -i https://mirror.baidu.com/pypi/simple
   $py_version -m pip install client-build/python/dist/paddle_serving* -i https://mirror.baidu.com/pypi/simple
   $py_version -m pip install server-build-gpu-opencv/python/dist/paddle_serving* -i https://mirror.baidu.com/pypi/simple
 }
