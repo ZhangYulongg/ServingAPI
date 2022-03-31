@@ -263,7 +263,8 @@ function brpc_server_fit_a_line_cpu() {
     # 命令检查
     check_save server 10
     # 拷贝模型配置文件
-    cp -r uci_housing_client/serving_client_conf.prototxt  ./fit_a_line.prototxt
+    cd $serving_dir/java/examples/target
+    cp -r ${DATA_PATH}/fit_a_line/uci_housing_client/serving_client_conf.prototxt  ./fit_a_line.prototxt
     java -cp paddle-serving-sdk-java-examples-0.0.1-jar-with-dependencies.jar PaddleServingClientExample http_proto fit_a_line.prototxt > ${dir}client_log.txt 2>&1
     check_save client "fit_a_line_java_http_proto_GPU_BRPC"
 
@@ -288,6 +289,7 @@ function prepare_java_client() {
     cd examples
     mvn compile
     mvn install
+    unset_proxy
 }
 
 unset http_proxy
