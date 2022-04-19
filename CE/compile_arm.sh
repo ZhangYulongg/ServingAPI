@@ -4,6 +4,7 @@
 # $2 cpu、101、102、110、arm
 # $3 opencv
 export serving_dir=${CODE_PATH}/Serving
+export bin_folder=serving-xpu-aarch64-${VERSION_TAG}
 
 if [ ${serving_dir} != "" ]; then
     cd ${serving_dir}
@@ -116,7 +117,22 @@ function compile_server() {
             -DSERVER=ON \
             -DWITH_GPU=ON ..
     fi
-    make -j10
+    make -j32
+    if [ `ls -A python/dist/ | wc -w` == 0 ]; then
+        echo "--------make server failed, try again"
+        make -j32
+    fi
+    if [ ! -f "./core/general-server/serving" ]; then
+        echo "--------serving bin not found, exit"
+        exit 1
+    fi
+    # 打包bin
+    mkdir ${bin_folder}
+    cp core/general-server/serving output/
+    cp third_party/install/Paddle/third_party/install/xpu/lib/libxpuapi.so output/
+    cp third_party/install/Paddle/third_party/install/xpu/lib/libxpurt.so output/
+    cp third_party/install/Paddle/third_party/install/lite/cxx/lib/libpaddle_full_api_shared.so output/
+    tar -zcvf ${bin_folder}.tar.gz ${bin_folder}
 #    unset_proxy
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
     set_proxy
@@ -183,10 +199,10 @@ function compile_client() {
         -DWITH_LITE=ON \
         -DWITH_XPU=ON \
         -DCLIENT=ON ..
-    make -j10
+    make -j32
     if [ `ls -A python/dist/ | wc -w` == 0 ]; then
         echo "--------make client failed, try again"
-        make -j10
+        make -j32
     fi
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
     set_proxy
@@ -202,10 +218,10 @@ function compile_app() {
         -DWITH_LITE=ON \
         -DWITH_XPU=ON \
         -DAPP=ON ..
-    make -j10
+    make -j32
     if [ `ls -A python/dist/ | wc -w` == 0 ]; then
         echo "--------make app failed, try again"
-        make -j10
+        make -j32
     fi
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
     set_proxy
@@ -225,3 +241,18 @@ fi
 
 compile_client
 compile_app
+
+# check output
+cp server-build-arm-xpu/python/dist/*.whl ./
+cp client-build/python/dist/*.whl ./
+cp app-build/python/dist/*.whl ./
+cp server-build-arm-xpu/*.tar.gz ./
+
+n_whl=`ls -l ./*.whl | wc -l`
+n_tar=`ls -l ./*.tar.gz | wc -l`
+if [ ${n_whl} -ne 3 ] || [ ${n_tar} -ne 1 ]; then
+    echo "!!!!!!!!!!!!!!! compile failed, please check the result!"
+    exit 1
+else
+    echo " ----------The num is right!"
+fi
