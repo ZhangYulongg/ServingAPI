@@ -36,8 +36,8 @@ class TestOCRPipeline(object):
         })
         self.ocr_reader = OCRReader()
         self.get_truth_val_by_inference(self)
-        os.system("sed -i '95 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_dict)' web_service.py")
-        os.system("sed -i '215 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_data)' web_service.py")
+        os.system("sed -i '97 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_det\", fetch_dict)' web_service.py")
+        os.system("sed -i '214 i \ \ \ \ \ \ \ \ np.save(\"fetch_dict_rec\", fetch_data)' web_service.py")
         # 读取yml文件
         with open("config.yml", "r", encoding="utf-8") as file:
             dict_ = yaml.safe_load(file)
