@@ -128,10 +128,10 @@ function compile_server() {
     fi
     # 打包bin
     mkdir ${bin_folder}
-    cp core/general-server/serving output/
-    cp third_party/install/Paddle/third_party/install/xpu/lib/libxpuapi.so output/
-    cp third_party/install/Paddle/third_party/install/xpu/lib/libxpurt.so output/
-    cp third_party/install/Paddle/third_party/install/lite/cxx/lib/libpaddle_full_api_shared.so output/
+    cp core/general-server/serving ${bin_folder}/
+    cp third_party/install/Paddle/third_party/install/xpu/lib/libxpuapi.so ${bin_folder}/
+    cp third_party/install/Paddle/third_party/install/xpu/lib/libxpurt.so ${bin_folder}/
+    cp third_party/install/Paddle/third_party/install/lite/cxx/lib/libpaddle_full_api_shared.so ${bin_folder}/
     tar -zcvf ${bin_folder}.tar.gz ${bin_folder}
 #    unset_proxy
     ${py_version} -m pip install python/dist/paddle* -i https://mirror.baidu.com/pypi/simple
