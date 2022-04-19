@@ -101,6 +101,7 @@ function compile_server() {
         cmake -DPYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR} \
             -DPYTHON_LIBRARIES=${PYTHON_LIBRARIES} \
             -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE} \
+            -DVERSION_TAG=${VERSION_TAG} \
             -DWITH_PYTHON=ON \
             -DWITH_LITE=ON \
             -DWITH_XPU=ON \
@@ -195,6 +196,7 @@ function compile_client() {
     cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR \
         -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
         -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
+        -DVERSION_TAG=${VERSION_TAG} \
         -DWITH_PYTHON=ON \
         -DWITH_LITE=ON \
         -DWITH_XPU=ON \
@@ -214,6 +216,7 @@ function compile_app() {
     cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR \
         -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
         -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
+        -DVERSION_TAG=${VERSION_TAG} \
         -DWITH_PYTHON=ON \
         -DWITH_LITE=ON \
         -DWITH_XPU=ON \
