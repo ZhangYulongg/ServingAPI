@@ -126,7 +126,7 @@ function pip_install_serving() {
   if [ $1 == 38 ]; then
     $py_version -m pip install --ignore-installed sentencepiece -i https://mirror.baidu.com/pypi/simple
   fi
-  $py_version -m pip install --ignore-installed paddle_serving* -i https://mirror.baidu.com/pypi/simple
+  $py_version -m pip install paddle_serving* -i https://mirror.baidu.com/pypi/simple
   set_proxy
 }
 
