@@ -61,16 +61,16 @@ function py_requirements () {
   cd ${CODE_PATH}
   rm -rf whl_packages
   mkdir whl_packages && cd whl_packages
-  if [ $1 == 36 ]; then
-      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.2-cp36-cp36m-linux_x86_64.whl
-      $py_version -m pip install --ignore-installed paddlepaddle-2.2.2-cp36-cp36m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
-  elif [ $1 == 37 ]; then
-      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.2-cp37-cp37m-linux_x86_64.whl
-      $py_version -m pip install --ignore-installed paddlepaddle-2.2.2-cp37-cp37m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
-  else
-      echo -e "${RED_COLOR}Error py version$1${RES}"
-      exit
-  fi
+#  if [ $1 == 36 ]; then
+#      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.2-cp36-cp36m-linux_x86_64.whl
+#      $py_version -m pip install --ignore-installed paddlepaddle-2.2.2-cp36-cp36m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
+#  elif [ $1 == 37 ]; then
+#      wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/XPU/x86-64_gcc8.2_py36_avx_mkl/paddlepaddle-2.2.2-cp37-cp37m-linux_x86_64.whl
+#      $py_version -m pip install --ignore-installed paddlepaddle-2.2.2-cp37-cp37m-linux_x86_64.whl -i https://mirror.baidu.com/pypi/simple
+#  else
+#      echo -e "${RED_COLOR}Error py version$1${RES}"
+#      exit
+#  fi
   echo -e "${YELOW_COLOR}---------complete---------\n${RES}"
 }
 
@@ -103,6 +103,8 @@ function pip_install_serving() {
     whl_list[2]=server-${version}-py3
   elif [ $2 == "x86" ]; then
     whl_list[2]=server_xpu-${version}.post2-py3
+  elif [ $2 == "arm" ]; then
+    whl_list[2]=server_xpu-${version}.post2-py3
   fi
   echo "----------whl_list: "
   echo ${whl_list[*]}
@@ -110,7 +112,11 @@ function pip_install_serving() {
   echo "----------cur path: `pwd`"
   for whl_item in ${whl_list[@]}
   do
-      wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_${whl_item}-none-any.whl
+      if [ $2 == "arm" ]; then
+          wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/arm/paddle_serving_${whl_item}-none-any.whl
+      else
+          wget -q https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_${whl_item}-none-any.whl
+      fi
       if [ $? -eq 0 ]; then
           echo "--------------download ${whl_item} succ"
       else
@@ -126,7 +132,7 @@ function pip_install_serving() {
 
 cd $serving_dir
 set_proxy
-git submodule update --init --recursive
+#git submodule update --init --recursive
 echo "-----------cur path: `pwd`"
 echo -e "${GREEN_COLOR}-----------env lists: ${RES}"
 env | grep -E "PYTHONROOT|PYTHON_INCLUDE_DIR|PYTHON_LIBRARIES|PYTHON_EXECUTABLE|CUDA_PATH|CUDA_PATH|CUDNN_LIBRARY|CUDA_CUDART_LIBRARY|TENSORRT_LIBRARY_PATH"
@@ -141,13 +147,6 @@ pip_install_serving $1 $2
 echo "--------pip list after pip: "
 ${pip_version} list
 # whl包检查
-if [ `${pip_version} list | grep -c paddlepaddle` != 1 ]; then
-    py_requirements $1 $2
-    if [ `${pip_version} list | grep -c paddlepaddle` != 1 ]; then
-        echo "----------paddle install failed!----------"
-        exit 2
-    fi
-fi
 
 if [ `${pip_version} list | egrep "paddle-serving" | wc -l` -eq 3 ]; then
     echo "-----------whl_packages succ"
