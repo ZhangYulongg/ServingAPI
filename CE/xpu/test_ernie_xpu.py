@@ -4,7 +4,7 @@ import numpy as np
 import sys
 
 from paddle_serving_client import Client, HttpClient
-import paddle.inference as paddle_infer
+# import paddle.inference as paddle_infer
 
 from chinese_ernie_reader import ChineseErnieReader
 sys.path.append("../")

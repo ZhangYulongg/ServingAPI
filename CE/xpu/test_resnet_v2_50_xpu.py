@@ -11,7 +11,7 @@ from paddle_serving_client.utils import MultiThreadRunner
 from paddle_serving_client.utils import benchmark_args, show_latency
 from paddle_serving_app.reader import Sequential, URL2Image, Resize, File2Image
 from paddle_serving_app.reader import CenterCrop, RGB2BGR, Transpose, Div, Normalize
-import paddle.inference as paddle_infer
+# import paddle.inference as paddle_infer
 
 sys.path.append("../")
 from util import *

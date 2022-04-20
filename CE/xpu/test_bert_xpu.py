@@ -5,7 +5,7 @@ import sys
 import time
 
 from paddle_serving_client import Client, HttpClient
-import paddle.inference as paddle_infer
+# import paddle.inference as paddle_infer
 
 from chinese_bert_reader import ChineseBertReader
 sys.path.append("../")

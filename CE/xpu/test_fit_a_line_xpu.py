@@ -8,7 +8,7 @@ import sys
 from paddle_serving_client import Client, HttpClient
 from paddle_serving_app.reader import SegPostprocess
 from paddle_serving_app.reader import *
-import paddle.inference as paddle_infer
+# import paddle.inference as paddle_infer
 
 sys.path.append("../")
 from util import *
