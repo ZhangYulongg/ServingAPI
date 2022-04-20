@@ -57,7 +57,7 @@ function py_requirements () {
   unset_proxy
   $py_version -m pip install --ignore-installed --upgrade pip -i https://mirror.baidu.com/pypi/simple
   $py_version -m pip uninstall paddle-serving-app paddle-serving-client paddle-serving-server paddlepaddle -y
-  # $py_version -m pip install --ignore-installed -r python/requirements.txt -i https://mirror.baidu.com/pypi/simple
+  $py_version -m pip install -r python/requirements.txt -i https://mirror.baidu.com/pypi/simple
   cd ${CODE_PATH}
   rm -rf whl_packages
   mkdir whl_packages && cd whl_packages
