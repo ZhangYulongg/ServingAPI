@@ -10,7 +10,7 @@ export LD_LIBRARY_PATH=/usr/local/lib/${py_version}/site-packages/paddle/libs/:/
 
 cd ${shell_path}
 if [ $2 == "arm" ]; then
-    bash pip_install.sh $1 $2
+    bash -x pip_install.sh $1 $2
 elif [ $2 == "x86" ]; then
     # CE机器环境特殊
     bash pip_install_x86_xpu.sh $1 $2
