@@ -9,7 +9,12 @@ apt-get install -y net-tools
 export LD_LIBRARY_PATH=/usr/local/lib/${py_version}/site-packages/paddle/libs/:/usr/local/lib/${py_version}/site-packages/paddle_serving_server/serving-xpu-x86_64-0.0.0/:$LD_LIBRARY_PATH
 
 cd ${shell_path}
-bash pip_install.sh $1 $2
+if [ $2 == "arm" ]; then
+    bash pip_install.sh $1 $2
+elif [ $2 == "x86" ]; then
+    # CE机器环境特殊
+    bash pip_install_x86_xpu.sh $1 $2
+fi
 
 unset http_proxy && unset https_proxy
 # 依赖和bin
