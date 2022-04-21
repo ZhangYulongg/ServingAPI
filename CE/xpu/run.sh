@@ -1,8 +1,8 @@
 #!/bin/bash
 
 shell_path=${CODE_PATH}/CE/xpu
-export https_proxy=${proxy}
-export http_proxy=${proxy}
+#export https_proxy=${proxy}
+#export http_proxy=${proxy}
 apt-get install -y libgeos-dev
 apt-get install -y net-tools
 
