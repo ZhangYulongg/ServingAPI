@@ -6,6 +6,10 @@ if [ ! -f "${CODE_PATH}/Serving/server-build-gpu-opencv/core/general-server/serv
     exit 1
 fi
 
+# add libpaddle_inference.so
+export LD_LIBRARY_PATH=${CODE_PATH}/Serving/server-build-gpu-opencv/third_party/Paddle/src/extern_paddle/paddle/lib/:$LD_LIBRARY_PATH
+ldconfig
+
 rm -rf result.txt
 cases=`find ./ -name "test*.py" | sort`
 #cases=`find ./ -maxdepth 1 -name "test*.py" | sort`
