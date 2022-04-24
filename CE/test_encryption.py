@@ -83,6 +83,9 @@ class TestEncryption(object):
         if encryption:
             client.use_key("./key")
         client.connect(endpoint_list, encryption=encryption)
+        if encryption:
+            # 等待Server启动
+            time.sleep(10)
 
         if batch_size == 1:
             fetch_map = client.predict(feed={"x": data}, fetch=client.get_fetch_names(), batch=False)
