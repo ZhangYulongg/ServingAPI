@@ -167,7 +167,7 @@ class TestResnetV2(object):
 
         # 3.keywords check
         check_keywords_in_server_log("Sync params from CPU to GPU", filename="stderr.log")
-        check_keywords_in_server_log("Enable batch schedule framework, thread_num:2, batch_size:32, enable_overrun:0, allow_split_request:1", filename="stderr.log")
+        check_keywords_in_server_log("Enable batch schedule framework, thread_num:2, batch_size:32, enable_overrun:0, allow_split_request:1", filename="log/serving.INFO")
 
         # 4.predict by brpc 多client并发
         multi_thread_runner = MultiThreadRunner()
@@ -310,14 +310,7 @@ class TestResnetV2(object):
         self.serving_util.check_result(result_data=result_data, truth_data=self.truth_val, batch_size=2)
 
         # request cache keywords check
-        check_keywords_in_server_log("Get from cache", filename="stderr.log")
+        check_keywords_in_server_log("Get from cache", filename="log/serving.INFO")
 
         # 5.release
         kill_process(9696, 2)
-
-
-if __name__ == '__main__':
-    sss = TestResnetV2()
-    sss.get_truth_val_by_inference()
-
-

@@ -18,7 +18,7 @@ from util import *
 
 class TestOCR(object):
     def setup_class(self):
-        serving_util = ServingTest(data_path="ocr", example_path="C++/PaddleOCR/ocr", model_dir="ocr_det_model",
+        serving_util = ServingTest(data_path="ocr_pipe", example_path="C++/PaddleOCR/ocr", model_dir="ocr_det_model",
                                    client_dir="ocr_det_client")
         serving_util.check_model_data_exist()
         self.serving_util = serving_util
@@ -63,9 +63,9 @@ class TestOCR(object):
 
         det_img = det_img[np.newaxis, :]
         input_dict = {}
-        input_dict["image"] = det_img.astype("float32")
+        input_dict["x"] = det_img.astype("float32")
 
-        pd_config = paddle_infer.Config("ocr_det_model")
+        pd_config = paddle_infer.Config("ocr_det_model/inference.pdmodel", "ocr_det_model/inference.pdiparams")
         pd_config.disable_gpu()
         pd_config.switch_ir_optim(False)
 
@@ -85,16 +85,16 @@ class TestOCR(object):
             output_data = output_handle.copy_to_cpu()
             output_data_dict[output_data_name] = output_data
         # 对齐serving output
-        output_data_dict["concat_1.tmp_0"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
-        del output_data_dict["save_infer_model/scale_0.tmp_0"]
+        # output_data_dict["concat_1.tmp_0"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
+        # del output_data_dict["save_infer_model/scale_0.tmp_0"]
         self.truth_val_det = output_data_dict
-        print(self.truth_val_det, self.truth_val_det["concat_1.tmp_0"].shape)
+        print(self.truth_val_det, self.truth_val_det["save_infer_model/scale_0.tmp_1"].shape)
 
         # Rec result
         sorted_boxes = SortedBoxes()
         get_rotate_crop_image = GetRotateCropImage()
         ratio_list = [float(new_h) / ori_h, float(new_w) / ori_w]
-        dt_boxes_list = self.post_func(output_data_dict["concat_1.tmp_0"], [ratio_list])
+        dt_boxes_list = self.post_func(output_data_dict["save_infer_model/scale_0.tmp_1"], [ratio_list])
         dt_boxes = self.filter_func(dt_boxes_list[0], [ori_h, ori_w])
         dt_boxes = sorted_boxes(dt_boxes)
 
@@ -110,9 +110,9 @@ class TestOCR(object):
         for img in img_list:
             norm_img = self.ocr_reader.resize_norm_img(img, max_wh_ratio)
             feed_list.append(norm_img[np.newaxis, :])
-        input_dict = {"image": np.concatenate(feed_list, axis=0)}
+        input_dict = {"x": np.concatenate(feed_list, axis=0)}
 
-        pd_config = paddle_infer.Config("ocr_rec_model")
+        pd_config = paddle_infer.Config("ocr_rec_model/inference.pdmodel", "ocr_rec_model/inference.pdiparams")
         pd_config.disable_gpu()
         pd_config.switch_ir_optim(False)
 
@@ -132,12 +132,11 @@ class TestOCR(object):
             output_data = output_handle.copy_to_cpu()
             output_data_dict[output_data_name] = output_data
         # 对齐serving output
-        output_data_dict["ctc_greedy_decoder_0.tmp_0"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
-        output_data_dict["softmax_0.tmp_0"] = output_data_dict["save_infer_model/scale_1.tmp_0"]
-        del output_data_dict["save_infer_model/scale_0.tmp_0"], output_data_dict["save_infer_model/scale_1.tmp_0"]
+        # output_data_dict["ctc_greedy_decoder_0.tmp_0"] = output_data_dict["save_infer_model/scale_0.tmp_0"]
+        # output_data_dict["softmax_0.tmp_0"] = output_data_dict["save_infer_model/scale_1.tmp_0"]
+        # del output_data_dict["save_infer_model/scale_0.tmp_0"], output_data_dict["save_infer_model/scale_1.tmp_0"]
         self.truth_val_rec = output_data_dict
-        print(self.truth_val_rec, self.truth_val_rec["ctc_greedy_decoder_0.tmp_0"].shape,
-              self.truth_val_rec["softmax_0.tmp_0"].shape)
+        print(self.truth_val_rec, self.truth_val_rec["save_infer_model/scale_0.tmp_1"].shape)
 
     def predict_http(self, batch_size=1):
         # 1.prepare feed_data
@@ -146,7 +145,7 @@ class TestOCR(object):
             image_data = f.read()
         image = cv2_to_base64(image_data)
         feed_dict = {
-            "feed": [{"image": image}],
+            "feed": [{"x": image}],
             "fetch": ["res"],
         }
 
@@ -164,7 +163,7 @@ class TestOCR(object):
             image_data = f.read()
         image = cv2_to_base64(image_data)
         feed_dict = {
-            "feed": [{"image": image}] * batch_size,
+            "feed": [{"x": image}] * batch_size,
             "fetch": ["res"],
         }
         # 2.predict for fetch_map
@@ -204,7 +203,7 @@ class TestOCR(object):
         # 删除文件
         os.system("rm -rf fetch_dict_rec.npy")
         # # 删除lod信息
-        del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
+        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
         self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
@@ -242,7 +241,7 @@ class TestOCR(object):
         # 删除文件
         os.system("rm -rf fetch_dict_rec.npy")
         # # 删除lod信息
-        del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
+        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
         self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
@@ -271,7 +270,7 @@ class TestOCR(object):
         # 删除文件
         os.system("rm -rf fetch_dict_rec.npy")
         # # 删除lod信息
-        del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
+        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
         self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release
@@ -298,7 +297,7 @@ class TestOCR(object):
         # 删除文件
         os.system("rm -rf fetch_dict_rec.npy")
         # # 删除lod信息
-        del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
+        # del rec_result["ctc_greedy_decoder_0.tmp_0.lod"], rec_result["softmax_0.tmp_0.lod"]
         self.serving_util.check_result(result_data=rec_result, truth_data=self.truth_val_rec, batch_size=1)
 
         # 5.release

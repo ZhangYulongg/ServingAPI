@@ -208,7 +208,7 @@ class TestIMDB(object):
 
         # 3.keywords check
         check_keywords_in_server_log("Sync params from CPU to GPU", filename="stderr.log")
-        check_keywords_in_server_log("Enable batch schedule framework, thread_num:4, batch_size:32, enable_overrun:0, allow_split_request:1", filename="stderr.log")
+        check_keywords_in_server_log("Enable batch schedule framework, thread_num:4, batch_size:32, enable_overrun:0, allow_split_request:1", filename="log/serving.INFO")
 
         # 4.predict by brpc
         # batch_size 1
