@@ -87,7 +87,7 @@ class TestDeeplabv3(object):
         # 1.start server
         self.serving_util.start_server_by_shell(
             cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model deeplabv3_server --gpu_ids 0,1 --port 9494",
-            sleep=5,
+            sleep=15,
         )
 
         # 2.resource check
