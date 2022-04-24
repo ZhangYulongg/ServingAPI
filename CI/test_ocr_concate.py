@@ -32,8 +32,8 @@ def single_func(idx, resource):
     while True:
         l_start = time.time()
         result = client.predict(
-            feed={"image": resource["feed_data"]},
-            fetch=["ctc_greedy_decoder_0.tmp_0", "softmax_0.tmp_0"],
+            feed={"x": resource["feed_data"]},
+            fetch=["save_infer_model/scale_0.tmp_1"],
             batch=True)
         l_end = time.time()
         # o_start = time.time()
@@ -313,9 +313,9 @@ class TestOCR(object):
         # 4.predict by http
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
-        print(result["ctc_greedy_decoder_0.tmp_0"].shape)
+        print(result["save_infer_model/scale_0.tmp_1"].shape)
         # 删除lod信息
-        assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
+        # assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
         # del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"], result["ctc_greedy_decoder_0.tmp_0"]
         # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
 
@@ -340,9 +340,9 @@ class TestOCR(object):
         # 4.predict by http
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
-        print(result["ctc_greedy_decoder_0.tmp_0"].shape)
+        print(result["save_infer_model/scale_0.tmp_1"].shape)
         # 删除lod信息
-        assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
+        # assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
         # del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
         # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
 
@@ -374,9 +374,9 @@ class TestOCR(object):
         # 4.predict by http
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
-        print(result["ctc_greedy_decoder_0.tmp_0"].shape)
+        print(result["save_infer_model/scale_0.tmp_1"].shape)
         # 删除lod信息
-        assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
+        # assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
         # del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
         # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
 
