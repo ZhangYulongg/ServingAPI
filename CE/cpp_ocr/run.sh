@@ -7,9 +7,12 @@ unset http_proxy && unset https_proxy
 export FLAGS_call_stack_level=2
 if [ $2 == "cpu" ]; then
     export SERVING_BIN=${CODE_PATH}/Serving/server-build-cpu-opencv/core/general-server/serving
+    export LD_LIBRARY_PATH=${CODE_PATH}/Serving/server-build-cpu-opencv/third_party/Paddle/src/extern_paddle/paddle/lib/:$LD_LIBRARY_PATH
 else
     export SERVING_BIN=${CODE_PATH}/Serving/server-build-gpu-opencv/core/general-server/serving
+    export LD_LIBRARY_PATH=${CODE_PATH}/Serving/server-build-gpu-opencv/third_party/Paddle/src/extern_paddle/paddle/lib/:$LD_LIBRARY_PATH
 fi
+ldconfig
 
 # 修改det feed type
 rm -rf ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client
