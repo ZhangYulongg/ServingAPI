@@ -210,22 +210,22 @@ function pipeline_imdb_model_ensemble_cpu_pipeline () {
   if [ $? == 0 ]
   then
   	echo -e "${GREEN_COLOR}pipeline_imdb_model_ensemble_CNN_CPU_RPC execute normally${RES}"
-  	sleep 5
+  	sleep 10
     cat ${dir}cnn_log.txt | tee -a ${log_dir}server_total.txt
   fi
   $py_version -m paddle_serving_server.serve --model imdb_bow_model --port 9393 > ${dir}bow_log.txt 2>&1 &
   if [ $? == 0 ]
   then
   	echo -e "${GREEN_COLOR}pipeline_imdb_model_ensemble_BOW_CPU_RPC execute normally${RES}"
-  	sleep 5
+  	sleep 10
     cat ${dir}bow_log.txt | tee -a ${log_dir}server_total.txt
   fi
   $py_version test_pipeline_server.py > ${dir}server_log.txt 2>&1 &
   if [ $? == 0 ]
   then
   	echo -e "${GREEN_COLOR}pipeline_imdb_model_ensemble_PIPELINE_SERVER execute normally${RES}"
-  	sleep 5
-    cat ${dir}bow_log.txt | tee -a ${log_dir}server_total.txt
+  	sleep 10
+    cat ${dir}server_log.txt | tee -a ${log_dir}server_total.txt
   fi
   cd $serving_dir/java/examples/target
   java -cp paddle-serving-sdk-java-examples-0.0.1-jar-with-dependencies.jar PipelineClientExample string_imdb_predict > ${dir}client_log.txt 2>&1
@@ -233,6 +233,8 @@ function pipeline_imdb_model_ensemble_cpu_pipeline () {
   java -cp paddle-serving-sdk-java-examples-0.0.1-jar-with-dependencies.jar PipelineClientExample asyn_predict > ${dir}client_log.txt 2>&1
   check_save client "pipeline_imdb_model_ensemble_asyn_java_client_CPU_PIPELINE"
   kill_process
+  # 等待server关闭
+  sleep 10
 }
 
 function pipeline_simple_web_service_cpu_pipeline () {
@@ -247,7 +249,7 @@ function pipeline_simple_web_service_cpu_pipeline () {
   echo -e "${GREEN_COLOR}pipeline_simple_web_service_CPU_PIPELINE server started${RES}" | tee -a ${log_dir}server_total.txt
   $py_version web_service_java.py > ${dir}server_log.txt 2>&1 &
   # 命令检查
-  check_save server 5
+  check_save server 10
   cd $serving_dir/java/examples/target
   java -cp paddle-serving-sdk-java-examples-0.0.1-jar-with-dependencies.jar PipelineClientExample indarray_predict > ${dir}client_log.txt 2>&1
   check_save client "pipeline_simple_web_service_indarray_sync_java_client_CPU_PIPELINE"
