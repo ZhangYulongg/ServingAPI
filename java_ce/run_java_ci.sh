@@ -15,6 +15,9 @@ YELOW_COLOR='\E[1;33m' #黄
 RES='\E[0m'
 # 异常词
 error_words="Fail|DENIED|None|empty|failed|not match"
+# add libpaddle_inference.so
+export LD_LIBRARY_PATH=${CODE_PATH}/Serving/server-build-gpu-opencv/third_party/Paddle/src/extern_paddle/paddle/lib/:$LD_LIBRARY_PATH
+ldconfig
 
 # 获取运行参数
 if [ $# == 2 ]
