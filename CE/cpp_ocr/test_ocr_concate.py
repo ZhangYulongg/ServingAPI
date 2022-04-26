@@ -228,7 +228,7 @@ class TestOCR(object):
     def test_gpu_cpp_async_concurrent(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralInferOp --thread 16 --runtime_thread_num 2 2 --batch_infer_size 16 --gpu_ids 1 --port 9293",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralInferOp --thread 8 --runtime_thread_num 2 2 --batch_infer_size 4 --gpu_ids 1 --port 9293",
             sleep=17,
         )
 
@@ -287,6 +287,8 @@ class TestOCR(object):
         print("total count: {} ".format(total_number))
         show_latency(result[1])
 
+        # 合batch检测
+        check_keywords_in_server_log("Hit auto padding", "log/serving.INFO")
         # 内存泄露检测
         out, _ = run_cmd("cat /proc/" + server_pid + "/status | grep RSS | awk '{print $2}'")
         rss_after = int(out.decode().strip().split("\n")[-1])

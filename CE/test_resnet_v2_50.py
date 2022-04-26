@@ -156,7 +156,7 @@ class TestResnetV2(object):
         """放在前面，放在test_gpu后报错，原因未知"""
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9696 --gpu_ids 1 --thread 16 --runtime_thread_num 2",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model resnet_v2_50_imagenet_model --port 9696 --gpu_ids 1 --thread 8 --runtime_thread_num 2",
             sleep=7,
         )
 
@@ -204,6 +204,8 @@ class TestResnetV2(object):
         print("total count: {} ".format(total_number))
         show_latency(result[1])
 
+        # 合batch检测
+        check_keywords_in_server_log("Hit auto padding", "log/serving.INFO")
         # check server
         assert count_process_num_on_port(9696) == 1
 

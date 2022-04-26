@@ -287,6 +287,8 @@ class TestOCR(object):
         print("total count: {} ".format(total_number))
         show_latency(result[1])
 
+        # 合batch检测
+        check_keywords_in_server_log("Hit auto padding", "log/serving.INFO")
         # 内存泄露检测
         out, _ = run_cmd("cat /proc/" + server_pid + "/status | grep RSS | awk '{print $2}'")
         rss_after = int(out.decode().strip().split("\n")[-1])
