@@ -57,19 +57,18 @@ function compile_server() {
     export TENSORRT_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu"
     mkdir server-build-gpu && cd server-build-gpu
     cmake -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR/ \
-      -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
-      -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
-      -DCMAKE_INSTALL_PREFIX=./output \
-      -DCUDA_TOOLKIT_ROOT_DIR=${CUDA_PATH} \
-      -DCUDNN_LIBRARY=${CUDNN_LIBRARY} \
-      -DCUDA_CUDART_LIBRARY=${CUDA_CUDART_LIBRARY} \
-      -DTENSORRT_ROOT=${TENSORRT_LIBRARY_PATH} \
-      -DWITH_GPU=ON \
-      -DWITH_JETSON=ON \
-      -DWITH_MKL=OFF \
-      -DWITH_MKLML=OFF \
-      -DSERVER=ON ..
-    fi
+        -DPYTHON_LIBRARIES=$PYTHON_LIBRARIES \
+        -DPYTHON_EXECUTABLE=$PYTHON_EXECUTABLE \
+        -DCMAKE_INSTALL_PREFIX=./output \
+        -DCUDA_TOOLKIT_ROOT_DIR=${CUDA_PATH} \
+        -DCUDNN_LIBRARY=${CUDNN_LIBRARY} \
+        -DCUDA_CUDART_LIBRARY=${CUDA_CUDART_LIBRARY} \
+        -DTENSORRT_ROOT=${TENSORRT_LIBRARY_PATH} \
+        -DWITH_GPU=ON \
+        -DWITH_JETSON=ON \
+        -DWITH_MKL=OFF \
+        -DWITH_MKLML=OFF \
+        -DSERVER=ON ..
     make TARGET=ARMV8 -j3
     if [ `ls -A python/dist/ | wc -w` == 0 ]; then
         echo "--------make server failed, try again"
