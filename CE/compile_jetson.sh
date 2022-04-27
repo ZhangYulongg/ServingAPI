@@ -126,7 +126,6 @@ git submodule update --init --recursive
 set_py $1 $2
 install_go
 compile_server $2
-fi
 
 #compile_client
 #compile_app
