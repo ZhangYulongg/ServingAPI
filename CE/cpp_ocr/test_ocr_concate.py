@@ -384,3 +384,46 @@ class TestOCR(object):
 
         # 5.release
         kill_process(9293, 2)
+
+    def test_gpu_cpp_async_trt_fp32(self):
+        # 1.start server
+        self.serving_util.start_server_by_shell(
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve "
+                f"--model ocr_det_model ocr_rec_model "
+                f"--op GeneralDetectionOp GeneralInferOp "
+                f"--port 9293 "
+                f"--use_trt "
+                f"--gpu_ids 0 "
+                f"--min_subgraph_size 13 3 "
+                f"--runtime_thread_num 1 1",
+            sleep=90,
+        )
+
+        # 2.resource check
+        assert count_process_num_on_port(9293) == 1  # web Server
+        assert check_gpu_memory(0) is True
+        assert check_gpu_memory(1) is False
+
+        # 3.keywords check
+        check_keywords_in_server_log("Sync params from CPU to GPU")
+        check_keywords_in_server_log("BSF thread init done", "log/serving.INFO")
+        check_keywords_in_server_log("runtime_thread_num: 1",
+                                     "workdir_9293/GeneralDetectionOp_0/model_toolkit.prototxt")
+        check_keywords_in_server_log("runtime_thread_num: 1", "workdir_9293/GeneralInferOp_0/model_toolkit.prototxt")
+        detection_op = parse_prototxt("workdir_9293/GeneralDetectionOp_0/model_toolkit.prototxt")
+        infer_op = parse_prototxt("workdir_9293/GeneralInferOp_0/model_toolkit.prototxt")
+        assert detection_op["gpu_ids"] == ["0"]
+        assert infer_op["gpu_ids"] == ["0"]
+
+        # 4.predict by http
+        # batch_size=1
+        result = self.predict_brpc(batch_size=1)
+        print(result["save_infer_model/scale_0.tmp_1"].shape)
+        # 删除lod信息
+        # assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
+        # del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
+        # self.serving_util.check_result(result_data=result, truth_data=self.truth_val_rec, batch_size=1)
+
+        # 5.release
+        kill_process(9293, 2)
+
