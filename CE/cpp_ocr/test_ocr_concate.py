@@ -419,6 +419,8 @@ class TestOCR(object):
         # batch_size=1
         result = self.predict_brpc(batch_size=1)
         print(result["save_infer_model/scale_0.tmp_1"].shape)
+        result = self.predict_brpc(batch_size=1)
+        print(result["save_infer_model/scale_0.tmp_1"].shape)
         # 删除lod信息
         # assert list(result["ctc_greedy_decoder_0.tmp_0.lod"]) == [0, 13, 22]
         # del result["ctc_greedy_decoder_0.tmp_0.lod"], result["softmax_0.tmp_0.lod"]
