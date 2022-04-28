@@ -127,18 +127,16 @@ set_py $1 $2
 install_go
 compile_server $2
 
-#compile_client
-#compile_app
+compile_client
+compile_app
 
 # check output
 cp server-build-gpu/python/dist/*.whl ./
-#cp client-build/python/dist/*.whl ./
-#cp app-build/python/dist/*.whl ./
-#cp server-build-arm-xpu/*.tar.gz ./
+cp client-build/python/dist/*.whl ./
+cp app-build/python/dist/*.whl ./
 
 n_whl=`ls -l ./*.whl | wc -l`
-n_tar=`ls -l ./*.tar.gz | wc -l`
-if [ ${n_whl} -ne 1 ] ; then
+if [ ${n_whl} -ne 3 ] ; then
     echo "!!!!!!!!!!!!!!! compile failed, please check the result!"
     exit 1
 else
