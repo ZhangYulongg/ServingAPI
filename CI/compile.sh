@@ -227,13 +227,13 @@ function py_requirements () {
   $py_version -m pip install -r python/requirements.txt -i https://mirror.baidu.com/pypi/simple
   if [ $2 == 101 ]; then
     if [ $1 == 36 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.1_cudnn7.6.5_trt6.0.1.5/paddlepaddle_gpu-2.2.2.post101-cp36-cp36m-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.1_cudnn7.6.5_trt6.0.1.5/paddlepaddle_gpu-2.3.0rc0.post101-cp36-cp36m-linux_x86_64.whl
     elif [ $1 == 37 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.1_cudnn7.6.5_trt6.0.1.5/paddlepaddle_gpu-2.2.2.post101-cp37-cp37m-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.1_cudnn7.6.5_trt6.0.1.5/paddlepaddle_gpu-2.3.0rc0.post101-cp37-cp37m-linux_x86_64.whl
     elif [ $1 == 38 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.1_cudnn7.6.5_trt6.0.1.5/paddlepaddle_gpu-2.2.2.post101-cp38-cp38-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.1_cudnn7.6.5_trt6.0.1.5/paddlepaddle_gpu-2.3.0rc0.post101-cp38-cp38-linux_x86_64.whl
     elif [ $1 == 39 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.1_cudnn7.6.5_trt6.0.1.5/paddlepaddle_gpu-2.2.2.post101-cp39-cp39-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.1_cudnn7.6.5_trt6.0.1.5/paddlepaddle_gpu-2.3.0rc0.post101-cp39-cp39-linux_x86_64.whl
     fi
   elif [ $2 == 1027 ]; then
     if [ $1 == 36 ]; then
@@ -247,33 +247,33 @@ function py_requirements () {
     fi
   elif [ $2 == 1028 ]; then
     if [ $1 == 36 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.2_cudnn8.1.1_trt7.2.3.4/paddlepaddle_gpu-2.2.2-cp36-cp36m-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.2_cudnn8.1.1_trt7.2.3.4/paddlepaddle_gpu-2.3.0rc0.post102-cp36-cp36m-linux_x86_64.whl
     elif [ $1 == 37 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.2_cudnn8.1.1_trt7.2.3.4/paddlepaddle_gpu-2.2.2-cp37-cp37m-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.2_cudnn8.1.1_trt7.2.3.4/paddlepaddle_gpu-2.3.0rc0.post102-cp37-cp37m-linux_x86_64.whl
     elif [ $1 == 38 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.2_cudnn8.1.1_trt7.2.3.4/paddlepaddle_gpu-2.2.2-cp38-cp38-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.2_cudnn8.1.1_trt7.2.3.4/paddlepaddle_gpu-2.3.0rc0.post102-cp38-cp38-linux_x86_64.whl
     elif [ $1 == 39 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.2_cudnn8.1.1_trt7.2.3.4/paddlepaddle_gpu-2.2.2-cp39-cp39-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda10.2_cudnn8.1.1_trt7.2.3.4/paddlepaddle_gpu-2.3.0rc0.post102-cp39-cp39-linux_x86_64.whl
     fi
   elif [ $2 == 112 ]; then
     if [ $1 == 36 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda11.2_cudnn8.2.1_trt8.0.3.4/paddlepaddle_gpu-2.2.2.post112-cp36-cp36m-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda11.2_cudnn8.2.1_trt8.0.3.4/paddlepaddle_gpu-2.3.0rc0.post112-cp36-cp36m-linux_x86_64.whl
     elif [ $1 == 37 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda11.2_cudnn8.2.1_trt8.0.3.4/paddlepaddle_gpu-2.2.2.post112-cp37-cp37m-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda11.2_cudnn8.2.1_trt8.0.3.4/paddlepaddle_gpu-2.3.0rc0.post112-cp37-cp37m-linux_x86_64.whl
     elif [ $1 == 38 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda11.2_cudnn8.2.1_trt8.0.3.4/paddlepaddle_gpu-2.2.2.post112-cp38-cp38-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda11.2_cudnn8.2.1_trt8.0.3.4/paddlepaddle_gpu-2.3.0rc0.post112-cp38-cp38-linux_x86_64.whl
     elif [ $1 == 39 ]; then
-        wget -q https://paddle-inference-lib.bj.bcebos.com/2.2.2/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda11.2_cudnn8.2.1_trt8.0.3.4/paddlepaddle_gpu-2.2.2.post112-cp39-cp39-linux_x86_64.whl
+        wget -q https://paddle-inference-lib.bj.bcebos.com/2.3.0-rc0/python/Linux/GPU/x86-64_gcc8.2_avx_mkl_cuda11.2_cudnn8.2.1_trt8.0.3.4/paddlepaddle_gpu-2.3.0rc0.post112-cp39-cp39-linux_x86_64.whl
     fi
   elif [ $2 == "cpu" ]; then
     if [ $1 == 36 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/2.2.2/linux/linux-cpu-mkl-avx/paddlepaddle-2.2.2-cp36-cp36m-linux_x86_64.whl
+        wget -q https://paddle-wheel.bj.bcebos.com/2.3.0-rc0/linux/linux-cpu-mkl-avx/paddlepaddle-2.3.0rc0-cp36-cp36m-linux_x86_64.whl
     elif [ $1 == 37 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/2.2.2/linux/linux-cpu-mkl-avx/paddlepaddle-2.2.2-cp37-cp37m-linux_x86_64.whl
+        wget -q https://paddle-wheel.bj.bcebos.com/2.3.0-rc0/linux/linux-cpu-mkl-avx/paddlepaddle-2.3.0rc0-cp37-cp37m-linux_x86_64.whl
     elif [ $1 == 38 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/2.2.2/linux/linux-cpu-mkl-avx/paddlepaddle-2.2.2-cp38-cp38-linux_x86_64.whl
+        wget -q https://paddle-wheel.bj.bcebos.com/2.3.0-rc0/linux/linux-cpu-mkl-avx/paddlepaddle-2.3.0rc0-cp38-cp38-linux_x86_64.whl
     elif [ $1 == 39 ]; then
-        wget -q https://paddle-wheel.bj.bcebos.com/2.2.2/linux/linux-cpu-mkl-avx/paddlepaddle-2.2.2-cp39-cp39-linux_x86_64.whl
+        wget -q https://paddle-wheel.bj.bcebos.com/2.3.0-rc0/linux/linux-cpu-mkl-avx/paddlepaddle-2.3.0rc0-cp39-cp39-linux_x86_64.whl
     fi
   else
     echo -e "${RED_COLOR}Error cuda version$1${RES}"
