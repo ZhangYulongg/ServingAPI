@@ -130,6 +130,7 @@ function compile_server() {
     # 打包bin
     mkdir ${bin_folder}
     cp core/general-server/serving ${bin_folder}/
+    cp third_party/Paddle/src/extern_paddle/paddle/lib/libpaddle_inference.so ${bin_folder}/
     cp third_party/install/Paddle/third_party/install/xpu/lib/libxpuapi.so ${bin_folder}/
     cp third_party/install/Paddle/third_party/install/xpu/lib/libxpurt.so ${bin_folder}/
     cp third_party/install/Paddle/third_party/install/lite/cxx/lib/libpaddle_full_api_shared.so ${bin_folder}/
