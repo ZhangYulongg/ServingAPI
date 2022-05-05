@@ -79,7 +79,7 @@ class TestPPTSN_K400(object):
         # self.serving_util.check_result(result_data=result, truth_data=self.truth_val, batch_size=1)
         # predict by http
         result = self.predict_pipeline_http(batch_size=1)  # batch_size=1
-        assert result["value"][0] == "class: ['archery'] score: [0.9989794]"
+        assert result["value"][0] == "class: ['archery'] score: [0.99897975]"
 
         # 5.release
         kill_process(9998, 2)
