@@ -228,7 +228,7 @@ class TestOCR(object):
     def test_gpu_cpp_async_concurrent(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralInferOp --thread 8 --runtime_thread_num 2 2 --batch_infer_size 4 --gpu_ids 1 --port 9293",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralInferOp --thread 6 --runtime_thread_num 2 2 --batch_infer_size 4 --gpu_ids 1 --port 9293",
             sleep=17,
         )
 
