@@ -6,7 +6,7 @@ shell_path=${CODE_PATH}/CE/xpu
 apt-get install -y libgeos-dev
 apt-get install -y net-tools
 
-export LD_LIBRARY_PATH=/usr/local/lib/${py_version}/site-packages/paddle/libs/:/usr/local/lib/${py_version}/site-packages/paddle_serving_server/serving-xpu-x86_64-0.0.0/:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/local/lib/${py_version}/site-packages/paddle/libs/:/usr/local/lib/${py_version}/site-packages/paddle_serving_server/serving-xpu-x86_64-${VERSION_TAG}/:$LD_LIBRARY_PATH
 
 cd ${shell_path}
 if [ $2 == "arm" ]; then
