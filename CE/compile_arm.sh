@@ -131,6 +131,7 @@ function compile_server() {
     mkdir ${bin_folder}
     wget -O ${bin_folder}/libgfortran.so.4 https://paddle-qa.bj.bcebos.com/PaddleServing/libgfortran.so.4
     wget -O ${bin_folder}/libopenblas.so.0 https://paddle-qa.bj.bcebos.com/PaddleServing/libopenblas.so.0
+    cp core/general-server/serving ${bin_folder}/
     cp third_party/Paddle/src/extern_paddle/paddle/lib/libpaddle_inference.so ${bin_folder}/
     cp third_party/install/Paddle/third_party/install/xpu/lib/libxpuapi.so ${bin_folder}/
     cp third_party/install/Paddle/third_party/install/xpu/lib/libxpurt.so ${bin_folder}/
