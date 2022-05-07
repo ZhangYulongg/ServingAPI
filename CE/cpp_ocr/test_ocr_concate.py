@@ -25,7 +25,7 @@ def single_func(idx, resource):
     latency_list = []
 
     client = Client()
-    client.load_client_config(["ocr_det_client", "ocr_rec_client"])
+    client.load_client_config(["ocr_det_concat_client", "ocr_rec_client"])
     client.connect(resource["endpoint"])
     start = time.time()
 
@@ -209,7 +209,7 @@ class TestOCR(object):
 
         # 2.init client
         client = Client()
-        client.load_client_config(["ocr_det_client", "ocr_rec_client"])
+        client.load_client_config(["ocr_det_concat_client", "ocr_rec_client"])
         client.connect(["127.0.0.1:9293"])
 
         # 3.predict for fetch_map
@@ -228,7 +228,7 @@ class TestOCR(object):
     def test_gpu_cpp_async_concurrent(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralInferOp --thread 8 --runtime_thread_num 2 2 --batch_infer_size 4 --gpu_ids 1 --port 9293",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralInferOp --thread 6 --runtime_thread_num 2 2 --batch_infer_size 4 --gpu_ids 1 --port 9293",
             sleep=17,
         )
 

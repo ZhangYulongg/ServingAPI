@@ -16,10 +16,10 @@ ldconfig
 
 # 修改det feed type
 rm -rf ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client
-cp -r ${DATA_PATH}/ocr_pipe/ocr_det_client ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/
-sed -i "s/feed_type: 1/feed_type: 20/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client/serving_client_conf.prototxt
-sed -i "s/shape: 3/shape: 1/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client/serving_client_conf.prototxt
-sed -i '7,8d' ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_client/serving_client_conf.prototxt
+cp -r ${DATA_PATH}/ocr_pipe/ocr_det_client ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client
+sed -i "s/feed_type: 1/feed_type: 20/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client/serving_client_conf.prototxt
+sed -i "s/shape: 3/shape: 1/g" ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client/serving_client_conf.prototxt
+sed -i '7,8d' ${CODE_PATH}/Serving/examples/C++/PaddleOCR/ocr/ocr_det_concat_client/serving_client_conf.prototxt
 
 rm -rf result.txt
 cases=`find ./ -name "test*.py" | sort`
