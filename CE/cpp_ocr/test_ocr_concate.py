@@ -259,8 +259,8 @@ class TestOCR(object):
         # 4.predict by brpc 多client并发
         multi_thread_runner = MultiThreadRunner()
         endpoint_list = ["127.0.0.1:9293"]
-        turns = 100
-        thread_num = 50  # client并发数
+        turns = 50
+        thread_num = 30  # client并发数
         batch_size = 1
         # prepare feed_data
         image_file = "imgs/1.jpg"
