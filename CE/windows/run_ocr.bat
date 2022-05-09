@@ -22,7 +22,14 @@ goto:eof
 ::set env
 set GNU_HOME=C:\Program Files (x86)\GnuWin32
 set Path=D:\zhangyulong04\Python38;%Path%;%GNU_HOME%\bin;
+set PATH=d:\v10.2\bin;%PATH%
+set PATH=D:\zhangyulong04\nvidia\TensorRT-7.0.0.11\lib;%PATH%
+
 d:
+cd D:\zhangyulong04\daily_output
+rmdir %date:~5,2%%date:~8,2%_%time:~0,2% /q /s
+mkdir %date:~5,2%%date:~8,2%_%time:~0,2%
+
 cd D:\zhangyulong04\6f50c83f8d3e38f4
 ::copy case file
 ::/s /e 复制子目录和空目录
@@ -34,15 +41,18 @@ cd whl_packages
 wget --no-check-certificate https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_app-0.0.0-py3-none-any.whl >nul 2>nul
 wget --no-check-certificate https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_client-0.0.0-cp38-none-any.whl >nul 2>nul
 wget --no-check-certificate https://paddle-serving.bj.bcebos.com/test-dev/whl/paddle_serving_server_gpu-0.0.0.post1028-py3-none-any.whl >nul 2>nul
+curl -O https://paddle-inference-lib.bj.bcebos.com/2.3.0/python/Windows/GPU/x86-64_vs2017_avx_mkl_cuda10.2_cudnn7.6.5_trt7.0.0.11/paddlepaddle_gpu-2.3.0-cp38-cp38-win_amd64.whl >nul 2>nul
 
 python -m pip uninstall paddle_serving_app -y
 python -m pip uninstall paddle_serving_client -y
 python -m pip uninstall paddle_serving_server_gpu -y
+python -m pip uninstall paddlepaddle-gpu -y
 ::python -m pip uninstall paddlepaddle -y
 
 python -m pip install paddle_serving_app-0.0.0-py3-none-any.whl
 python -m pip install paddle_serving_client-0.0.0-cp38-none-any.whl
 python -m pip install paddle_serving_server_gpu-0.0.0.post1028-py3-none-any.whl
+python -m pip install paddlepaddle_gpu-2.3.0-cp38-cp38-win_amd64.whl
 ::python -m pip install paddlepaddle-gpu -i https://mirror.baidu.com/pypi/simple
 
 cd D:\zhangyulong04\6f50c83f8d3e38f4\test_ocr
