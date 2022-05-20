@@ -10,7 +10,7 @@ if [ $2 == "pd_cpu" ]; then
     $py_version -m pip uninstall paddlepaddle -y
 elif [ $2 == "pd_1027" ]; then
     bash -x paddle_docker/run_paddle_1027.sh
-    cuda=1027
+    cuda=1028
     $py_version -m pip uninstall paddlepaddle-gpu -y
 elif [ $2 == "pd_112" ]; then
     bash -x paddle_docker/run_paddle_112.sh
