@@ -40,7 +40,7 @@ def single_func(idx, resource):
         latency_list.append(l_end * 1000 - l_start * 1000)
         total_number = total_number + 1
         # o_end = time.time()
-        if time.time() - start > 20:
+        if time.time() - start > 10:
             break
 
     end = time.time()
@@ -228,7 +228,7 @@ class TestOCR(object):
     def test_gpu_cpp_async_concurrent(self):
         # 1.start server
         self.serving_util.start_server_by_shell(
-            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralInferOp --thread 4 --runtime_thread_num 2 2 --batch_infer_size 2 --gpu_ids 1 --port 9293",
+            cmd=f"{self.serving_util.py_version} -m paddle_serving_server.serve --model ocr_det_model ocr_rec_model --op GeneralDetectionOp GeneralInferOp --thread 10 --runtime_thread_num 4 2 --batch_infer_size 2 --gpu_ids 1 --port 9293",
             sleep=17,
         )
 
