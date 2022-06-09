@@ -28,7 +28,7 @@ def parse_args():
 
 def check_file(file_path: str):
     failed_lines = []
-    if file_path.endswith("en.md"):
+    if file_path.endswith("en.md") or file_path.endswith("en.rst"):
         pattern_prefix = "\\b"
         pattern_suffix = "\\b"
     else:
