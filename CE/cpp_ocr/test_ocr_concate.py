@@ -240,7 +240,7 @@ class TestOCR(object):
         # 3.keywords check
         check_keywords_in_server_log("Sync params from CPU to GPU")
         check_keywords_in_server_log("BSF thread init done", "log/serving.INFO")
-        check_keywords_in_server_log("runtime_thread_num: 2",
+        check_keywords_in_server_log("runtime_thread_num: 4",
                                      "workdir_9293/GeneralDetectionOp_0/model_toolkit.prototxt")
         check_keywords_in_server_log("runtime_thread_num: 2", "workdir_9293/GeneralInferOp_0/model_toolkit.prototxt")
         detection_op = parse_prototxt("workdir_9293/GeneralDetectionOp_0/model_toolkit.prototxt")
