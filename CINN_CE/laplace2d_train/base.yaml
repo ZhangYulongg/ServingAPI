@@ -1,0 +1,26 @@
+laplace2d_10000_epoch:
+  cost_time_s:
+    kpi_base: 80.418
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.01
+  mean_square_error:
+    kpi_base: 0
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.001
+laplace2d_2000_epoch:
+  cost_time_s:
+    kpi_base: 13
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0
+  mean_square_error:
+    kpi_base: 0.0033177
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.001

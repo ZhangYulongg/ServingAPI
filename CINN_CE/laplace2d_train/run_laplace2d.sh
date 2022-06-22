@@ -7,4 +7,10 @@ export FLAGS_cinn_use_new_fusion_pass=1
 export FLAGS_enable_pe_launch_cinn=0
 export FLAGS_cinn_use_fill_constant_folding=1
 
-python3.7 examples/laplace2d/laplace2d_static_new_ad.py
+log_dir=$PWD/ce_log
+rm -rf ${log_dir}
+mkdir -p ${log_dir}
+
+python3.7 examples/laplace2d/laplace2d_static_new_ad.py | tee -a ${log_dir}/laplace2d_2000_epoch.log 2>&1
+sed -i "s/num_epoch = 2010/num_epoch = 10010/" examples/laplace2d/laplace2d_static_new_ad.py
+python3.7 examples/laplace2d/laplace2d_static_new_ad.py | tee -a ${log_dir}/laplace2d_10000_epoch.log 2>&1
