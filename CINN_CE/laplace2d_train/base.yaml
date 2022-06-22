@@ -10,7 +10,7 @@ laplace2d_10000_epoch:
     kpi_status: Passed
     kpi_value: None
     ratio: 0
-    threshold: 0.001
+    threshold: 0.0001
 laplace2d_2000_epoch:
   cost_time_s:
     kpi_base: 13
