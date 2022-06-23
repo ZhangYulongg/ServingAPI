@@ -93,7 +93,7 @@ def check_case_status(case_dict):
         if case_dict["kpi_value"] > case_dict["kpi_base"] + case_dict["threshold"]:
             status = "Failed"
     elif case_dict["model_name"] == "laplace2d_10000_epoch" and case_dict["kpi_name"] == "mean_square_error":
-        abs_diff = abs(case_dict["kpi_value"] - case_dict["kpi_base"])
+        abs_diff = case_dict["kpi_value"]
         status = "Failed" if abs_diff > case_dict["threshold"] else "Passed"
 
     return status
