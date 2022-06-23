@@ -16,6 +16,7 @@ import re
 import os
 import sys
 import json
+import numpy as np
 import time
 import argparse
 import requests
@@ -50,20 +51,21 @@ def find_all_logs(log_path):
 
 def process_log(log_file):
     result_dict = {
-        "cost_time_s": {
-            "kpi_value": None
-        },
-        "mean_square_error": {
+        "avg_ips(500~3500)": {
             "kpi_value": None
         },
     }
     with open(log_file, "r") as file:
-        lines = [line.strip() for line in file.readlines()]
+        lines = [line.strip().split(" ") for line in file.readlines() if "train step:" in line]
+
+    ips_list = []
     for line in lines:
-        if "time:" in line:
-            result_dict["cost_time_s"]["kpi_value"] = float(line.split(" ")[-2])
-        if "mean_sqeare_error:" in line:
-            result_dict["mean_square_error"]["kpi_value"] = float(line.split(" ")[-1])
+        step = int(line[8].split(":")[1])
+        if line[4] == "epoch:0" and 500 <= step <= 3500:
+            ips_list.append(float(line[-2]))
+    avg_ips = float(np.mean(np.array(ips_list)))
+
+    result_dict["avg_ips(500~3500)"]["kpi_value"] = avg_ips
 
     return result_dict
 
@@ -89,12 +91,9 @@ def read_log(log_path, yaml_file):
 
 def check_case_status(case_dict):
     status = "Passed"
-    if case_dict["model_name"] == "laplace2d_2000_epoch" and case_dict["kpi_name"] == "cost_time_s":
-        if case_dict["kpi_value"] > case_dict["kpi_base"] + case_dict["threshold"]:
+    if case_dict["model_name"] == "ResNet50_bs64" and case_dict["kpi_name"] == "avg_ips(500~3500)":
+        if case_dict["ratio"] <= -case_dict["threshold"]:
             status = "Failed"
-    elif case_dict["model_name"] == "laplace2d_10000_epoch" and case_dict["kpi_name"] == "mean_square_error":
-        abs_diff = abs(case_dict["kpi_value"] - case_dict["kpi_base"])
-        status = "Failed" if abs_diff > case_dict["threshold"] else "Passed"
 
     return status
 

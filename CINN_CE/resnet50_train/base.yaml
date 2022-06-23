@@ -1,0 +1,7 @@
+ResNet50_bs64:
+  avg_ips(500~3500):
+    kpi_base: 329.631977641196
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
