@@ -3,7 +3,7 @@
 function download_model {
     local tar_file=$1
     if [[ ! -f $tar_file ]]; then
-        wget https://paddle-inference-dist.bj.bcebos.com/CINN/$tar_file
+        wget -q https://paddle-inference-dist.bj.bcebos.com/CINN/$tar_file
         tar -zxvf $tar_file
     fi
 }
