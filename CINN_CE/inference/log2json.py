@@ -83,9 +83,13 @@ def read_log(log_path, yaml_file):
         result_dict = process_log(full_path)
         for kpi_name, value in result_dict.items():
             yaml_dict[case_name][kpi_name]["kpi_value"] = value["kpi_value"]
-            yaml_dict[case_name][kpi_name]["ratio"] = (value["kpi_value"] -
-                                                       yaml_dict[case_name][kpi_name]["kpi_base"]) / \
-                                                       yaml_dict[case_name][kpi_name]["kpi_base"]
+            try:
+                yaml_dict[case_name][kpi_name]["ratio"] = (value["kpi_value"] -
+                                                           yaml_dict[case_name][kpi_name]["kpi_base"]) / \
+                                                           yaml_dict[case_name][kpi_name]["kpi_base"]
+            except Exception as e:
+                yaml_dict[case_name][kpi_name]["ratio"] = 0
+                print(e)
 
     with open("result.yaml", "w") as f:
         yaml.dump(yaml_dict, f)
