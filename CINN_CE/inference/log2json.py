@@ -99,6 +99,8 @@ def read_log(log_path, yaml_file):
 
 def check_case_status(case_dict):
     status = "Passed"
+    if case_dict["kpi_value"] is None:
+        status = "Failed"
     # if case_dict["model_name"] == "ResNet50_bs64" and case_dict["kpi_name"] == "avg_ips(500~3500)":
     #     if case_dict["ratio"] <= -case_dict["threshold"]:
     #         status = "Failed"
