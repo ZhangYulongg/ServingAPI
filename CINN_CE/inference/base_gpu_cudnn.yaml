@@ -1,0 +1,91 @@
+EfficientNet:
+  load_model_time(s):
+    kpi_base: 568.383
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 5
+  avg_cost_1000_repeat(ms):
+    kpi_base: 13.525
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 3
+ResNet18:
+  load_model_time(s):
+    kpi_base: 484.327
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 5
+  avg_cost_1000_repeat(ms):
+    kpi_base: 4.227
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 3
+FaceDet:
+  load_model_time(s):
+    kpi_base: 252.381
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 5
+  avg_cost_1000_repeat(ms):
+    kpi_base: 8.546
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 3
+SqueezeNet:
+  load_model_time(s):
+    kpi_base: 37.403
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 5
+  avg_cost_1000_repeat(ms):
+    kpi_base: 4.410
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 3
+ResNet50:
+  load_model_time(s):
+    kpi_base: 412.822
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 5
+  avg_cost_1000_repeat(ms):
+    kpi_base: 10.451
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 3
+MobilenetV1:
+  load_model_time(s):
+    kpi_base: 18.332
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 5
+  avg_cost_1000_repeat(ms):
+    kpi_base: 4.464
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 3
+MobileNetV2:
+  load_model_time(s):
+    kpi_base: 378.488
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 5
+  avg_cost_1000_repeat(ms):
+    kpi_base: 8.557
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 3
