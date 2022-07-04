@@ -18,16 +18,16 @@ function get_tar() {
 }
 
 function run() {
-    cd ${code_path}/Paddle-Inference-Demo/c++/paddle-trt
+    cd ${code_path}/Paddle-Inference-Demo/c++/gpu/resnet50
     mv /usr/bin/c++ /usr/bin/c++.bak
     mv /usr/bin/gcc /usr/bin/gcc.bak
     ln -s /usr/local/gcc-${gcc}/bin/c++ /usr/bin/
     ln -s /usr/local/gcc-${gcc}/bin/gcc /usr/bin/
     wget -q https://paddle-inference-dist.bj.bcebos.com/Paddle-Inference-Demo/resnet50.tgz
     tar -xf resnet50.tgz
-    sed -i "33 i TENSORRT_ROOT=${trt_path}" compile.sh
+    sed -i "34 i TENSORRT_ROOT=${trt_path}" compile.sh
     bash -x compile.sh
-    ./build/trt_fp32_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams --repeats 1
+    ./build/resnet50_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams --run_mode=trt_fp32
     exit_code=$?
 }
 
