@@ -31,6 +31,6 @@ echo ">>> Run inference_benchmark ..."
 bash inference_benchmark_daily.sh
 
 echo ">>> generate tipc_benchmark_excel.xlsx..."
-python result2xlsx.py --without_onnx --docker_name $1
+python result2xlsx.py --docker_name $1
 
 echo ">>> Tipc benchmark done"
