@@ -90,11 +90,11 @@ def read_log(log_path, yaml_file):
 def check_case_status(case_dict):
     status = "Passed"
     if case_dict["model_name"] == "laplace2d_2000_epoch" and case_dict["kpi_name"] == "cost_time_s":
-        if case_dict["kpi_value"] > case_dict["kpi_base"] + case_dict["threshold"]:
+        if case_dict["ratio"] > case_dict["threshold"]:
             status = "Failed"
     elif case_dict["model_name"] == "laplace2d_10000_epoch" and case_dict["kpi_name"] == "mean_square_error":
-        abs_diff = case_dict["kpi_value"]
-        status = "Failed" if abs_diff > case_dict["threshold"] else "Passed"
+        mse = case_dict["kpi_value"]
+        status = "Failed" if mse > case_dict["threshold"] else "Passed"
 
     return status
 
