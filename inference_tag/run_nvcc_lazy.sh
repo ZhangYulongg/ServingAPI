@@ -28,7 +28,7 @@ echo ">>> Run onnx_convert and converted model diff checker ..."
 bash onnx_convert.sh
 
 echo ">>> Run inference_benchmark ..."
-bash inference_benchmark_daily.sh
+bash inference_benchmark_daily_nvcc.sh
 
 echo ">>> generate tipc_benchmark_excel.xlsx..."
 python result2xlsx.py --docker_name $1
