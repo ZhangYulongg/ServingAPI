@@ -8,6 +8,8 @@ export CUDA_VISIBLE_DEVICES=${device_id}
 ### cinn 相关参数
 if [[ ${use_cinn} == "True" ]]; then
   export FLAGS_use_cinn="True"
+  export FLAGS_cinn_use_cuda_vectorize="True"
+  export FLAGS_cinn_use_new_fusion_pass="True"
   export FLAGS_allow_cinn_ops="batch_norm;batch_norm_grad;conv2d;conv2d_grad;elementwise_add;elementwise_add_grad;relu;relu_grad;sum"
 fi
 ### 启动训练
