@@ -1,6 +1,7 @@
 #!/bin/bash
 set -xe
 
+nvidia-smi
 dir=$PWD
 python3.7 -m pip install -r requirements.txt -i https://mirror.baidu.com/pypi/simple
 
