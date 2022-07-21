@@ -115,6 +115,7 @@ def result_to_json(yaml_dict):
         for kpi_name in yaml_dict[model_name]:
             case_dict = yaml_dict[model_name][kpi_name]
             case_dict["model_name"] = model_name
+            case_dict["step_name"] = "INFER"
             case_dict["kpi_name"] = kpi_name
             case_dict["kpi_status"] = check_case_status(case_dict)
             if case_dict["kpi_status"] == "Failed":
