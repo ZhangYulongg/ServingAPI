@@ -19,7 +19,7 @@ if [[ ${use_cinn} == "True" ]]; then
 fi
 ### 启动训练
 
-hadoop fs -D fs.default.name=afs://<<fs_dafault_name>> -D hadoop.job.ugi=<<hadoop_job_ugi>> -get <<dataset_path>> .
+hadoop fs -D fs.default.name=<<fs_dafault_name>> -D hadoop.job.ugi=<<hadoop_job_ugi>> -get <<dataset_path>> .
 tar -xf ILSVRC2012_20_percent.tgz
 
 python3.7 -u ppcls/static/train.py \
