@@ -7,7 +7,7 @@ python3.7 -m pip install -r requirements.txt -i https://mirror.baidu.com/pypi/si
 
 ### 传入参数
 #device_id=${1:-"0"}
-use_cinn=${1:-"False"}
+use_cinn=True
 ### 指定单卡(提交PDC任务默认单卡)
 #export CUDA_VISIBLE_DEVICES=${device_id}
 ### cinn 相关参数
