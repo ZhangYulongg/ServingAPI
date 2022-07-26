@@ -28,9 +28,9 @@ python3.7 -u ppcls/static/train.py \
             -o print_interval=10 \
             -o is_distributed=False \
             -o Global.epochs=1 \
-            -o DataLoader.Train.sampler.batch_size=64 \
+            -o DataLoader.Train.sampler.batch_size=256 \
             -o DataLoader.Train.dataset.image_root=${dir}/ILSVRC2012 \
-            -o DataLoader.Train.dataset.cls_label_path=${dir}/ILSVRC2012/train_list_cinn.txt \
+            -o DataLoader.Train.dataset.cls_label_path=${dir}/ILSVRC2012/train_list_bs256.txt \
             -o DataLoader.Train.loader.num_workers=8 \
             -o Global.save_interval=10000 \
             -o Global.eval_interval=10000 \
