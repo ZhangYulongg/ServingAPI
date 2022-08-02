@@ -19,8 +19,8 @@ if [[ ${use_cinn} == "True" ]]; then
 fi
 ### 启动训练
 
-hadoop fs -D fs.default.name=<<fs_dafault_name>> -D hadoop.job.ugi=<<hadoop_job_ugi>> -get <<dataset_path>> .
-tar -xf ILSVRC2012_20_percent.tgz
+#hadoop fs -D fs.default.name=<<fs_dafault_name>> -D hadoop.job.ugi=<<hadoop_job_ugi>> -get <<dataset_path>> .
+#tar -xf ILSVRC2012_20_percent.tgz
 
 python3.7 -u ppcls/static/train.py \
             -c ppcls/configs/ImageNet/ResNet/ResNet50.yaml \
@@ -28,7 +28,7 @@ python3.7 -u ppcls/static/train.py \
             -o print_interval=10 \
             -o is_distributed=False \
             -o Global.epochs=120 \
-            -o DataLoader.Train.sampler.batch_size=128 \
+            -o DataLoader.Train.sampler.batch_size=64 \
             -o DataLoader.Train.dataset.image_root=${dir}/ILSVRC2012_20_percent \
             -o DataLoader.Train.dataset.cls_label_path=${dir}/ILSVRC2012_20_percent/train_list_20_percent.txt \
             -o DataLoader.Train.loader.num_workers=8 \
