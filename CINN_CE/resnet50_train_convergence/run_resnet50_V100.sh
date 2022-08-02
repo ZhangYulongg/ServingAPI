@@ -23,7 +23,7 @@ python3.7 -u ppcls/static/train.py \
             -o use_gpu=True \
             -o print_interval=10 \
             -o is_distributed=False \
-            -o Global.epochs=1 \
+            -o Global.epochs=120 \
             -o DataLoader.Train.sampler.batch_size=64 \
             -o DataLoader.Train.dataset.image_root=${Data_path}/ILSVRC2012_w \
             -o DataLoader.Train.dataset.cls_label_path=${Data_path}/ILSVRC2012_w/train_list_20_percent.txt \
