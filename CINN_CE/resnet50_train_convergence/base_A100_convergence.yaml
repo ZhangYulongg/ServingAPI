@@ -1,0 +1,2163 @@
+ResNet50_bs256_top1:
+  epoch_000:
+    kpi_base: 0.0035
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_001:
+    kpi_base: 0.0242
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_002:
+    kpi_base: 0.0647
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_003:
+    kpi_base: 0.1095
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_004:
+    kpi_base: 0.1541
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_005:
+    kpi_base: 0.1954
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_006:
+    kpi_base: 0.2315
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_007:
+    kpi_base: 0.263
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_008:
+    kpi_base: 0.2894
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_009:
+    kpi_base: 0.3143
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_010:
+    kpi_base: 0.3358
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_011:
+    kpi_base: 0.3531
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_012:
+    kpi_base: 0.3703
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_013:
+    kpi_base: 0.3853
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_014:
+    kpi_base: 0.398
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_015:
+    kpi_base: 0.4077
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_016:
+    kpi_base: 0.4187
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_017:
+    kpi_base: 0.4271
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_018:
+    kpi_base: 0.4382
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_019:
+    kpi_base: 0.4446
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_020:
+    kpi_base: 0.4503
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_021:
+    kpi_base: 0.4573
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_022:
+    kpi_base: 0.464
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_023:
+    kpi_base: 0.4694
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_024:
+    kpi_base: 0.4739
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_025:
+    kpi_base: 0.4781
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_026:
+    kpi_base: 0.4833
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_027:
+    kpi_base: 0.4888
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_028:
+    kpi_base: 0.4939
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_029:
+    kpi_base: 0.4951
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_030:
+    kpi_base: 0.6072
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_031:
+    kpi_base: 0.6361
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_032:
+    kpi_base: 0.6469
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_033:
+    kpi_base: 0.6547
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_034:
+    kpi_base: 0.6625
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_035:
+    kpi_base: 0.6685
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_036:
+    kpi_base: 0.673
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_037:
+    kpi_base: 0.6787
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_038:
+    kpi_base: 0.6844
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_039:
+    kpi_base: 0.6878
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_040:
+    kpi_base: 0.6922
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_041:
+    kpi_base: 0.6948
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_042:
+    kpi_base: 0.6981
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_043:
+    kpi_base: 0.7015
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_044:
+    kpi_base: 0.7048
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_045:
+    kpi_base: 0.7101
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_046:
+    kpi_base: 0.7118
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_047:
+    kpi_base: 0.7152
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_048:
+    kpi_base: 0.7169
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_049:
+    kpi_base: 0.7195
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_050:
+    kpi_base: 0.7236
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_051:
+    kpi_base: 0.7257
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_052:
+    kpi_base: 0.7289
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_053:
+    kpi_base: 0.7306
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_054:
+    kpi_base: 0.7329
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_055:
+    kpi_base: 0.7334
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_056:
+    kpi_base: 0.7371
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_057:
+    kpi_base: 0.7397
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_058:
+    kpi_base: 0.7398
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_059:
+    kpi_base: 0.7417
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_060:
+    kpi_base: 0.7796
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_061:
+    kpi_base: 0.7904
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_062:
+    kpi_base: 0.7947
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_063:
+    kpi_base: 0.7971
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_064:
+    kpi_base: 0.7991
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_065:
+    kpi_base: 0.8006
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_066:
+    kpi_base: 0.8028
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_067:
+    kpi_base: 0.8027
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_068:
+    kpi_base: 0.8061
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_069:
+    kpi_base: 0.8057
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_070:
+    kpi_base: 0.8067
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_071:
+    kpi_base: 0.8082
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_072:
+    kpi_base: 0.81
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_073:
+    kpi_base: 0.8103
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_074:
+    kpi_base: 0.8107
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_075:
+    kpi_base: 0.8124
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_076:
+    kpi_base: 0.8128
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_077:
+    kpi_base: 0.8127
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_078:
+    kpi_base: 0.8145
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_079:
+    kpi_base: 0.8151
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_080:
+    kpi_base: 0.8169
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_081:
+    kpi_base: 0.8162
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_082:
+    kpi_base: 0.8177
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_083:
+    kpi_base: 0.819
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_084:
+    kpi_base: 0.8188
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_085:
+    kpi_base: 0.8208
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_086:
+    kpi_base: 0.8197
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_087:
+    kpi_base: 0.8214
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_088:
+    kpi_base: 0.8216
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_089:
+    kpi_base: 0.8237
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_090:
+    kpi_base: 0.826
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_091:
+    kpi_base: 0.8273
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_092:
+    kpi_base: 0.8266
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_093:
+    kpi_base: 0.8268
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_094:
+    kpi_base: 0.8287
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_095:
+    kpi_base: 0.828
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_096:
+    kpi_base: 0.8286
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_097:
+    kpi_base: 0.8285
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_098:
+    kpi_base: 0.8286
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_099:
+    kpi_base: 0.8298
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_100:
+    kpi_base: 0.828
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_101:
+    kpi_base: 0.8293
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_102:
+    kpi_base: 0.8292
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_103:
+    kpi_base: 0.829
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_104:
+    kpi_base: 0.8298
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_105:
+    kpi_base: 0.8292
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_106:
+    kpi_base: 0.8297
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_107:
+    kpi_base: 0.83
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_108:
+    kpi_base: 0.83
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_109:
+    kpi_base: 0.8299
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_110:
+    kpi_base: 0.8302
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_111:
+    kpi_base: 0.8308
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_112:
+    kpi_base: 0.8308
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_113:
+    kpi_base: 0.8308
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_114:
+    kpi_base: 0.831
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_115:
+    kpi_base: 0.8308
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_116:
+    kpi_base: 0.8311
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_117:
+    kpi_base: 0.8294
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_118:
+    kpi_base: 0.8321
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_119:
+    kpi_base: 0.8313
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+ResNet50_bs256_top5:
+  epoch_000:
+    kpi_base: 0.0151
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_001:
+    kpi_base: 0.0842
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_002:
+    kpi_base: 0.1829
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_003:
+    kpi_base: 0.2721
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_004:
+    kpi_base: 0.3491
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_005:
+    kpi_base: 0.4111
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_006:
+    kpi_base: 0.4614
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_007:
+    kpi_base: 0.503
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_008:
+    kpi_base: 0.5348
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_009:
+    kpi_base: 0.5648
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_010:
+    kpi_base: 0.5874
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_011:
+    kpi_base: 0.608
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_012:
+    kpi_base: 0.6249
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_013:
+    kpi_base: 0.6409
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_014:
+    kpi_base: 0.6544
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_015:
+    kpi_base: 0.6648
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_016:
+    kpi_base: 0.6741
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_017:
+    kpi_base: 0.683
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_018:
+    kpi_base: 0.6927
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_019:
+    kpi_base: 0.6985
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_020:
+    kpi_base: 0.7051
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_021:
+    kpi_base: 0.7111
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_022:
+    kpi_base: 0.7174
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_023:
+    kpi_base: 0.7213
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_024:
+    kpi_base: 0.7269
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_025:
+    kpi_base: 0.7314
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_026:
+    kpi_base: 0.7342
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_027:
+    kpi_base: 0.7392
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_028:
+    kpi_base: 0.7425
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_029:
+    kpi_base: 0.745
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_030:
+    kpi_base: 0.8215
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_031:
+    kpi_base: 0.8399
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_032:
+    kpi_base: 0.8477
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_033:
+    kpi_base: 0.8523
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_034:
+    kpi_base: 0.8569
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_035:
+    kpi_base: 0.8618
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_036:
+    kpi_base: 0.8649
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_037:
+    kpi_base: 0.868
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_038:
+    kpi_base: 0.871
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_039:
+    kpi_base: 0.8727
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_040:
+    kpi_base: 0.8763
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_041:
+    kpi_base: 0.8775
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_042:
+    kpi_base: 0.8793
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_043:
+    kpi_base: 0.8824
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_044:
+    kpi_base: 0.8835
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_045:
+    kpi_base: 0.8856
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_046:
+    kpi_base: 0.8869
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_047:
+    kpi_base: 0.8892
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_048:
+    kpi_base: 0.8898
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_049:
+    kpi_base: 0.8918
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_050:
+    kpi_base: 0.8935
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_051:
+    kpi_base: 0.895
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_052:
+    kpi_base: 0.8963
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_053:
+    kpi_base: 0.8978
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_054:
+    kpi_base: 0.8986
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_055:
+    kpi_base: 0.8982
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_056:
+    kpi_base: 0.9016
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_057:
+    kpi_base: 0.902
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_058:
+    kpi_base: 0.903
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_059:
+    kpi_base: 0.9037
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_060:
+    kpi_base: 0.9187
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_061:
+    kpi_base: 0.9217
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_062:
+    kpi_base: 0.9233
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_063:
+    kpi_base: 0.9246
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_064:
+    kpi_base: 0.9257
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_065:
+    kpi_base: 0.9256
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_066:
+    kpi_base: 0.9271
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_067:
+    kpi_base: 0.9271
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_068:
+    kpi_base: 0.9283
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_069:
+    kpi_base: 0.928
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_070:
+    kpi_base: 0.9286
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_071:
+    kpi_base: 0.9294
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_072:
+    kpi_base: 0.9296
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_073:
+    kpi_base: 0.9295
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_074:
+    kpi_base: 0.9308
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_075:
+    kpi_base: 0.9313
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_076:
+    kpi_base: 0.9309
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_077:
+    kpi_base: 0.9312
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_078:
+    kpi_base: 0.9319
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_079:
+    kpi_base: 0.9313
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_080:
+    kpi_base: 0.9324
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_081:
+    kpi_base: 0.9323
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_082:
+    kpi_base: 0.9324
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_083:
+    kpi_base: 0.9335
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_084:
+    kpi_base: 0.934
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_085:
+    kpi_base: 0.9338
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_086:
+    kpi_base: 0.9331
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_087:
+    kpi_base: 0.9343
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_088:
+    kpi_base: 0.9344
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_089:
+    kpi_base: 0.9351
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_090:
+    kpi_base: 0.9356
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_091:
+    kpi_base: 0.9365
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_092:
+    kpi_base: 0.9357
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_093:
+    kpi_base: 0.9368
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_094:
+    kpi_base: 0.9365
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_095:
+    kpi_base: 0.9369
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_096:
+    kpi_base: 0.9362
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_097:
+    kpi_base: 0.9368
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_098:
+    kpi_base: 0.9368
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_099:
+    kpi_base: 0.9371
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_100:
+    kpi_base: 0.9365
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_101:
+    kpi_base: 0.9366
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_102:
+    kpi_base: 0.9367
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_103:
+    kpi_base: 0.937
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_104:
+    kpi_base: 0.937
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_105:
+    kpi_base: 0.9371
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_106:
+    kpi_base: 0.9366
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_107:
+    kpi_base: 0.9376
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_108:
+    kpi_base: 0.9373
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_109:
+    kpi_base: 0.9374
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_110:
+    kpi_base: 0.9369
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_111:
+    kpi_base: 0.9376
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_112:
+    kpi_base: 0.9375
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_113:
+    kpi_base: 0.9374
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_114:
+    kpi_base: 0.938
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_115:
+    kpi_base: 0.9375
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_116:
+    kpi_base: 0.9373
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_117:
+    kpi_base: 0.9372
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_118:
+    kpi_base: 0.9377
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_119:
+    kpi_base: 0.9378
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+ResNet50_bs256_train_loss:
+  epoch_000:
+    kpi_base: 6.8181
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_001:
+    kpi_base: 5.9788
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_002:
+    kpi_base: 5.3156
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_003:
+    kpi_base: 4.8165
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_004:
+    kpi_base: 4.4138
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_005:
+    kpi_base: 4.0848
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_006:
+    kpi_base: 3.821
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_007:
+    kpi_base: 3.6016
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_008:
+    kpi_base: 3.4251
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_009:
+    kpi_base: 3.2656
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_010:
+    kpi_base: 3.1374
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_011:
+    kpi_base: 3.0246
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_012:
+    kpi_base: 2.927
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_013:
+    kpi_base: 2.8379
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_014:
+    kpi_base: 2.7648
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_015:
+    kpi_base: 2.7001
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_016:
+    kpi_base: 2.6437
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_017:
+    kpi_base: 2.5933
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_018:
+    kpi_base: 2.5364
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_019:
+    kpi_base: 2.4946
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_020:
+    kpi_base: 2.4572
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_021:
+    kpi_base: 2.423
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_022:
+    kpi_base: 2.3881
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_023:
+    kpi_base: 2.3618
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_024:
+    kpi_base: 2.3307
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_025:
+    kpi_base: 2.3082
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_026:
+    kpi_base: 2.2815
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_027:
+    kpi_base: 2.2535
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_028:
+    kpi_base: 2.2328
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_029:
+    kpi_base: 2.2182
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_030:
+    kpi_base: 1.6934
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_031:
+    kpi_base: 1.5561
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_032:
+    kpi_base: 1.503
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_033:
+    kpi_base: 1.4668
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_034:
+    kpi_base: 1.4272
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_035:
+    kpi_base: 1.3963
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_036:
+    kpi_base: 1.3736
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_037:
+    kpi_base: 1.3523
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_038:
+    kpi_base: 1.3292
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_039:
+    kpi_base: 1.3114
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_040:
+    kpi_base: 1.2877
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_041:
+    kpi_base: 1.2778
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_042:
+    kpi_base: 1.262
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_043:
+    kpi_base: 1.2438
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_044:
+    kpi_base: 1.2295
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_045:
+    kpi_base: 1.2126
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_046:
+    kpi_base: 1.2048
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_047:
+    kpi_base: 1.1851
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_048:
+    kpi_base: 1.1783
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_049:
+    kpi_base: 1.1644
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_050:
+    kpi_base: 1.1525
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_051:
+    kpi_base: 1.1381
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_052:
+    kpi_base: 1.1275
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_053:
+    kpi_base: 1.1188
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_054:
+    kpi_base: 1.1089
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_055:
+    kpi_base: 1.1079
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_056:
+    kpi_base: 1.0886
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_057:
+    kpi_base: 1.0836
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_058:
+    kpi_base: 1.0767
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_059:
+    kpi_base: 1.0686
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_060:
+    kpi_base: 0.933
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_061:
+    kpi_base: 0.8939
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_062:
+    kpi_base: 0.882
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_063:
+    kpi_base: 0.8684
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_064:
+    kpi_base: 0.8589
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_065:
+    kpi_base: 0.856
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_066:
+    kpi_base: 0.8466
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_067:
+    kpi_base: 0.8472
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_068:
+    kpi_base: 0.8334
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_069:
+    kpi_base: 0.8361
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_070:
+    kpi_base: 0.8278
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_071:
+    kpi_base: 0.8248
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_072:
+    kpi_base: 0.8207
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_073:
+    kpi_base: 0.8171
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_074:
+    kpi_base: 0.8144
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_075:
+    kpi_base: 0.8086
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_076:
+    kpi_base: 0.8082
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_077:
+    kpi_base: 0.8065
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_078:
+    kpi_base: 0.8007
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_079:
+    kpi_base: 0.7999
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_080:
+    kpi_base: 0.7918
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_081:
+    kpi_base: 0.7922
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_082:
+    kpi_base: 0.7903
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_083:
+    kpi_base: 0.7817
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_084:
+    kpi_base: 0.7821
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_085:
+    kpi_base: 0.7782
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_086:
+    kpi_base: 0.7817
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_087:
+    kpi_base: 0.7733
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_088:
+    kpi_base: 0.771
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_089:
+    kpi_base: 0.7656
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_090:
+    kpi_base: 0.7582
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_091:
+    kpi_base: 0.7493
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_092:
+    kpi_base: 0.7548
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_093:
+    kpi_base: 0.7518
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_094:
+    kpi_base: 0.7473
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_095:
+    kpi_base: 0.7498
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_096:
+    kpi_base: 0.7499
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_097:
+    kpi_base: 0.7483
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_098:
+    kpi_base: 0.7466
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_099:
+    kpi_base: 0.7451
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_100:
+    kpi_base: 0.7482
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_101:
+    kpi_base: 0.7442
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_102:
+    kpi_base: 0.7461
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_103:
+    kpi_base: 0.7453
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_104:
+    kpi_base: 0.7453
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_105:
+    kpi_base: 0.7431
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_106:
+    kpi_base: 0.7439
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_107:
+    kpi_base: 0.7393
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_108:
+    kpi_base: 0.7406
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_109:
+    kpi_base: 0.7416
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_110:
+    kpi_base: 0.7432
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_111:
+    kpi_base: 0.7404
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_112:
+    kpi_base: 0.741
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_113:
+    kpi_base: 0.7391
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_114:
+    kpi_base: 0.7364
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_115:
+    kpi_base: 0.7398
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_116:
+    kpi_base: 0.7387
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_117:
+    kpi_base: 0.7431
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_118:
+    kpi_base: 0.7341
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05
+  epoch_119:
+    kpi_base: 0.7375
+    kpi_status: Passed
+    kpi_value: None
+    ratio: 0
+    threshold: 0.05

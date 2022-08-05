@@ -49,12 +49,12 @@ def find_all_logs(log_path):
                 yield file_name, full_path
 
 
-def process_log(log_file, yaml_file):
+def process_log(log_file, yaml_file, case_name):
     with open(yaml_file, "r") as f:
         yaml_dict = yaml.safe_load(f.read())
 
     result_dict = {
-        "ResNet50_bs64_train_loss": {
+        f"{case_name}_train_loss": {
             f"epoch_{i:03}": {
                 "kpi_base": 0,
                 "kpi_status": "Passed",
@@ -63,7 +63,7 @@ def process_log(log_file, yaml_file):
                 "threshold": 0.05,
             } for i in range(120)
         },
-        "ResNet50_bs64_top1": {
+        f"{case_name}_top1": {
             f"epoch_{i:03}": {
                 "kpi_base": 0,
                 "kpi_status": "Passed",
@@ -72,7 +72,7 @@ def process_log(log_file, yaml_file):
                 "threshold": 0.05,
             } for i in range(120)
         },
-        "ResNet50_bs64_top5": {
+        f"{case_name}_top5": {
             f"epoch_{i:03}": {
                 "kpi_base": 0,
                 "kpi_status": "Passed",
@@ -91,18 +91,18 @@ def process_log(log_file, yaml_file):
         train_loss = float(line[8])
         top1 = float(line[10])
         top5 = float(line[12])
-        train_loss_base = yaml_dict["ResNet50_bs64_train_loss"][f"epoch_{epoch:03}"]["kpi_base"]
-        top1_base = yaml_dict["ResNet50_bs64_top1"][f"epoch_{epoch:03}"]["kpi_base"]
-        top5_base = yaml_dict["ResNet50_bs64_top5"][f"epoch_{epoch:03}"]["kpi_base"]
-        result_dict["ResNet50_bs64_train_loss"][f"epoch_{epoch:03}"]["kpi_value"] = train_loss
-        result_dict["ResNet50_bs64_top1"][f"epoch_{epoch:03}"]["kpi_value"] = top1
-        result_dict["ResNet50_bs64_top5"][f"epoch_{epoch:03}"]["kpi_value"] = top5
-        result_dict["ResNet50_bs64_train_loss"][f"epoch_{epoch:03}"]["kpi_base"] = train_loss_base
-        result_dict["ResNet50_bs64_top1"][f"epoch_{epoch:03}"]["kpi_base"] = top1_base
-        result_dict["ResNet50_bs64_top5"][f"epoch_{epoch:03}"]["kpi_base"] = top5_base
-        result_dict["ResNet50_bs64_train_loss"][f"epoch_{epoch:03}"]["ratio"] = (train_loss - train_loss_base) / train_loss_base
-        result_dict["ResNet50_bs64_top1"][f"epoch_{epoch:03}"]["ratio"] = (top1 - top1_base) / top1_base
-        result_dict["ResNet50_bs64_top5"][f"epoch_{epoch:03}"]["ratio"] = (top5 - top5_base) / top5_base
+        train_loss_base = yaml_dict[f"{case_name}_train_loss"][f"epoch_{epoch:03}"]["kpi_base"]
+        top1_base = yaml_dict[f"{case_name}_top1"][f"epoch_{epoch:03}"]["kpi_base"]
+        top5_base = yaml_dict[f"{case_name}_top5"][f"epoch_{epoch:03}"]["kpi_base"]
+        result_dict[f"{case_name}_train_loss"][f"epoch_{epoch:03}"]["kpi_value"] = train_loss
+        result_dict[f"{case_name}_top1"][f"epoch_{epoch:03}"]["kpi_value"] = top1
+        result_dict[f"{case_name}_top5"][f"epoch_{epoch:03}"]["kpi_value"] = top5
+        result_dict[f"{case_name}_train_loss"][f"epoch_{epoch:03}"]["kpi_base"] = train_loss_base
+        result_dict[f"{case_name}_top1"][f"epoch_{epoch:03}"]["kpi_base"] = top1_base
+        result_dict[f"{case_name}_top5"][f"epoch_{epoch:03}"]["kpi_base"] = top5_base
+        result_dict[f"{case_name}_train_loss"][f"epoch_{epoch:03}"]["ratio"] = (train_loss - train_loss_base) / train_loss_base
+        result_dict[f"{case_name}_top1"][f"epoch_{epoch:03}"]["ratio"] = (top1 - top1_base) / top1_base
+        result_dict[f"{case_name}_top5"][f"epoch_{epoch:03}"]["ratio"] = (top5 - top5_base) / top5_base
 
     # with open("result.yaml", "w") as f:
     #     yaml.dump(result_dict, f)
@@ -112,7 +112,8 @@ def process_log(log_file, yaml_file):
 
 def read_log(log_path, yaml_file):
     for file_name, full_path in find_all_logs(log_path):
-        result_dict = process_log(full_path, yaml_file)
+        case_name = file_name.split(".")[0]
+        result_dict = process_log(full_path, yaml_file, case_name)
 
     with open("result.yaml", "w") as f:
         yaml.dump(result_dict, f)
