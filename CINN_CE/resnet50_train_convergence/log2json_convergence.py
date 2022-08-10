@@ -69,7 +69,7 @@ def process_log(log_file, yaml_file, case_name):
                 "kpi_status": "Passed",
                 "kpi_value": "None",
                 "ratio": 0,
-                "threshold": 0.05,
+                "threshold": 0.02,
             } for i in range(120)
         },
         f"{case_name}_top5": {
@@ -78,7 +78,7 @@ def process_log(log_file, yaml_file, case_name):
                 "kpi_status": "Passed",
                 "kpi_value": "None",
                 "ratio": 0,
-                "threshold": 0.05,
+                "threshold": 0.01,
             } for i in range(120)
         },
     }
@@ -123,8 +123,10 @@ def read_log(log_path, yaml_file):
 
 def check_case_status(case_dict):
     status = "Passed"
-    if abs(case_dict["ratio"]) > case_dict["threshold"]:
-        status = "Failed"
+    epoch = int(case_dict["kpi_name"].split("_")[1])
+    if epoch >= 9:
+        if abs(case_dict["kpi_value"] - case_dict["kpi_base"]) >= case_dict["threshold"]:
+            status = "Failed"
 
     return status
 
