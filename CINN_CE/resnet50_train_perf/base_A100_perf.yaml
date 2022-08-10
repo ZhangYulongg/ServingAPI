@@ -1,6 +1,6 @@
 ResNet50_bs256:
   avg_ips(500~3500):
-    kpi_base: 782.1389084385381
+    kpi_base: 909.9885485049834
     kpi_status: Passed
     kpi_value: None
     ratio: 0
