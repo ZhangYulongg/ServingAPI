@@ -84,8 +84,8 @@ def read_log(log_path, yaml_file):
         for kpi_name, value in result_dict.items():
             yaml_dict[case_name][kpi_name]["kpi_value"] = value["kpi_value"]
             try:
-                yaml_dict[case_name][kpi_name]["ratio"] = (value["kpi_value"] -
-                                                           yaml_dict[case_name][kpi_name]["kpi_base"]) / \
+                yaml_dict[case_name][kpi_name]["ratio"] = (yaml_dict[case_name][kpi_name]["kpi_base"] -
+                                                           value["kpi_value"]) / \
                                                            yaml_dict[case_name][kpi_name]["kpi_base"]
             except Exception as e:
                 yaml_dict[case_name][kpi_name]["ratio"] = 0
@@ -99,11 +99,8 @@ def read_log(log_path, yaml_file):
 
 def check_case_status(case_dict):
     status = "Passed"
-    if case_dict["kpi_value"] is None:
+    if case_dict["ratio"] < -case_dict["threshold"]:
         status = "Failed"
-    # if case_dict["model_name"] == "ResNet50_bs64" and case_dict["kpi_name"] == "avg_ips(500~3500)":
-    #     if case_dict["ratio"] <= -case_dict["threshold"]:
-    #         status = "Failed"
 
     return status
 
