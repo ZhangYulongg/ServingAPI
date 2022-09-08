@@ -4,7 +4,8 @@
 
 tar_path=${tar_path}
 gcc=$1
-trt_path=$2
+device=$2
+trt_path=$3
 
 function get_tar() {
     cd ${code_path}/Paddle-Inference-Demo/c++/lib
@@ -13,7 +14,7 @@ function get_tar() {
     tar -xf paddle_inference.tgz
 }
 
-function run() {
+function run_trt() {
     cd ${code_path}/Paddle-Inference-Demo/c++/gpu/resnet50
     mv /usr/bin/c++ /usr/bin/c++.bak
     mv /usr/bin/gcc /usr/bin/gcc.bak
@@ -27,6 +28,21 @@ function run() {
     exit_code=$?
 }
 
+function run_cpu() {
+    cd ${code_path}/Paddle-Inference-Demo/c++/cpu/resnet50
+    mv /usr/bin/c++ /usr/bin/c++.bak
+    mv /usr/bin/gcc /usr/bin/gcc.bak
+    ln -s /usr/local/gcc-${gcc}/bin/c++ /usr/bin/
+    ln -s /usr/local/gcc-${gcc}/bin/gcc /usr/bin/
+    wget -q https://paddle-inference-dist.bj.bcebos.com/Paddle-Inference-Demo/resnet50.tgz
+    tar -xf resnet50.tgz
+    sed -i "s/WITH_MKL=ON/WITH_MKL=OFF/" compile.sh
+    sed -i "s/WITH_ONNXRUNTIME=ON/WITH_ONNXRUNTIME=OFF/" compile.sh
+    bash -x compile.sh
+    ./build/resnet50_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams
+    exit_code=$?
+}
+
 
 export LD_LIBRARY_PATH=/opt/_internal/cpython-3.7.0/lib/:${LD_LIBRARY_PATH};
 export PATH=/opt/_internal/cpython-3.7.0/bin/:${PATH};
@@ -34,6 +50,11 @@ export PYTHON_FLAGS='-DPYTHON_EXECUTABLE:FILEPATH=/opt/_internal/cpython-3.7.0/b
 
 
 get_tar
-run
+if [ ${device} == "cpu" ]; then
+    run_cpu
+elif [ ${device} == "gpu" ]; then
+    run_trt
+fi
+
 
 exit ${exit_code}
