@@ -1,14 +1,10 @@
 #!/bin/bash
 # 需设置
-# tag_path (2.2.0-rc0)
+# tar_path (包地址)
 
-tag_path=${tag_path}
 tar_path=${tar_path}
-cuda=$1
-cudnn=$2
-gcc=$3
-trt=$4
-trt_path=$5
+gcc=$1
+trt_path=$2
 
 function get_tar() {
     cd ${code_path}/Paddle-Inference-Demo/c++/lib
@@ -40,7 +36,4 @@ export PYTHON_FLAGS='-DPYTHON_EXECUTABLE:FILEPATH=/opt/_internal/cpython-3.7.0/b
 get_tar
 run
 
-echo "=======result========"
-cat log_${cuda}_${cudnn}_${gcc}_${trt}.txt
-echo "====================="
 exit ${exit_code}
