@@ -6,6 +6,7 @@ tar_path=${tar_path}
 gcc=$1
 device=$2
 trt_path=$3
+cpu_lib=$3
 
 function get_tar() {
     cd ${code_path}/Paddle-Inference-Demo/c++/lib
@@ -36,7 +37,11 @@ function run_cpu() {
     ln -s /usr/local/gcc-${gcc}/bin/gcc /usr/bin/
     wget -q https://paddle-inference-dist.bj.bcebos.com/Paddle-Inference-Demo/resnet50.tgz
     tar -xf resnet50.tgz
-    sed -i "s/WITH_MKL=ON/WITH_MKL=OFF/" compile.sh
+    if [ ${cpu_lib} == "mkl" ]; then
+        echo ${cpu_lib}
+    elif [ ${cpu_lib} == "openblas" ]; then
+        sed -i "s/WITH_MKL=ON/WITH_MKL=OFF/" compile.sh
+    fi
     sed -i "s/WITH_ONNXRUNTIME=ON/WITH_ONNXRUNTIME=OFF/" compile.sh
     bash -x compile.sh
     ./build/resnet50_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams
