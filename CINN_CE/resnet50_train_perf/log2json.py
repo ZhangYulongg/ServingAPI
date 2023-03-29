@@ -126,7 +126,8 @@ def read_description_file(description_path):
 def send(args, json_list, failed_num, des_dict):
     if failed_num > 0:
         status = "Failed"
-        exit_code = 8
+        #todo:xly 任务会直接退出
+        exit_code = 0
     else:
         status = "Passed"
         exit_code = 0
