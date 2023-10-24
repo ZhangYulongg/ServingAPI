@@ -13,6 +13,8 @@ function get_tar() {
     rm -rf paddle_inference*
     wget -q ${tar_path}
     tar -xf paddle_inference.tgz
+    # mkldnn不兼容适配
+    sed -i "s/libdnnl.so.3/libmkldnn.so.0/" CMakeLists.txt
 }
 
 function run_trt() {
