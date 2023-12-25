@@ -25,7 +25,7 @@ function run_trt() {
     ln -s /usr/local/gcc-${gcc}/bin/gcc /usr/bin/
     wget -q https://paddle-inference-dist.bj.bcebos.com/Paddle-Inference-Demo/resnet50.tgz
     tar -xf resnet50.tgz
-    sed -i "34 i TENSORRT_ROOT=${trt_path}" compile.sh
+    sed -i "35 i TENSORRT_ROOT=${trt_path}" compile.sh
     bash -x compile.sh
     ./build/resnet50_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams --run_mode=trt_fp32
     exit_code=$?
@@ -44,7 +44,7 @@ function run_cpu() {
     elif [ ${cpu_lib} == "openblas" ]; then
         sed -i "s/WITH_MKL=ON/WITH_MKL=OFF/" compile.sh
     fi
-    sed -i "s/WITH_ONNXRUNTIME=ON/WITH_ONNXRUNTIME=OFF/" compile.sh
+    sed -i "s/WITH_ONNXRUNTIME=ON/WITH_ONNXRUNTIME=OFF/" compile.shc
     bash -x compile.sh
     ./build/resnet50_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams
     exit_code=$?
