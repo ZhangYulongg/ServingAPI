@@ -44,7 +44,7 @@ function run_cpu() {
     elif [ ${cpu_lib} == "openblas" ]; then
         sed -i "s/WITH_MKL=ON/WITH_MKL=OFF/" compile.sh
     fi
-    sed -i "s/WITH_ONNXRUNTIME=ON/WITH_ONNXRUNTIME=OFF/" compile.shc
+    sed -i "s/WITH_ONNXRUNTIME=ON/WITH_ONNXRUNTIME=OFF/" compile.sh
     bash -x compile.sh
     ./build/resnet50_test --model_file resnet50/inference.pdmodel --params_file resnet50/inference.pdiparams
     exit_code=$?
